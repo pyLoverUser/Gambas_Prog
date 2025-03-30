@@ -1,0 +1,268 @@
++---------------------+--------------------------+------+----------+---------------+
+| Name                | Vorname                  | VZB  | Chip_Val | Chip_lade_val |
++---------------------+--------------------------+------+----------+---------------+
+| Melchior            | Oliver                   | Y    |      0.5 |           810 |
+| Baumann             | Alfred                   | Y    |     15.2 |           465 |
+| Baumann             | Nico                     | Y    |        0 |            70 |
+| Baumann             | Oliver                   | Y    |      0.1 |           510 |
+| Belzner             | Ulrich                   | Y    |        0 |            20 |
+| Brauer              | Detlef                   | Y    |      0.1 |           100 |
+| Brauer              | Petra                    | Y    |        2 |            60 |
+| Hillebrand          | Katrin                   | Y    |      1.7 |             0 |
+| Brauer              | Simone                   | Y    |        1 |            75 |
+| Burghart            | Hans Dieter              | Y    |      3.2 |            50 |
+| Cateriano Obermeyer | Lucia                    | Y    |      7.7 |            80 |
+| Birkhold            | Julia Marie              | Y    |     19.3 |           195 |
+| Drenkelfort         | Karsten                  | Y    |      2.4 |           210 |
+| Bolz                | Eugen                    | Y    |      2.9 |           110 |
+| Bolz                | Dorothea                 | Y    |      1.1 |             0 |
+| Klaiber             | Jasmin                   | Y    |      0.8 |            90 |
+| Womes               | David                    | Y    |      7.2 |             5 |
+| Flegel              | Wolfgang                 | Y    |        0 |             0 |
+| Gack                | Christoph                | Y    |      1.3 |           275 |
+| Schulze             | Katja                    | Y    |        0 |           180 |
+| Baumann             | Maren                    | Y    |      6.5 |           285 |
+| Finda               | Mathias                  | Y    |        4 |           280 |
+| Eckhardt            | Werner                   | Y    |     17.3 |           230 |
+| Gutbrod             | Marion                   | Y    |      9.1 |             0 |
+| Veltre              | Marco                    | Y    |      0.6 |           140 |
+| Müller              | Hans                     | Y    |      0.1 |            10 |
+| Bender              | Simon                    | Y    |      0.3 |           530 |
+| Harsch              | Walter                   | Y    |        0 |            10 |
+| Lorenzo             | Giuliano                 | Y    |     28.2 |             0 |
+| Heilmann            | Hermann                  | Y    |        0 |            60 |
+| Heilmann            | Monika                   | Y    |      0.8 |           240 |
+| Henne               | Birgit                   | Y    |        0 |           170 |
+| Henne               | Marc                     | Y    |      6.4 |           810 |
+| Henne               | Tim                      | Y    |     15.6 |           555 |
+| Hillebrand          | Jürgen                   | Y    |        0 |            20 |
+| Kemmer-Trinks       | Inge                     | Y    |       30 |             0 |
+| Kern                | Klaus                    | Y    |        0 |           395 |
+| Kern                | Marlies                  | Y    |        5 |            90 |
+| Löser               | Hans Ludwig              | Y    |     10.5 |           670 |
+| Klassen             | Peter                    | Y    |      6.4 |             0 |
+| Olde Rikkert        | Thomas                   | Y    |     21.2 |             0 |
+| Krämer              | Daniel                   | Y    |      3.9 |            10 |
+| Kuntzer             | Brigitte                 | Y    |      1.7 |           420 |
+| Weih                | Steffen                  | Y    |        0 |           160 |
+| Ries                | Thomas                   | Y    |        2 |             0 |
+| Kuntzer             | Patrick                  | Y    |     20.1 |            20 |
+| Kussmaul            | Anita                    | Y    |     23.7 |             0 |
+| Kussmaul            | Roland                   | Y    |     17.4 |             0 |
+| Pecijareski         | Vasko                    | Y    |      2.9 |            95 |
+| Löffler             | Klaus                    | Y    |      1.5 |             0 |
+| Gohier              | Vincent                  | Y    |     35.8 |           445 |
+| Maisch              | Ilona                    | Y    |      0.9 |            10 |
+| Mierzowski          | Nina                     | Y    |      0.3 |            45 |
+| Marks               | Oliver                   | Y    |      5.4 |            90 |
+| Michel              | Werner                   | Y    |     21.9 |            70 |
+| Peifer              | Roland                   | Y    |       30 |             0 |
+| Müller              | Gudrun                   | Y    |        0 |            20 |
+| Müller              | Uschi                    | Y    |      0.3 |            30 |
+| Niedergesäß         | Bernhard                 | Y    |      1.3 |           185 |
+| Packeiser           | Burkhard                 | Y    |        0 |            10 |
+| Packeiser           | Renate                   | Y    |      0.2 |             0 |
+| Schumann            | Britt                    | Y    |       30 |             0 |
+| Glemser             | Jannik                   | Y    |       30 |             0 |
+| Klement             | Joachim                  | Y    |     23.7 |            45 |
+| Mansel              | Robert                   | Y    |        0 |             0 |
+| Stauss              | Alexander                | Y    |      9.1 |           215 |
+| Keiser              | Christoph                | Y    |      1.9 |           195 |
+| Prumbs              | Roland                   | Y    |      0.6 |           145 |
+| Johl                | Anke                     | Y    |        0 |           110 |
+| Seigner             | Matthias                 | Y    |      0.2 |            80 |
+| Riedel              | Jan                      | Y    |      0.5 |           150 |
+| Sanzenbacher        | Hermann                  | Y    |      5.7 |            10 |
+| Hack                | Oliver                   | Y    |     22.2 |            40 |
+| Scheyhing           | Herbert                  | Y    |      6.1 |             0 |
+| Buchfink            | Sebastian                | Y    |      5.8 |            30 |
+| Knapp               | Daniel                   | Y    |      1.1 |           100 |
+| Schlotterbeck       | Gert                     | Y    |       10 |           260 |
+| Luncz               | Marita                   | Y    |        0 |            10 |
+| Schuler             | Edmund W.                | Y    |        0 |            30 |
+| Schuler             | Ursula                   | Y    |        0 |            80 |
+| Schmidt             | Jessica                  | Y    |     18.9 |             0 |
+| Schulze             | Robert                   | Y    |      0.4 |            70 |
+| Hohmann             | Daniel                   | Y    |     20.7 |            50 |
+| Sippel              | Wolfgang                 | Y    |      4.8 |            10 |
+| Pfeifer             | Achim                    | Y    |      5.8 |           280 |
+| Duvenkrop           | Claudia                  | Y    |      3.7 |           165 |
+| Hieber              | Christina                | Y    |        2 |           365 |
+| Till                | Silvia                   | Y    |      1.2 |           120 |
+| Torno               | Oskar                    | Y    |      6.8 |            30 |
+| Scholz              | Christian                | Y    |      1.9 |           870 |
+| Trinks              | Wilfried                 | Y    |        0 |           370 |
+| Scholz              | Daniela                  | Y    |      9.7 |           940 |
+| Weih                | Yvonne                   | Y    |      1.5 |           245 |
+| Baumann             | Marco                    | Y    |       30 |             0 |
+| Wölfler             | Alexandra                | Y    |      5.2 |            40 |
+| Wölfler             | Werner                   | Y    |      0.3 |             0 |
+| Womes               | Sofia-Katharina          | Y    |      0.1 |            60 |
+| Schuler             | Sebastian                | Y    |        0 |             0 |
+| Nothacker           | Karin                    | Y    |     12.4 |            10 |
+| Weber               | Sonja                    | Y    |      5.1 |           225 |
+| Keller              | Manfred                  | Y    |      0.1 |           150 |
+| Schweizer           | Renate                   | Y    |        0 |            25 |
+| Steiger             | Gabriele                 | Y    |        7 |           245 |
+| Brauer              | Andreas                  | Y    |      0.7 |           100 |
+| Lang                | Karen                    | Y    |        0 |             0 |
+| König               | Thomas                   | Y    |     18.5 |            30 |
+| Olde Rikkert-Zaiser | Katharina                | Y    |      0.8 |            10 |
+| Akhil               | Karthasseril Sivankuttly | Y    |       30 |             0 |
+| Zaiser              | Margarete                | Y    |        0 |             0 |
+| Demel               | Stefan                   | Y    |     10.3 |            85 |
+| Rupp                | Roger                    | Y    |        0 |             0 |
+| Knötig              | Hans                     | Y    |      0.2 |           205 |
+| Heinemann           | Daniel                   | Y    |     26.2 |            60 |
+| Breitinger          | Stefan                   | Y    |       30 |             0 |
+| Mundinger           | Thilo                    | Y    |     12.2 |            55 |
+| Lesmeister          | René                     | Y    |       30 |             0 |
+| Weigold             | Marc                     | Y    |      2.3 |           160 |
+| Keck                | Martin                   | Y    |      1.8 |           250 |
+| Keck                | Carola                   | Y    |        0 |            85 |
+| Pertschy            | Jeannette                | Y    |        0 |           135 |
+| Rupp                | Claudia                  | Y    |        0 |            50 |
+| Knöller             | Michael                  | Y    |      4.2 |             0 |
+| Lang                | Andreas                  | Y    |      7.6 |            95 |
+| Wetzel              | Peter                    | Y    |      9.7 |            60 |
+| Baun                | Simone                   | Y    |      6.8 |           130 |
+| Weber               | Ronald                   | Y    |     12.5 |            20 |
+| Pertschy            | Ali                      | Y    |        6 |            40 |
+| Wenzel              | Dirk Oliver              | Y    |      1.3 |           105 |
+| Vietense            | Lars                     | Y    |      1.2 |           180 |
+| Kilic               | Deniz                    | Y    |       30 |             0 |
+| Stolz               | Marianne                 | Y    |      1.4 |           130 |
+| Breitinger          | Jessica                  | Y    |        2 |           170 |
+| Peters              | Sabine                   | Y    |      8.1 |           220 |
+| Walker              | Tobias                   | Y    |       30 |             0 |
+| Mangold             | Martin                   | Y    |       30 |             0 |
+| Mangold             | Pamela                   | Y    |       30 |             0 |
+| Franz               | Heike                    | Y    |      6.9 |           160 |
+| Klaiber             | Daniel                   | Y    |      5.2 |           810 |
+| Vietense            | Ingo                     | Y    |      0.4 |           170 |
+| Schönleber          | Annette                  | Y    |      2.1 |            70 |
+| Fink                | Tanja                    | Y    |     10.7 |           140 |
+| Glemser             | Michael                  | Y    |       30 |             0 |
+| Gross               | Alexander                | Y    |      6.6 |            70 |
+| Breuer              | Felix                    | Y    |     17.8 |           245 |
+| Todtenhaupt         | Lea                      | Y    |      1.5 |            10 |
+| Kolbow              | Steffen                  | Y    |      8.5 |             0 |
+| Bludnikov           | Anna                     | Y    |     18.2 |           290 |
+| Brenneisen          | Hannes                   | Y    |       30 |             0 |
+| Cuoco               | Tobias                   | Y    |       30 |             0 |
+| Essig               | Joachim                  | Y    |      4.6 |           230 |
+| Ritter              | Michael                  | Y    |       28 |             0 |
+| Maier               | Thomas                   | Y    |        0 |          1020 |
+| Demel               | Valeria                  | Y    |        0 |             0 |
+| Ries                | Jutta                    | Y    |        0 |            20 |
+| Rößler              | Heike                    | Y    |       28 |            10 |
+| Süß-Räuchle         | Claudia                  | Y    |       28 |            10 |
+| Wagner              | Christoph                | Y    |      5.9 |            45 |
+| Bertola             | Carlos                   | Y    |     10.9 |            60 |
+| Haffner             | Andreas                  | Y    |       30 |             0 |
+| Schönleber          | Markus                   | Y    |     10.7 |            20 |
+| Steinbach           | Wencke                   | Y    |        0 |             0 |
+| Schmidt             | Nadine                   | Y    |        0 |             0 |
+| Kuon                | Pia                      | Y    |     13.5 |           415 |
++---------------------+--------------------------+------+----------+---------------+
+
+
+
++------------+-----------+------+----------+---------------+
+| Name       | Vorname   | VZB  | Chip_Val | Chip_lade_val |
++------------+-----------+------+----------+---------------+
+| Mierzowski | Niklas    | N    |      0.6 |           220 |
+| Kuon       | Paula     | N    |     10.9 |            25 |
+| Keck       | Fabian    | N    |      2.5 |           335 |
+| Wilfried   | Test      | N    |     51.9 |            90 |
+| Habibi     | Saba      | N    |     10.4 |            30 |
+| Fiehn      | Kara      | N    |      3.4 |            10 |
+| Walker     | Tim       | N    |       32 |           300 |
+| Scholz     | Selina    | N    |      2.6 |            80 |
+| Mundinger  | Lucy      | N    |      5.3 |            20 |
+| Pichl      | Annabelle | N    |       10 |            10 |
+| Hüsch      | Thomas    | N    |      5.6 |           250 |
+| Baumann    | Mayla     | N    |       10 |            10 |
+| Pertschy   | Danusch   | N    |     14.6 |            90 |
+| Hieber     | Mara      | N    |      5.3 |            30 |
+| Trainer    | Filip     | N    |     14.3 |           355 |
++------------+-----------+------+----------+---------------+
+
+MariaDB [Belegung]> SELECT DISTINCT m.Name, m.Vorname, m.Mitgl_Nr FROM Mitglieder m RIGHT JOIN CWTabelle c ON m.Mitgl_Nr = c.MitglNr WHERE ((c.BarChip = 'ChipLaden') AND ( c.Datum BETWEEN '2024-01-01' AND '2024-12-31'));
++---------------+-------------+----------+
+| Name          | Vorname     | Mitgl_Nr |
++---------------+-------------+----------+
+| Melchior      | Oliver      |     2004 |
+| Baumann       | Alfred      |     2005 |
+| Baumann       | Oliver      |     2008 |
+| Brauer        | Simone      |     2017 |
+| Birkhold      | Julia Marie |     2024 |
+| Drenkelfort   | Karsten     |     2026 |
+| Gack          | Christoph   |     2035 |
+| Schulze       | Katja       |     2036 |
+| Baumann       | Maren       |     2038 |
+| Finda         | Mathias     |     2040 |
+| Eckhardt      | Werner      |     2042 |
+| Bender        | Simon       |     2059 |
+| Heilmann      | Monika      |     2071 |
+| Henne         | Birgit      |     2076 |
+| Henne         | Marc        |     2077 |
+| Henne         | Tim         |     2078 |
+| Kuon          | Paula       |     2058 |
+| Kern          | Klaus       |     2089 |
+| Kern          | Marlies     |     2090 |
+| Löser         | Hans Ludwig |     2031 |
+| Kuntzer       | Brigitte    |     2102 |
+| Weih          | Steffen     |     2103 |
+| Gohier        | Vincent     |     2115 |
+| Keck          | Fabian      |     2121 |
+| Niedergesäß   | Bernhard    |     2132 |
+| Stauss        | Alexander   |     2143 |
+| Keiser        | Christoph   |     2145 |
+| Prumbs        | Roland      |     2146 |
+| Johl          | Anke        |     2149 |
+| Riedel        | Jan         |     2152 |
+| Wilfried      | Test        |     2153 |
+| Schlotterbeck | Gert        |     2162 |
+| Schulze       | Robert      |     2170 |
+| Pfeifer       | Achim       |     2180 |
+| Duvenkrop     | Claudia     |     2183 |
+| Hieber        | Christina   |     2072 |
+| Till          | Silvia      |     2190 |
+| Scholz        | Christian   |     2194 |
+| Trinks        | Wilfried    |     2196 |
+| Scholz        | Daniela     |     2198 |
+| Weih          | Yvonne      |     2203 |
+| Weber         | Sonja       |     2220 |
+| Keller        | Manfred     |     2224 |
+| Steiger       | Gabriele    |     2227 |
+| Demel         | Stefan      |     2142 |
+| Knötig        | Hans        |     2091 |
+| Keck          | Martin      |     2259 |
+| Fiehn         | Kara        |     2263 |
+| Walker        | Tim         |     2049 |
+| Scholz        | Selina      |     2278 |
+| Lang          | Andreas     |     2155 |
+| Baun          | Simone      |     2287 |
+| Pertschy      | Ali         |     2301 |
+| Mundinger     | Lucy        |     2302 |
+| Vietense      | Lars        |     2305 |
+| Stolz         | Marianne    |     2307 |
+| Breitinger    | Jessica     |     2308 |
+| Peters        | Sabine      |     2310 |
+| Klaiber       | Daniel      |     2320 |
+| Pichl         | Annabelle   |     2191 |
+| Fink          | Tanja       |     2053 |
+| Breuer        | Felix       |     2351 |
+| Hüsch         | Thomas      |     2002 |
+| Bludnikov     | Anna        |     2006 |
+| Essig         | Joachim     |     2016 |
+| Maier         | Thomas      |     2185 |
+| Baumann       | Mayla       |     2119 |
+| Pertschy      | Danusch     |     2232 |
+| Hieber        | Mara        |     2064 |
+| Kuon          | Pia         |     2173 |
+| Trainer       | Filip       |     2082 |
++---------------+-------------+----------+
+
+

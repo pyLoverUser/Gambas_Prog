@@ -84,8 +84,8 @@ tgBtn[0] = New ToggleButton(pan0) As "MyTG"
 tgBtn[1] = New ToggleButton(pan1) As "MyTG"
 tgBtn[2] = New ToggleButton(pan2) As "MyTG"
 For i = 0 To 2
-tgBtn[i].H = pan0.H    
-tgBtn[i].W = pan1.H
+tgBtn[i].H = pan1.H    
+tgBtn[i].W = pan2.H
 tgBtn[i].X = 0
 tgBtn[i].Y = 0
 tgBtn[i].Tag = i
@@ -93,8 +93,8 @@ tgBtn[i].Radio = True
 tgBtn[i].Visible = True
 Next
 If rbNicht = True Then tgBtn[0].Background = Color.Green
-If rbKompl = True Then tgBtn[0].Background = Color.Green
-If rbVerbraucht = True Then tgBtn[0].Background = Color.Green
+If rbKompl = True Then tgBtn[1].Background = Color.Green
+If rbVerbraucht = True Then tgBtn[2].Background = Color.Green
 tbVZB.Text = Format(vzbBetrag, "#,##0.00") 
 lbVZBalt.Text = Format(vzbAlt, "#,##0.00")  
 End
@@ -230,11 +230,7 @@ Select Case j
                     rs1 = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
                     rs.MoveNext
                 Next
-            End If
-            fmAdmin.DBMitglieder()
-            ' Case 2
-                ' Message.Info(" <br/><font size=3 color='red'>Es wurde kein Verzehrbon zugewiesen ?< / b > < / font >")
-            ' End Select
+            End If            
         End If
 End Select
 End

@@ -42,7 +42,7 @@
     Background = Color.Black
     Foreground = Color.Red
     Text = ("Guthaben wie übernehmen?")
-    { Pan2 Panel
+    { pan0 Panel
       MoveScaled(3,19,31.1111,4)
       Border = Border.Raised
       { Label5 Label
@@ -52,7 +52,7 @@
         Text = ("Guthaben NICHT übernehmen!")
       }
     }
-    { pan0 Panel
+    { pan1 Panel
       MoveScaled(3,3,31.1111,4)
       Border = Border.Raised
       { Label6 Label
@@ -62,7 +62,7 @@
         Text = ("Guthaben KOMPLETT übernehmen!")
       }
     }
-    { Pan1 Panel
+    { pan2 Panel
       MoveScaled(3,11,31.1111,4)
       Border = Border.Raised
       { Label7 Label
