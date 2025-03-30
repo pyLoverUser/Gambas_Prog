@@ -1,0 +1,269 @@
+' Gambas class file
+
+Public sFeldTrennzeichen As String
+Public sTextTrennzeichen As String
+Public bSaveTitel As Boolean
+Public bError As Boolean
+
+Public c[11] As Integer
+Public al[11] As Integer
+Public h1[11] As String
+Public btnAbrGast[6] As Button
+Public GridGastSp As GridView
+Public HeaderGast[11] As Label
+Public Dia As Dialog
+Public SqlCom As String
+Public SqlTab As String
+Public SqlP As String
+Public rs As Result
+
+Public Sub Form_Open()
+Dim i As Integer
+fmAbrGastSpieler.w = 750
+fmAbrGastSpieler.h = 600
+For i = 0 To 5
+  btnAbrGast[i] = New Button(Me) As "MyVerechnGast"
+  With btnAbrGast[i]
+    .H = 60
+    .W = 150
+    .X = 0 + i * 150 
+    .Y = 0
+    If i = 5 Then .W = 1280 - .X + 150
+    .Font.Size = 12
+    .Tag = i
+    .Background = Color.DarkGray
+    .Foreground = Color.White
+      Select Case i
+        Case 0
+            .Text = "Speich-CSV"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Save.ico")
+        Case 1
+            .Text = "Sichern"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Database add.ico")
+        Case 2
+            .Text = "Datum,Name"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Search.ico")
+        Case 3
+            .Text = "Name,Datum"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Search.ico")
+        Case 4
+            .Text = "Ende"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Home.ico")
+      End Select
+  End With
+Next
+
+GridGastSp = New GridView(Me) As "MyGastGrid" 
+c[0] = 100
+c[1] = 100
+c[2] = 40
+c[3] = 40
+c[4] = 60
+c[5] = 220
+c[6] = 50
+c[7] = 50
+
+al[0] = 3
+al[1] = 3
+al[2] = 3
+al[3] = 3
+al[4] = 3
+al[5] = 1
+al[6] = 3
+al[7] = 2
+
+h1[0] = "Datum"
+h1[1] = "Zeit"
+h1[2] = "PlzNr"
+h1[3] = "E/D"
+h1[4] = "MitglNr"
+h1[5] = "Name, Vorname"
+h1[6] = "Er/Ju"
+h1[7] = "Preis"
+
+With GridGastSp
+  .w = 660
+  .H = 525
+  .x = 45
+  .y = 70
+  .Mode = Select.Single
+  .ScrollBar = 0
+  .Expand = True
+  .font.Size = 10
+  .Font.Name = "Sans Serif"
+  .Font.Bold = False
+  .Grid = True
+  .Rows.Count = 1
+  .Rows.H = 25
+  .Visible = True
+  .Enabled = True
+  .SetFocus
+  .Columns.count = 9
+  .Header = 1
+For i = 0 To 7
+    .Columns[i].W = c[i]
+    .Columns[i].Alignment = al[i]
+    
+Next
+End With
+For i = 0 To 7
+ HeaderGast[i] = New Label(Me) As "MyGastGridHeader"
+ HeaderGast[i].Foreground = Color.White
+ HeaderGast[i].Alignment = Align.Center
+ HeaderGast[i].Font.Size = 10
+ HeaderGast[i].Font.Bold = False
+ HeaderGast[i].Font.Name = "Sans Serif"
+ HeaderGast[i].H = 28
+ HeaderGast[i].w = c[i] - 1 'GridView2.Columns[i].w '- 1
+ HeaderGast[i].Left = GridGastSp[0, i].Left + GridGastSp.Left
+ HeaderGast[i].top = GridGastSp[0, i].top + GridGastSp.Top
+ HeaderGast[i].Background = Color.DarkBlue
+ HeaderGast[i].Visible = True
+ HeaderGast[i].Text = h1[i]
+Next
+SeekGsp(2)
+End
+
+Public Sub SeekGsp(si As Integer)
+Dim i As Integer
+Select Case si
+    Case 2
+        SqlCom = "SELECT * FROM "
+        SqlTab = "_GastSpieler "
+        SqlP = "ORDER BY Datum_Beginn,Name,Vorname"
+    Case 3
+        SqlCom = "SELECT * FROM "
+        SqlTab = "_GastSpieler "
+        SqlP = "ORDER BY Name,Vorname,Datum_Beginn"
+End Select
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.count > 0 Then
+    GridGastSp.Rows.Count = rs.Count
+    For i = 0 To rs.count - 1
+        GridGastSp[i, 0].Text = Format(rs!Datum_Beginn, "dd.mm.yyyy")
+        GridGastSp[i, 1].Text = Format(rs!Beginn, "hh:mm:ss") & "-" & Format(rs!Ende, "hh:mm:ss")
+        GridGastSp[i, 2].Text = rs!Platz_idx \ 100
+        ' GridGastSp[i, 3].Text = rs!Einzel_Doppel
+        If rs!Einzel_Doppel = 0 Then
+            GridGastSp[i, 3].Text = "E"
+        Else
+            GridGastSp[i, 3].Text = "D"
+        Endif
+'        GridGastSp[i, 2].Text = Format(rs!Ende, "hh:mm:ss")
+        GridGastSp[i, 4].Text = rs!Mitgl_Nr
+        GridGastSp[i, 5].Text = rs!Name & ", " & rs!Vorname
+        ' GridGastSp[i, 6].Text = rs!Vorname
+        If rs!Erwachsen = 1 Then
+            GridGastSp[i, 6].Foreground = Color.Black    
+            GridGastSp[i, 7].Foreground = Color.Black    
+            GridGastSp[i, 6].Text = "E"
+        Else
+            GridGastSp[i, 6].Foreground = Color.Red    
+            GridGastSp[i, 7].Foreground = Color.Red    
+            GridGastSp[i, 6].Text = "J"
+        Endif
+        GridGastSp[i, 7].Text = Format(rs!Preis, "#,##0.00")
+        ' GridGastSp[i, 9].Text = rs!Preis  
+        rs.MoveNext     
+    Next
+    
+Endif
+End
+Public Sub DialSave()
+Dialog.SaveFile()
+Dialog.Titel = "Speichern "
+Dialog.Path = "/home/pi/Kassen_RFID"
+
+Dialog.Filter = ["*.csv", "data Files"]
+File.Save(Dialog.Path, Dialog.SaveFile)
+Catch
+    If Error Then Return
+
+End
+
+Public Sub MyVerechnGast_MouseDown()
+' Dim i As Integer  
+Select Case Last.Tag  
+  Case 0
+      ExportGridView2CSV(GridGastSp, ";", "/", True)
+  Case 1
+  Case 2
+      SeekGsp(2)
+  Case 3
+      SeekGsp(3)
+  Case 4    'Ende
+     fmVerrechnung.Visible = True
+     fmAbrGastSpieler.Close
+End Select
+End
+
+' Public Sub ExportGridView2CSV()
+'   ' FExport.ShowModal
+'   If MCSV.bError = False Then 
+'      ' MCSV.GridView2CSV(GridView1, MCSV.sFeldTrennzeichen, MCSV.sTextTrennzeichen, MCSV.bSaveTitel)
+'      GridView2CSV(GridView1, sFeldTrennzeichen, sTextTrennzeichen, bSaveTitel)
+'      ' btnGridViewExportCSV.Enabled = True
+'   Else 
+'     Message.Warning("Der Daten-Export wurde abgebrochen!")
+'     ' btnGridViewExportCSV.Enabled = True
+'   Endif ' MCSV.bError = FALSE?
+' End ' ExportGridView2CSV()
+ 
+Public Sub ExportGridView2CSV(Grid As GridView, pFeldTrenner As String, pTextTrenner As String, pSaveTitel As Boolean)
+ 
+  Dim iCount, rCount, cCount As Integer
+  Dim sZeile As String
+  Dim hFile As File
+ 
+  Dialog.Title = "Speichern Sie die Daten in einer csv-Datei!"
+  Dialog.Filter = ["*.csv", "csv-Dateien"]
+  If Dialog.SaveFile() = True Then 
+      Message.Title = "CSV Daten-Export"
+     Message.Warning("Der Daten-Export wurde abgebrochen!")
+     Return ' Cancel-Button     
+  Else 
+   ' Die CSV-Datei wird neu angelegt oder geleert
+     If File.Ext(Dialog.Path) <> "csv" And File.Ext(Dialog.Path) <> "txt" Then 
+        Dialog.Path = File.SetExt(Dialog.Path, "csv")
+     Endif 
+     hFile = Open Dialog.Path For Write Create
+     ' If Error Then 
+     '    Message.Error(Error.Text & Error.Where)
+     '    Return
+     ' Endif ' ERROR
+     Seek #hFile, 0
+ 
+   ' Spalten überschriften speichern (optional)
+   If pSaveTitel = True Then 
+      If Grid.Header = Grid.Horizontal Then
+         For iCount = 0 To Grid.Columns.Count - 1
+             If iCount < Grid.Columns.Count - 1 Then 
+                sZeile &= Grid.Columns[iCount].Title & pTextTrenner
+             Else 
+                sZeile &= Grid.Columns[iCount].Title 
+             Endif ' iCount > 0
+         Next 
+         Print #hFile, sZeile 
+      Endif ' Grid.Horizontal OR Grid.Header?
+   Endif ' bTitel = TRUE?
+ 
+   ' GridView-Daten speichern
+     sZeile = ""
+     For rCount = 0 To Grid.Rows.Count - 1
+         For cCount = 0 To Grid.Columns.Count - 1
+             If cCount > 0 Then 
+                ' sZeile &= pFeldTrenner & pTextTrenner & Grid[rCount, cCount].Text & pTextTrenner
+                sZeile &= pFeldTrenner & Grid[rCount, cCount].Text 
+             Else 
+                ' sZeile &= pTextTrenner & Grid[rCount, cCount].Text & pTextTrenner
+                sZeile &= Grid[rCount, cCount].Text 
+             Endif ' cCount > 0  
+         Next ' cCount
+         Print #hFile, sZeile 
+         sZeile = ""
+     Next ' rCount  
+   Endif ' Dialog.SaveFile() = TRUE?
+ 
+  Close #hFile
+ 
+End 

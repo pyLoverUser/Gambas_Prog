@@ -1,0 +1,11 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,142.2222,80)
+  Background = Color.LightGray
+  FullScreen = True
+  { GridMitgl GridView
+    MoveScaled(5,1,45,5)
+    Mode = Select.Single
+  }
+}

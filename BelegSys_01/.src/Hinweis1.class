@@ -1,0 +1,14 @@
+' Gambas class file
+
+
+Public Sub Button1_Click()
+  Hinweis.Visible = False
+  Hinweis.close
+  FMain.Enabled = True
+End
+
+Public Sub Form_Open()
+  Hinweis.TakeFocus = True
+  FMain.TakeFocus = False
+
+End

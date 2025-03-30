@@ -1,0 +1,297 @@
+' Gambas class file
+
+Public btnRegeln[6] As Button
+Public comGlob[7] As ComboBox
+Public lblGlob[7] As Label
+Public comPlatz[6] As ComboBox
+Public lblPlatz[6] As Label
+Public comGast[6] As ComboBox
+Public lblGast[6] As Label
+
+Public Sub Form_Open()
+frGlob.Enabled = True
+frPlatz.Enabled = False    
+frGast.Enabled = False
+frGlob.X = Screen.W \ 2 - frGlob.W \ 2
+frPlatz.X = Screen.W \ 2 - frGlob.W \ 2
+frGast.X = Screen.W \ 2 - frGlob.W \ 2
+frGast.H = 150
+frGlob.H = frGast.H
+frPlatz.H = frGast.H
+frGlob.Y = 100
+frPlatz.Y = frGlob.Y + frGlob.H + 30
+frGast.Y = frPlatz.Y + frPlatz.H + 30
+initBtnRegeln()
+initComGlob()
+InitlblGlob()
+InitComPlatz()
+InitlblPlatz() 
+InitComGast()
+InitlblGast()
+End
+Public Sub initBtnRegeln()
+Dim i As Integer
+For i = 0 To 5
+btnRegeln[i] = New Button(Me) As "MyRegeln"
+  With btnRegeln[i]
+    .H = 60
+    .W = 150
+    .X = 0 + i * 150 
+    .Y = 0
+    If i = 5 Then .W = fmVZB.W - .X + 150
+    If i < 5 Then fmTranspNeuSperre.w = (i + 1) * 150
+    .Tag = i 
+    .Background = Color.Black
+    .Foreground = Color.White
+      Select Case i 
+        Case 0
+            .Text = "Global"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Globe.ico")
+        Case 1
+            .Text = "Gast"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Man.ico")
+        Case 2
+            .Text = "Platz"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Target.ico")
+        Case 3
+            .Text = "Löschen"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Trash.ico")            
+        Case 4
+            .Text = "Ende"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Home.ico")
+      End Select
+  End With
+  Next
+End
+Public Sub MyRegeln_MouseDown()
+Dim i As Integer  
+i = Last.Tag  
+Select Case i
+Case 0
+Case 1
+Case 2
+Case 3
+Case 4
+    fmAdmin.Show
+    fmRegeln.Close  
+End Select  
+End
+Public Sub initComGlob()
+Dim i As Integer
+For i = 0 To 6
+     comGlob[i] = New ComboBox(frGlob) As "MyGlob"
+     With comGlob[i]
+       .Tag = i
+       .Visible = True
+       .Background = Color.ButtonBackground
+       .H = 36
+       .W = 72
+       .Y = 100
+       Select Case i
+           Case 0
+               .X = 18
+               .List = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+           Case 1
+               .X = 108
+               .List = ["Ja", "Nein"]
+          Case 2
+               .X = 261
+           Case 3
+               .X = 351
+           Case 4
+               .X = 441
+           Case 5
+               .X = 567
+          Case 6
+               .X = 657
+       End Select
+   End With
+Next
+
+End
+Public Sub InitlblGlob()
+Dim i As Integer
+ For i = 0 To 6
+      lblGlob[i] = New Label(frGlob) As "MylblGlob"
+      With lblGlob[i]
+        ' .H = 36
+        ' .W = 72
+        ' .Y = 40
+        .Font.Size = 10
+        .Visible = True
+        .Alignment = Align.Center
+        .Foreground = Color.Cyan
+        Select Case i
+            Case 0
+                .X = 28
+                .Text = "Anz." & Chr(10) & "Plätze"
+            Case 1
+                .X = 118
+                .Text = "Regen-" & Chr(10) & "Sensor"
+           Case 2
+                .X = 281
+                .W = comGlob[3].X - comGlob[2].X + comGlob[3].W
+                .Text = "System-Rollo" & Chr(10) & "Ein        Aus"
+            Case 3
+                .X = 361
+                .Text = ""
+            Case 4
+                .X = 451
+                .Text = "Dauer" & Chr(10) & "in Min"
+            Case 5
+                .X = 577
+                .W = comGlob[6].X - comGlob[5].X + comGlob[6].W
+                .Text = "Nachtsperre" & Chr(10) & "von         bis"
+           Case 6
+                .W = 90
+                .X = 657 - 9
+                .Text = ""
+        End Select
+    .Adjust
+    .Y = comGlob[0].Y - .H - 15
+    End With
+ Next
+End
+Public Sub InitComPlatz()
+Dim i As Integer
+ For i = 0 To 5
+      comPlatz[i] = New ComboBox(frPlatz) As "MycomPlatz"
+      With comPlatz[i]
+        .Tag = i
+        .Visible = True
+        .Background = Color.ButtonBackground
+        .H = 36
+        .W = 72
+        .Y = 100
+        Select Case i
+            Case 0
+                .X = 18
+            Case 1
+                .X = 117
+           Case 2
+                .X = 306
+            Case 3
+                .X = 423
+            Case 4
+                .X = 540
+            Case 5
+                .X = 657
+        End Select
+    End With
+ Next
+End
+Public Sub InitlblPlatz()
+Dim i As Integer
+ For i = 0 To 5
+      lblPlatz[i] = New Label(frPlatz) As "MylblPlatz"
+      With lblPlatz[i]
+        ' .H = 36
+        ' .W = 72
+        ' .Y = 60 - .H
+        .Font.Size = 10
+        .Visible = True
+        .Alignment = Align.Center
+        .Foreground = Color.Cyan
+        Select Case i
+            Case 0
+                .X = 28
+                .Text = "Zeit" & Chr(10) & "Einzel" 
+            Case 1
+                .X = 127
+                .Text = "Zeit" & Chr(10) & "Doppel"
+           Case 2
+                .X = 306
+                .Text = "Max Pause"
+            Case 3
+                .X = 420
+                ' .H = 60
+                ' .W = 80
+                .Text = "löschen" & Chr(10) & "wenn nicht" & Chr(10) & "kompl." & Chr(10) & "in Min"
+            Case 4
+                ' .W = 95
+                .X = 540 - (lblPlatz[4].W - comPlatz[4].W) \ 2
+                ' .H = 60
+                .Text = "Ausbuchung:" & Chr(10) & "löschen wenn" & Chr(10) & "nicht kompl."
+            Case 5
+                .X = 664
+                .Text = "Gelb-" & Chr(10) & "Sperre "
+       End Select
+        .Adjust
+        .Y = comPlatz[0].Y - .H - 15
+    End With
+ Next
+End
+'********************************************************************************
+Public Sub InitComGast()
+Dim i As Integer
+ For i = 0 To 5
+      comGast[i] = New ComboBox(frGast) As "MycomGast"
+      With comGast[i]
+        .Tag = i
+        .Visible = True
+        .Background = Color.ButtonBackground
+        .H = 36
+        .W = 72
+        .Y = 100
+        Select Case i
+            Case 0
+                .X = 18
+            Case 1
+                .X = 126
+           Case 2
+                .X = 234
+            Case 3
+                .X = 342
+            Case 4
+                .X = 549
+            Case 5
+                .X = 657
+        End Select
+    End With
+ Next
+End
+Public Sub InitlblGast()
+Dim i As Integer
+ For i = 0 To 5
+    lblGast[i] = New Label(frGast) As "MylblGast"
+    With lblGast[i]
+        ' .H = 36
+        ' .W = 72
+        .Font.Size = 10
+        .Visible = True
+        .Alignment = Align.Center
+        .Foreground = Color.Cyan
+        Select Case i
+            Case 0
+                .X = 25
+                .Text = "Gast" & Chr(10) & "erlaubt?" 
+            Case 1
+                .X = 120
+                ' .H = 65
+                ' .Y = .Y - 15
+                .Text = "Gast-" & Chr(10) & "anzahl" & Chr(10) & "beschränkt?"
+           Case 2
+                .X = 246
+                .Text = "Gast-" & Chr(10) & "Anzahl"
+            Case 3
+                .X = 340
+                ' .H = 65
+                ' .W = 90
+                ' .Y = .Y - 10
+                .Text = "Gast-" & Chr(10) & "Abrechnung" & Chr(10) & "nach Min." ""
+            Case 4
+                .X = 540
+                ' .W = 90
+                ' .H = 60
+                .Text = "Preis für" & Chr(10) & "Erwachsene:"
+            Case 5
+                 .X = 648
+                ' .W = 95
+                 .Text = "Preis für" & Chr(10) & "Jugendliche:"
+       End Select
+        .Adjust
+        .Y = comGast[0].Y - .H - 15
+    End With
+ Next
+End
+

@@ -1,0 +1,7 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,148,64)
+  Font = Font["Sans Serif,Bold,12"]
+  FullScreen = True
+}

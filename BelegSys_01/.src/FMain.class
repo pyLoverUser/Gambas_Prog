@@ -1,0 +1,2343 @@
+' Gambas class file
+
+' Gambas class file
+
+' / usr / bin / gpio
+' / usr / share / doc / wiringpi / People
+' / usr / share / doc / wiringpi / README.TXT
+' / usr / share / doc / wiringpi / changelog.Debian.gz
+' / usr / share / doc / wiringpi / copyright
+' / usr / share / man / man1 / gpio.1. gz
+
+' Library "/lib/libwiringPi"
+Library "/lib/libwiringPi"
+Public Extern gpioSetMode(pin As Integer, PI_OUTPUT As Integer)
+Public Extern pinMode(pin As Integer, PI_OUTPUT As Integer)
+Public Extern gpioInitialise() As Integer
+
+Public Extern wiringPiSetupGpio() As Integer
+Public Extern digitalRead(pin As Integer) As Integer
+Public Extern digitalWrite(pin As Integer, value As Integer)
+' Public Extern pinMode(pin As Integer, pud As Integer)
+Public Extern pullUpDnControlGpio(pin As Integer, mode As Integer)
+Public Extern pwmWriteGpio(pin As Integer, value As Integer)
+Public Extern lcdInit(rows As Integer, cols As Integer, bits As Integer, rs As Integer, strb As Integer, d0 As Integer, d1 As Integer, d2 As Integer, d3 As Integer, d4 As Integer, d5 As Integer, d6 As Integer, d7 As Integer) As Integer
+Public Extern lcdHome(fd As Integer)
+Public Extern lcdClear(fd As Integer)
+Public Extern lcdPosition(fd As Integer, x As Integer, y As Integer)
+Public Extern lcdPutchar(fd As Integer, data As Byte)
+Public Extern lcdPuts(fd As Integer, s As String)
+
+Public Const PIN_OUTPUT As Integer = 1
+Public Const PIN_INPUT As Integer = 0
+Public Const PIN_PWM As Integer = 2
+Public Const PUD_OFF As Integer = 0
+Public Const PUD_DOWN As Integer = 1
+Public Const PUD_UP As Integer = 2
+Public mnuBtn As String
+Public gpioD8[8] As Integer
+Public clock0 As Integer
+Public clock1 As Integer
+Public secure As Integer
+Public OutByte[8, 2] As Integer
+Public Temp_Jahre As Integer
+Public GastFl As Boolean = False
+Public cDBVerbindung As New Connection
+Public rDBResult As Result
+Public hLabAktSpieler[7] As Label 
+Public hPicPlatz[7] As DrawingArea
+Public hPicRegner[7] As PictureBox 
+Public hLabRegnerNr[7] As Label
+Public BelZeitBeschr[115] As String
+Public hRS232 As SerialPort
+Public vRFID As String
+Public tvRFID As String
+Public TimerGridZeit As Timer
+Public tRow As Integer
+Public tCol As Integer
+Public tColtxt As String
+Public altTime As Integer
+Public firstRow As Integer
+Public altColorGridCel As Integer
+Public altFontGridCel As Integer
+Public Rnr[7] As Boolean
+Public Const gridH As Integer = 700
+Public Const gridTop As Integer = 220
+Public btnBreite As Integer
+
+Public Const gridCellSpace As Integer = 15
+Public Const gridRows As Integer = 115
+Public Const picTH As Integer = 219
+Public aTagesListe As String[]
+Public dDate As Date
+Public MitglNr As Integer
+Public Berecht As String
+Public FirstName As String
+Public LastName As String
+Public Titel As String
+
+Public RolloOpenTime As Date
+Public RolloClosed As Date
+Public RolloTrigg As Integer
+Public RolloBtnSperre As Integer
+Public temp_rfid As String
+Public rfid As String
+Public SqlP As Variant
+Public SqlCom As Variant
+Public SqlTab As Variant
+Public Erwachs_FL As Integer
+Public rcMitglNr[4] As Integer
+' Public buchCtl As Integer
+Public Admin_Fl As Integer          '1=Service; 2=Platzsperre; 3=Spiel löschen
+Public a As String
+Public b As String
+Public s As String
+Private aryMgl[4] As Integer
+Public RegnerCach[20, 3] As Integer     'x,0=Regner Nr., x,1 Beregnungsdauer, x,2=Einschaltverzögerung
+Public zRFID As Integer
+Public altLedUhr_min As String
+Public aryDelZeit[10, 4] As Integer     'Platz_idx, MitglNr, Del_Zeit, Gelb_Sperre
+Private aWeekDay As String[]
+Public Plz[7] As Integer
+Public PlzFreeIdx As Integer
+Public TastSaveFl As Boolean
+Public lbplzSperre[7] As Label
+Public strSperrPlz As String
+Public strScreenStandby As String = "60"
+'==========================================================================
+' Initialisierung:  Form_Open()
+'	
+'
+'==========================================================================
+
+Public Sub Form_Open()
+  
+  Dim i As Integer
+  Dim rs As Result
+
+  FMain.Center
+  i = wiringPiSetupGpio()
+  gpioD8[0] = 16
+  gpioD8[1] = 17
+  gpioD8[2] = 22
+  gpioD8[3] = 23
+  gpioD8[4] = 24
+  gpioD8[5] = 25
+  gpioD8[6] = 26
+  gpioD8[7] = 27
+  clock0 = 8
+  clock1 = 7
+  secure = 12
+  pinMode(secure, PIN_OUTPUT)
+  pinMode(Clock0, PIN_OUTPUT) 
+  pinMode(clock1, PIN_OUTPUT) 
+  digitalWrite(secure, 0)
+  digitalWrite(clock0, 0)
+  digitalWrite(clock1, 0)
+  
+  For i = 0 To 7
+    pinMode(gpioD8[i], PIN_OUTPUT)
+    ' regWrite(clock0, gpioD8[i], 0)
+    OutByte[i, 0] = 0
+    OutByte[i, 1] = 0
+  Next
+  RegnerRollo(0, clock0)
+  RegnerRollo(1, clock1)
+  FMain.Resizable = False
+  a = "/home/pi/Gambas_Prog/WavHilfeSound/Buchung.wav"
+  b = "/home/pi/Gambas_Prog/WavHilfeSound/BtnED.wav" 
+  ' s = "/home/wt/Test_db/WavHilfeSound/COMPLETE.wav" 
+  s = "/home/pi/Gambas_Prog/WavHilfeSound/COMPLETE.wav" 
+  Music.Load(s)
+  Music.Play
+  
+  hRS232 = New SerialPort As "hRS232"
+  TimerRFID = New Timer As "TimerRFID"
+  TimerGridZeit = New Timer As "TimerGridZeit"
+  aWeekDay = Split("So, Mo, Di, Mi, Do, Fr, Sa", ",")
+  aTagesListe = Split("Sonntag, Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag", ",")
+  TimerRFID.Delay = 100 '
+  ZeitDatum.Delay = 100
+  TimerGridZeit.Delay = 1000
+  TimerGridZeit.Enabled = True 
+  ZeitDatum.Enabled = True
+  panEinzelDoppel.Raise
+  Vname.Raise
+  panEinzelDoppel.Visible = False
+  Vname.Visible = False 
+  Vname.Height = 40
+  Vname.Width = 330
+  Vname.Y = 10 
+  Vname.x = Screen.Width / 2 - Vname.Width / 2
+  ' RolloClosedTime = Time(0, 0, 0)
+  lbZeitDatum.X = Vname.X - 20
+  lbZeitDatum.H = 120
+  lbZeitDatum.Width = Vname.Width + 80
+  lbZeitDatum.X = Screen.Width / 2 - lbZeitDatum.Width / 2 
+  lbZeitDatum.y = Vname.y + Vname.Height 
+  lbZeitDatum.Alignment = Align.Top
+  
+  frBtnMenue.y = gridTop + gridH - 3
+  frBtnMenue.x = 0
+  frBtnMenue.Height = Screen.Height - (gridTop + gridH)
+  frBtnMenue.Width = Screen.Width
+  
+  btnAdmin.Left = 100
+  btnSpielBetr.Left = 400
+  btnGast.left = 1920 - 450 - btnGast.Width
+  btnDelete.Left = 1920 - 250 - btnDelete.Width
+  btnRollo.X = 1920 - 120
+  btnRollo.Y = 35
+  btnAdmin.y = (frBtnMenue.Height - btnAdmin.Height) / 2 
+  btnSpielBetr.y = btnAdmin.y
+  btnDelete.y = btnAdmin.y
+  btnGast.y = btnAdmin.y
+  btnRollo.Visible = False
+  btnDelete.Visible = False
+  btnGast.Visible = False
+  btnAdmin.Visible = False
+  btnSpielBetr.Visible = False
+  Exec ["xset", "s", strScreenStandby, strScreenStandby] 
+  
+  mysqlInit()
+  rfidInit()
+  
+  ModsAndRules.GetRules()
+  ModsAndRules.RegnerManu()
+  ModsAndRules.RegnerAuto
+  SqlCom = "DELETE FROM "
+  SqlTab = "_delBuchung "
+  SqlP = ""                        
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  ' AltDate()
+  belGridInit()
+  picTopBotInit()
+  TimerGridZeit.start
+  i = topRow()
+  delLoadAktBel(i)
+  plzSperreInit()
+  loadTrVbsEv()
+  gridUpdate()  
+
+End
+'==========================================================================
+' Sub plzSperreInit()
+'	
+'
+'==========================================================================
+
+Public Sub plzSperreInit()
+
+  Dim i, j As Integer
+  Dim rs As Result
+
+  j = 1
+  SqlCom = "SELECT * FROM "
+  SqlTab = "_PlatzSperre "
+  SqlP = ""
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  strSperrPlz = Trim(rs!SperrePlz)
+  
+  For i = 0 To 6    
+    lbplzSperre[i] = New Label(Me) As "MyplzSperre"
+    With lbplzSperre[i]
+      .Y = gridTop
+      .H = gridH
+      .W = btnBreite
+      .Tag = i
+      .Alignment = Align.Center
+      .Text = "P" & Chr(10) & "l" & Chr(10) & "a" & Chr(10) & "t" & Chr(10) & "z" & Chr(10) & "p" & Chr(10) & "f" & Chr(10) & "l" & Chr(10) & "e" & Chr(10) & "g" & Chr(10) & "e"
+      .Font.Size = 30
+      .Font.Bold = True
+      .Font.name = "Sans Serif"
+      .Foreground = Color.Red
+      .Background = Color.LightGray
+      .X = gridBelegung[0, j].X
+      .Visible = False       
+      If Mid(strSperrPlz, i + 1, 1) = 1 Then 
+        .Visible = True
+        hLabAktSpieler[i].text = "Platzpflege"    
+      Endif
+      j += 2
+    End With
+  Next
+  
+End
+'==========================================================================
+' Sub MyplzSperre_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub MyplzSperre_MouseDown()
+
+  Dim i As Integer
+  Dim rs As Result
+
+  i = Last.Tag
+  If Admin_Fl = 0 Then Return
+  lbplzSperre[i].Visible = False    
+  hLabAktSpieler[i].text = ""    
+  Mid(strSperrPlz, i + 1, 1) = 0
+  
+  SqlCom = "UPDATE  "
+  SqlTab = "_PlatzSperre "
+  SqlP = "SET SperrePlz = '" & strSperrPlz & "'"
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  loadTrVbsEv()
+  gridUpdate()
+
+End
+
+'==========================================================================
+' Sub AltDate()
+'	
+'
+'==========================================================================
+Public Sub AltDate()
+
+  Dim rs As Result
+  Dim tag, datum As String
+
+  tag = Trim(aWeekDay[WeekDay(Now)])
+  datum = Format(Date, "yyyy-mm-dd")
+  SqlCom = "UPDATE "
+  SqlTab = "_AltDatTag "
+  SqlP = "SET AltTag = '" & tag & "' ,AltDatum = '" & datum & "'"
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+End
+
+'==========================================================================
+' Sub loadTrVbsEv()
+'	
+'
+'==========================================================================
+Public Sub loadTrVbsEv()
+
+  Dim i, j, b, e, h As Integer
+  Dim rs As Result
+  Dim tag, Platz, aktPlatz, datum As String
+
+  tag = Trim(aWeekDay[WeekDay(Now)])
+  datum = Format(Date, "yyyy-mm-dd")
+  For i = 0 To 1
+    SqlCom = "SELECT *  From "
+    SqlTab = "MannHeimGast "
+    SqlP = "WHERE Tag = '" & tag & "' And Ende > '" & Time & "' AND  '" & datum & "' BETWEEN SpTermin AND SpTermin AND ED = " & i 
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    If rs.count > 0 Then
+      saveTrVbEv(rs, i)
+    Endif
+  Next
+  SqlCom = "SELECT *  From "
+  SqlTab = "MannschTrain "
+  SqlP = "WHERE Tag = '" & tag & "' And Ende > '" & Time & "' AND  '" & datum & "' BETWEEN DatumVon AND DatumBis AND Freigabe = " & "'J'"
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  If rs.count > 0 Then
+    saveTrVbEv(rs, 0)
+  Endif 
+
+End
+
+Public Sub saveTrVbEv(rs As Result, ed As Integer)
+
+  Dim i, j, b, e, h As Integer
+  Dim rs1, rs2, rs3 As Result
+  Dim tag, Platz, aktPlatz, datum As String
+
+  With StrucType.Belegung
+    If rs.Count > 0 Then
+      For i = 0 To rs.Count - 1
+        Select Case rs!Event_fl
+          Case 0, 1
+            SqlCom = "SELECT *  From "
+            SqlTab = "_Buchung_aktiv "
+            SqlP = "WHERE Mannschaft ='" & rs!Mannschaft & "'"
+            rs1 = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+          Case 2
+            SqlCom = "SELECT *  From "
+            SqlTab = "_Buchung_aktiv "
+            SqlP = "WHERE Mannschaft ='" & rs!Mannschaft & "' And Einzel_Doppel = " & ed
+            rs1 = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+        End Select
+        If rs1.Count > 0 Then
+          aktPlatz = "0000000"
+          For j = 0 To rs1.count - 1
+            e = rs1!Platz_idx \ 100
+            Mid(aktPlatz, e, 1) = 1
+            rs1.MoveNext
+          Next
+          structBuchLeer()
+          strucTrainBuch(rs)
+          b = Val(Format(rs!Beginn, "hh")) * 4 + Val(Format(rs!Beginn, "nn")) \ 15
+          e = Val(Format(rs!Ende, "hh")) * 4 + Val(Format(rs!Ende, "nn")) \ 15
+          h = e - b
+          .hight_nr = h
+          Platz = Trim(rs!Platz)
+          For j = 1 To 7
+            If Mid(strSperrPlz, j, 1) = 0 And Mid(Platz, j, 1) = 1 And Mid(aktPlatz, j, 1) = 0 Then
+              .Platz_idx = j * 100 + b
+              SqlCom = "SELECT *  From "
+              SqlTab = "_delBuchung "
+              SqlP = "WHERE Platz_idx ='" & .Platz_idx & "'"
+              rs3 = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+              If rs3.Count = 0 Then
+                SqlCom = "INSERT INTO "
+                SqlTab = "_Buchung_aktiv "
+                SqlP = "(Einbuch_Datum, Einbuch_Zeit, Datum_Beginn, Datum_Ende, Mannschaft, InfoText, Platz_idx, Beginn, Ende, Belegungs_sts, anz_Spieler, Einzel_Doppel, hight_nr, Event_fl, EinbuchPflicht) values ('"
+                SqlP = SqlP & .Einbuch_Datum & "','" & .Einbuch_Zeit & "','" & .Datum_Beginn & "','" & .Datum_Ende & "','" & .Mannschaft & "', '" & .InfoText & " ', '" & .Platz_idx & "', '" & .Beginn & "', '" & .Ende & "','"  
+                SqlP = SqlP & .Belegungs_sts & "','" & .anz_spieler & "','" & .Einzel_Doppel & "','" & .hight_nr & "','" & .Event_fl & "','" & .EinbuchPflicht & "' )"
+                rs2 = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+              Endif
+              rs1.MoveNext
+            Endif  
+          Next
+          rs.MoveNext
+        Else
+          structBuchLeer()
+          strucTrainBuch(rs)
+          b = Val(Format(rs!Beginn, "hh")) * 4 + Val(Format(rs!Beginn, "nn")) \ 15
+          e = Val(Format(rs!Ende, "hh")) * 4 + Val(Format(rs!Ende, "nn")) \ 15
+          h = e - b
+          .hight_nr = h
+          Platz = Trim(rs!Platz)
+          For j = 1 To 7
+            If Mid(Platz, j, 1) = 1 Then
+              .Platz_idx = j * 100 + b
+              SqlCom = "INSERT INTO "
+              SqlTab = "_Buchung_aktiv "
+              SqlP = "(Einbuch_Datum, Einbuch_Zeit, Datum_Beginn, Datum_Ende, Mannschaft, Gast, InfoText, Platz_idx, Beginn, Ende, Belegungs_sts, anz_Spieler, Einzel_Doppel, hight_nr, Event_fl, EinbuchPflicht) values ('"
+              SqlP = SqlP & .Einbuch_Datum & "','" & .Einbuch_Zeit & "','" & .Datum_Beginn & "','" & .Datum_Ende & "','" & .Mannschaft & "', '" & .Gast & "', '" & .InfoText & " ', '" & .Platz_idx & "', '" & .Beginn & "', '" & .Ende & "','"  
+              SqlP = SqlP & .Belegungs_sts & "','" & .anz_spieler & "','" & .Einzel_Doppel & "','" & .hight_nr & "','" & .Event_fl & "','" & .EinbuchPflicht & "' )"
+              rs2 = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+            Endif
+          Next
+          rs.MoveNext
+        Endif
+      Next
+    Endif
+  End With
+
+End
+
+'==========================================================================
+' Initialisierung:  belGridInit()
+'	
+'
+'==========================================================================
+
+Public Sub belGridInit()
+  
+  Dim i As Integer
+  Dim k As Integer
+  Dim h As Integer
+  Dim m As Integer
+  Dim strTime As String
+  Dim AnzPlz As Integer
+  ' Dim btnBreite As Integer
+  'Dim btnWidth As Integer
+  Dim leftMin As Integer
+  Dim cellSpace As Integer
+  
+  gridBelegung.Visible = False
+  gridBelegung.Border = False
+  'Gridview1.Border = Color.DarkRed
+  AnzPlz = StrucType.GlobRegeln.AnzPlatzVal    
+  leftMin = 0
+  'btnBreite = 165
+  cellSpace = gridCellSpace   '15
+  btnBreite = (Screen.width - (AnzPlz + 1) * 15) / 7
+  h = 0 
+  m = 0 
+  With gridBelegung
+    .Clear
+    .Height = gridH   '700
+    .Width = Screen.Width
+    .Top = gridTop    '220
+    .Columns.Count = (AnzPlz * 2 + 1)
+    .Rows.Count = gridRows    '115
+    .Left = 0
+    .ScrollBar = 0
+    .Mode = 0
+    If m = 0 Then
+      strTime = Trim(Str(h)) & ":00"
+    Else
+      strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+    End If
+    For i = 1 To (.Columns.Count - 2) Step 2
+      .Columns[i].Width = btnBreite
+    Next 
+    For i = 0 To (.Columns.Count) Step 2
+      .Columns[i].Width = cellSpace
+    Next 
+    For i = 0 To 114
+      .Row = i
+      .Rows[i].Height = 35
+      .Font.Name = "AvantGarde Md BT"
+      If i Mod 4 = 0 Then
+        For k = 1 To (AnzPlz * 2 - 1) Step 2
+          .Column = k
+          With gridBelegung[i, k]
+            .RowSpan = 1
+            .Alignment = Align.Center
+            .Font.Size = 14
+            .Background = Color.RGB(114, 159, 207) '&HFF8080
+            .Foreground = Color.White '&H80000005
+            .Font.Bold = True
+            .Text = strTime
+          End With
+        Next 
+      Else
+        For k = 1 To (AnzPlz * 2 - 1) Step 2
+          .Column = k
+          With gridBelegung[i, k]
+            .RowSpan = 1
+            .Alignment = Align.Center
+            .Font.Size = 12
+            .Font.Bold = False
+            .Background = Color.White '&H8000000E
+            .Foreground = Color.Black '&H80000012
+            .Text = strTime
+          End With
+        Next 
+      End If
+      ' .Column = 0510
+      ' .Background = &H808080
+      ' .Column = (.Columns.Count - 1)
+      ' .Background = &H808080
+      For k = 0 To (AnzPlz * 2) Step 2
+        ' For k = 2 To (AnzPlz * 2 - 2) Step 2
+        .Column = k
+        .Background = &H808080
+      Next 
+      BelZeitBeschr[i] = strTime
+      m += 15
+      If m = 60 Then
+        m = 0
+        h += 1
+        If h = 24 Then h = 0
+      End If
+      If m = 0 Then
+        strTime = Trim(Str(h)) & ":00"
+      Else
+        strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+      End If
+      ' .Rows[i].Height = 35
+    Next 
+    For i = 0 To AnzPlz * 2 Step 2
+      gridBelegung[0, i].RowSpan = 115
+      gridBelegung[0, i].Background = Color.DarkRed
+    Next 
+    i = topRow()
+    altTime = i
+    ' .Column = 3
+  End With
+  gridBelegung.Visible = True
+  gridBelegung.Enabled = False
+  
+End
+
+Public Sub belGridOneCol(col As Integer)
+
+  Dim i, m, h, k As Integer
+  Dim strTime As String
+
+  h = 0 
+  m = 0 
+  k = col * 2 - 1
+  strTime = Trim(Str(h)) & ":00"
+  With gridBelegung
+    For i = 0 To 114
+      .Row = i
+      ' .Font.Name = "AvantGarde Md BT"
+      If i Mod 4 = 0 Then
+        .Column = k
+        With gridBelegung[i, k]
+          .RowSpan = 1
+          .Alignment = Align.Center
+          .Font.Size = 14
+          .Background = Color.RGB(114, 159, 207) '&HFF8080
+          .Foreground = Color.White '&H80000005
+          .Font.Bold = True
+          .Text = strTime
+        End With
+      Else
+        .Column = k
+        With gridBelegung[i, k]
+          .RowSpan = 1
+          .Alignment = Align.Center
+          .Font.Size = 12
+          .Font.Bold = False
+          .Background = Color.White '&H8000000E
+          .Foreground = Color.Black '&H80000012
+          .Text = strTime
+        End With
+      End If
+      m = m + 15
+      If m = 60 Then
+        m = 0
+        h = h + 1
+        If h = 24 Then h = 0
+      End If
+      If m = 0 Then
+        strTime = Trim(Str(h)) & ":00"
+      Else
+        strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+      End If
+    Next 
+  End With
+  
+End
+
+'==========================================================================
+' Initialisierung:  picTopBotInit()
+'	
+'
+'==========================================================================
+
+Public Sub picTopBotInit()  '--------------------------------------------------------
+  
+  Dim m As Integer
+  Dim i As Integer
+  Dim k As Integer
+  'Bild oben auf main form
+  picFmainTop.Visible = False
+  picFmainBot.Visible = False
+  picFmainTop.y = 0
+  picFmainTop.x = 0
+  picFmainTop.Border = False
+  picFmainTop.Height = picTH  '219
+  picFmainTop.Width = Screen.Width
+  picFmainTop.Visible = True
+  'Bild unten auf main form
+  picFmainBot.y = picFmainTop.Height + gridBelegung.Height
+  picFmainBot.x = 0
+  picFmainBot.Border = False
+  picFmainBot.Width = Screen.Width
+  picFmainBot.Height = Screen.Height - picFmainBot.Y
+  picFmainBot.Visible = True
+  ' picFmainBot.Painted
+  ' Vname.Y = picFmainTop.Height + GridView1.Height + 20
+  ' Vname.x = Screen.Width / 2 - Vname.Width / 2
+  For i = 0 To 6
+    hLabAktSpieler[i] = New Label(Me) As "MyLab1"
+    hPicPlatz[i] = New DrawingArea(Me) As "MyRegnerDrw"
+    hPicRegner[i] = New PictureBox(Me) As "MyPic"
+    hLabRegnerNr[i] = New Label(Me) As "MyLab1"
+    
+  Next  
+  m = gridBelegung[0, 1].W
+  For i = 0 To 6
+    k = (i + 1) * 2 - 1
+    hPicRegner[i].x = gridBelegung[0, k].X
+    hLabAktSpieler[i].x = gridBelegung[0, k].X
+    hPicPlatz[i].x = gridBelegung[0, k].X
+    hLabRegnerNr[i].x = gridBelegung[0, k].x
+    hLabRegnerNr[i].Transparent = True
+    hLabAktSpieler[i].y = 130
+    hPicPlatz[i].Y = 5
+    hPicRegner[i].Y = 5
+    hLabRegnerNr[i].Y = 5
+    hLabAktSpieler[i].W = m
+    hPicPlatz[i].W = m
+    hPicRegner[i].W = m
+    hLabRegnerNr[i].W = m
+    hLabAktSpieler[i].H = 80
+    hPicPlatz[i].H = 120
+    hPicRegner[i].H = 120
+    hLabRegnerNr[i].H = 120
+    hLabAktSpieler[i].Border = 3
+    hPicPlatz[i].Border = 3
+    hPicRegner[i].Stretch = True
+    hLabAktSpieler[i].Background = &000000FF&
+    hPicPlatz[i].Background = Color.DarkGreen
+    hLabAktSpieler[i].Tag = i
+    hPicPlatz[i].Tag = i
+    hPicRegner[i].Tag = i
+    hLabRegnerNr[i].Tag = i
+    hPicRegner[i].Picture = picRegCopy1.Picture
+    hPicRegner[i].Mode = 1
+    hPicRegner[i].Border = Border.Raised
+    hLabRegnerNr[i].Alignment = Align.Center
+    hLabRegnerNr[i].Font.Bold = False
+    hLabRegnerNr[i].Font.Size = 40
+    hLabRegnerNr[i].Foreground = Color.Red
+    hLabRegnerNr[i].Text = Str(i + 1)
+    hLabAktSpieler[i].Font.Size = 10
+    hLabAktSpieler[i].Font.Name = "Sans Serif"
+    hLabAktSpieler[i].Alignment = Align.Center
+    hLabAktSpieler[i].Foreground = Color.White
+    hLabAktSpieler[i].Font.Bold = True
+    hLabAktSpieler[i].Visible = True
+    hPicPlatz[i].Visible = True
+    hPicPlatz[i].Cached = True
+    hPicRegner[i].Visible = False
+    hLabRegnerNr[i].Visible = False
+    picDraw(i)
+  Next  
+  
+End
+
+'==========================================================================
+' Initialisierung:  picDraw(i As Integer)
+'	
+'
+'==========================================================================
+Public Sub picDraw(i As Integer)
+  
+  Draw.Begin(hPicPlatz[i]) 
+  Draw.Foreground = Color.White
+  Draw.LineWidth = 2
+  Draw.Line(10, 6, 246, 6)
+  Draw.Line(10, 19, 246, 19)
+  Draw.Line(10, 6, 10, 114)
+  Draw.Line(10, 114, 246, 114)
+  Draw.Line(246, 114, 246, 6)
+  Draw.Line(10, 101, 246, 101)
+  Draw.Line(64, 19, 64, 101)
+  Draw.Line(192, 19, 192, 101)
+  Draw.Line(64, 60, 192, 60)
+  Draw.Font.Size = 30
+  Draw.Font.Bold = True
+  Draw.RichText(i + 1, 118, 20, 10, 40, 3)
+  Draw.End 
+  
+End
+
+'==========================================================================
+' Initialisierung:  rfidInit()
+'	
+'
+'==========================================================================
+Public Sub rfidInit()
+  
+  hRS232.PortName = "/dev/serial0"
+  ' hRS232.PortName = "/dev/ttyS0"
+  
+  hRS232.Speed = 9600
+  
+  hRS232.DataBits = SerialPort.Bits8
+  hRS232.StopBits = SerialPort.Bits1
+  hRS232.Parity = SerialPort.None
+  hRS232.FlowControl = SerialPort.None
+  Try hRS232.Open()
+  If Error Then
+    Message.Error(("Error when opening the V24-RS232-USB adapter interface!"))
+  Endif
+  
+End
+
+'==========================================================================
+' Initialisierung:  mysqlInit()
+'	
+'
+'==========================================================================
+Public Sub mysqlInit()
+  
+  cDBVerbindung.Close()
+  cDBVerbindung.Type = "mysql" ' Der Typ muss klein geschrieben werden!
+  ' cDBVerbindung.Host = "192.168.178.2"  '"raspberrypi" '"192.168.2.112"
+  cDBVerbindung.Host = "192.168.2.205"  
+  cDBVerbindung.Name = "Belegung" ' Das ist der Datenbank-Name
+  cDBVerbindung.User = "root" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+  cDBVerbindung.Password = "asperg" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+  cDBVerbindung.Port = "3306" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+  
+End
+
+'==========================================================================
+' Event:  MyRegnerDrw_MouseDown()
+'	
+'
+'==========================================================================
+Public Sub MyRegnerDrw_MouseDown()
+  
+  Dim hView As DrawingArea = Last
+  Dim i, j, Plz, plzCol, plzRow, t As Integer
+  Dim rs As Result
+  ' Dim b As String
+  
+  i = hView.tag
+  If MitglNr Then
+    ' If Berecht = "A" Or Berecht = "E" Then
+    If Berecht <> "X" Or Erwachs_FL = 1 Then
+      j = 0
+      While RegnerCach[j, 1] > 0
+        j += 1
+      Wend
+      RegnerCach[j, 1] = StrucType.RegnerManu.RegnerZeitMan * 60 * 2
+      RegnerCach[j, 2] = StrucType.RegnerManu.RegDelay * 2
+      RegnerCach[j, 0] = i
+      Rnr[i] = True
+      hPicRegner[i].Visible = True
+      hLabRegnerNr[i].Visible = True
+      hLabRegnerNr[i].Raise
+      TimerRegner.Start
+    Else
+      rs = seekMitgl(MitglNr)
+      If rs.count <= 0 Then Return
+      plz = rs!Platz_idx \ 100
+      plzCol = (i + 1) * 2 - 1
+      plzRow = rs!Platz_idx - plz * 100
+      t = topRow()
+      ' If (plzRow - t <= 1 And gridBelegung[t, plzCol].Background <> Color.Red And Plz = i + 1) Then
+      If (plzRow - t <= 1 And Plz = i + 1) Then
+        j = 0
+        While RegnerCach[j, 1] > 0
+          j = j + 1
+        Wend
+        RegnerCach[j, 1] = StrucType.RegnerManu.RegnerZeitMan * 60 * 2
+        RegnerCach[j, 2] = StrucType.RegnerManu.RegDelay * 2
+        RegnerCach[j, 0] = i
+        Rnr[i] = True
+        hPicRegner[i].Visible = True
+        hLabRegnerNr[i].Visible = True
+        hLabRegnerNr[i].Raise
+        TimerRegner.Start
+      Endif
+    Endif
+  Endif
+  
+End
+
+'==========================================================================
+' Event:  MyLab1_MouseDown()
+'	
+'
+'==========================================================================
+Public Sub MyLab1_MouseDown()
+  
+  Dim hpic As Label = Last
+  Dim i, j, Plz, plzCol, plzRow, t As Integer
+  Dim rs As Result
+  
+  i = hpic.tag
+  j = 0
+  If MitglNr Then
+    ' If Berecht = "A" Or Berecht = "E" Then
+    If Berecht <> "X" Or Erwachs_FL = 1 Then
+      hPicRegner[i].Visible = False
+      hLabRegnerNr[i].Visible = False
+      OutByte[i, 0] = 0
+      RegnerRollo(0, clock0)
+      ' regWrite(clock0, gpioD8[i], 0)
+      While RegnerCach[j, 1] > 0 And RegnerCach[j, 0] <> i
+        j += 1
+      Wend
+      If RegnerCach[j, 1] > 0 Then
+        RegnerCach[j, 0] = 0
+        RegnerCach[j, 1] = 0
+        j += 1
+        While RegnerCach[j, 1] > 0
+          RegnerCach[j - 1, 0] = RegnerCach[j, 0]
+          RegnerCach[j - 1, 1] = RegnerCach[j, 1]
+          RegnerCach[j - 1, 2] = RegnerCach[j, 2]
+          RegnerCach[j, 0] = 0
+          RegnerCach[j, 1] = 0
+          RegnerCach[j, 2] = 0
+          j += 1
+        Wend  
+      Endif
+    Else
+      rs = seekMitgl(MitglNr)
+      If rs.count <= 0 Then Return
+      plz = rs!Platz_idx \ 100
+      plzCol = (i + 1) * 2 - 1
+      plzRow = rs!Platz_idx - plz * 100
+      t = topRow()
+      If (plzRow - t <= 1 And Plz = i + 1) Then
+        hPicRegner[i].Visible = False
+        hLabRegnerNr[i].Visible = False
+        OutByte[i, 0] = 0
+        RegnerRollo(0, clock0)
+        ' regWrite(clock0, gpioD8[i], 0)
+        While RegnerCach[j, 1] > 0 And RegnerCach[j, 0] <> i
+          j += 1
+        Wend
+        If RegnerCach[j, 1] > 0 Then
+          RegnerCach[j, 0] = 0
+          RegnerCach[j, 1] = 0
+          j += 1
+          While RegnerCach[j, 1] > 0
+            RegnerCach[j - 1, 0] = RegnerCach[j, 0]
+            RegnerCach[j - 1, 1] = RegnerCach[j, 1]
+            RegnerCach[j - 1, 2] = RegnerCach[j, 2]
+            RegnerCach[j, 0] = 0
+            RegnerCach[j, 1] = 0
+            RegnerCach[j, 2] = 0
+            j += 1
+          Wend 
+        Endif 
+      Endif
+      
+    Endif
+  Endif
+  If RegnerCach[0, 1] = 0 Then TimerRegner.Stop
+  
+End
+
+'==========================================================================
+' topRow() As Integer
+'	
+'
+'==========================================================================
+Public Function topRow() As Integer
+  
+  Dim i As Integer
+  Dim k As Integer
+  
+  i = Hour(Time) * 4
+  k = Minute(Time) \ 15
+  firstRow = i + k
+  ' If altTime = firstRow Then Return firstRow
+  gridBelegung.Row = firstRow
+  gridBelegung.MoveTo(firstRow, 1)
+  i = gridBelegung.Rows[firstRow].Y
+  gridBelegung.Scroll(0, i)
+  Return firstRow
+  
+End  
+
+'==========================================================================
+' Event:  hRS232_Read()
+'	
+'
+'==========================================================================
+Public Sub hRS232_Read()
+  
+  Dim c As String
+
+  Read #hRS232, c, Lof(hRS232)
+  tvRFID &= c
+  If c = Chr(4) Then
+    If vRFID <> tvRFID Then
+      vRFID = tvRFID
+      tvRFID = ""
+      TimerRFID.Start()
+    Endif
+  Endif
+  
+End
+'==========================================================================
+'  comEinbuchung(PlzNr As Integer)
+'	
+'
+'==========================================================================
+
+Public Sub comEinbuchung(PlzNr As Integer)
+
+  Dim i, PlatzTimeIdx As Integer
+  Dim t_Event_FL As Integer
+  Dim rs As Result
+  Dim PlNrRowBeg As Integer
+  Dim PlNrRowEnd As Integer
+  Dim strPlz As String
+  
+  PlNrRowBeg = PlzNr * 100
+  PlNrRowEnd = PlNrRowBeg + 98
+  ' PlatzTimeIdx = PlNrRowBeg + PlzIdx    'plz_sp_idx + SelTimeAbsIdx
+  SqlCom = "SELECT Platz_idx FROM "
+  SqlTab = "_Buchung_aktiv "
+  SqlP = "ORDER BY Platz_idx "
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  For i = 0 To rs.count - 1
+    Plz[rs!Platz_idx \ 100 - 1] = 1
+    rs.MoveNext
+  Next
+  strPlz = ""
+  For i = 0 To 6
+    If Plz[i] = 0 Then strPlz &= Str(i + 1) & "-"
+  Next
+  i = Len(strPlz) - 1
+  strPlz = Left(strPlz, i)
+  SqlCom = "SELECT * FROM "
+  SqlTab = "_Buchung_aktiv "
+  SqlP = "WHERE Platz_idx BETWEEN " & Str(PlNrRowBeg) & " AND " & Str(PlNrRowEnd) & " ORDER BY Platz_idx"
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  firstRow = FMain.firstRow
+  If rs.Count > 0 Then
+    For i = 0 To rs.count - 1
+      PlzFreeIdx = (rs!Platz_idx Mod 100) - firstRow 
+      If PlzFreeIdx > 2 Then
+        tRow = firstRow + 1
+        Return
+      Else
+        If strPlz = "" Then
+          firstRow = rs!Platz_idx + rs!hight_nr
+        Else
+          tRow = 999
+          Message.Info("<font size=4 color=Red><b>Bitte belege einen der freien Plätze! < / b > < / font > < br >" & "<center><font size=5 color=Green>  " & strPlz & "</center><br></font>"
+          "<font size=4 color=Black>Eine Buchung nach einer aktiven Belegung ist nur möglich, wenn keine freien Plätze zur Verfügung stehen</b></font>")
+          
+          Return
+        Endif
+      Endif
+      rs.MoveNext
+    Next
+  Else
+    PlzFreeIdx = 98 - firstRow
+    tRow = firstRow + 1
+  Endif
+  
+  Fmain.cDBVerbindung.Close()
+
+End
+
+'==========================================================================
+'  datenMitglLesen(dRFID As String)
+'	
+'
+'========================================================================== 
+Public Sub datenMitglLesen(dRFID As String)
+  ' Dim sSQL_Anweisung As String
+  ' Dim L As Integer
+  
+  Dim gebDat As Date
+  Dim rs As Result
+  ' Dim i As Integer
+  
+  ' Transponder_ID_glob = TransID
+  SqlCom = "SELECT * FROM "
+  SqlTab = "Mitglieder "
+  SqlP = "where ID_Nr ='" & dRFID & "'"
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  If rs.Count > 0 Then
+    ' Desktop.SendKeys(" ")
+    ' Timerdpms.Stop
+    Exec ["xset", "dpms", "force", "on"] 
+    ' Timerdpms.Start
+    Exec ["xset", "s", strScreenStandby, strScreenStandby] 
+    MitglNr = rs!Mitgl_Nr
+    Berecht = rs!Berechtigung
+    Titel = rs!Titel
+    FirstName = rs!Vorname
+    LastName = rs!Name
+    gebDat = rs!GeburtsDat
+    If LastName Then
+      Temp_Jahre = Year(Date) - Year(gebDat)
+      If Titel Then
+        Vname.Caption = Titel & " " & FirstName & " " & LastName
+      Else
+        ' Titel = ""
+        Vname.Caption = FirstName & " " & LastName
+      End If
+      btnMainInit(Berecht)
+      Vname.Raise
+      Vname.Visible = True
+      ' OutByte[0, 1] = 0
+      ' OutByte[1, 1] = 0
+      ' RegnerRollo(1, clock1)
+      ' OutByte[0, 1] = 0
+      ' OutByte[1, 1] = 1
+      If RolloBtnSperre <= 0 Then 
+        RolloOpenTime = Time
+        RolloClosedTime()
+        OutByte[7, 0] = 1
+        RegnerRollo(0, clock0)
+      Endif
+      
+      gridBelegung.Enabled = True
+      structBuchLeer()
+      If gebDat <> "" Then
+        If Temp_Jahre >= StrucType.RegelnJugend.JgdBisAlter Then
+          Erwachs_FL = 1
+          FMain.btnRollo.Visible = True
+        Else
+          Erwachs_FL = 0
+          FMain.btnRollo.Visible = False
+        End If
+      Else
+        Erwachs_FL = 1
+      Endif
+    Else
+      Vname.Caption = dRFID 
+      Vname.Raise
+      Vname.Visible = True
+    Endif
+    cDBVerbindung.Close()
+  Else
+    gridBelegung.Enabled = False
+    
+    cDBVerbindung.Close()
+  Endif
+  
+End 
+'==========================================================================
+' RolloClosedTime()
+'	
+'
+'==========================================================================
+
+Public Sub RolloClosedTime()
+  Dim i As Integer
+  Dim rs As Result
+
+  SqlCom = "SELECT Ende,Platz_idx FROM "
+  SqlTab = "_Buchung_aktiv "
+  SqlP = " WHERE Event_fl=0 AND (Belegungs_sts=2 or Belegungs_sts=4) ORDER BY Ende DESC"
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  If RolloBtnSperre = 0 Then
+    If rs.Count > 0 Then
+      RolloClosed = Time(0, StrucType.GlobRegeln.DauerOE, 0) + Time(rs!Ende)
+    Else
+      RolloClosed = Time + Time(0, StrucType.GlobRegeln.DauerOE, 0)
+    Endif
+  Endif
+  SqlCom = "SELECT Platz_idx FROM "
+  SqlTab = "_Buchung_aktiv "
+  SqlP = " WHERE Event_fl>0  ORDER BY Ende ASC"
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  If rs.count > 0 Then
+    i = rs!Platz_idx Mod 100
+    
+    If i - firstRow < 3 And RolloBtnSperre = 0 Then
+      SqlCom = "SELECT Ende FROM "
+      SqlTab = "_Buchung_aktiv "
+      SqlP = " WHERE Event_fl>0  ORDER BY Ende DESC"
+      rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+      If rs.Count > 0 Then
+        RolloClosed = Time(0, StrucType.GlobRegeln.DauerOE, 0) + Time(rs!Ende)
+      Else
+        RolloClosed = Time + Time(0, StrucType.GlobRegeln.DauerOE, 0)
+      Endif
+    Endif
+  Endif
+
+End
+
+'==========================================================================
+' btnMainInit(SystemRechte As String)
+'	
+'
+'==========================================================================
+Public Sub btnMainInit(SystemRechte As String)
+  
+  Dim rs As Result
+
+  rs = seekMitgl(MitglNr)
+  With StrucType.Belegung
+    If rs.count > 0 Then
+      btnDelete.Visible = True
+      If .Belegungs_sts <> 2 And .Belegungs_sts <> 4 Then
+        btnGast.Visible = True
+      Endif
+    Endif
+  End With
+  Select Case SystemRechte
+    Case "A"
+      btnAdmin.Visible = True
+      btnSpielBetr.Visible = True
+    Case "E"
+      ' btnDelede.Visible = True
+      ' btnGast.Visible = True
+      btnAdmin.Visible = True
+      btnSpielBetr.Visible = True
+      
+    Case "X"
+      ' btnDelede.Visible = True
+      ' btnGast.Visible = True
+      btnSpielBetr.Visible = True
+  End Select  
+  
+End
+
+Public Sub Form_Close()
+  
+  If hRS232.Status = Net.Active Then
+    hRS232.Close()
+    FMain.Close()
+  Endif
+  
+End
+
+'==========================================================================
+' Event:  gridBelegung_Click()
+'	
+'
+'==========================================================================
+Public Sub gridBelegung_MouseDown()
+  
+  Dim tx, ty, i, plzIdx, tempPi, anzsp, belegsts, bRow, bCol, plz, hnr, sp, j, m As Integer
+  Dim MitglNr1, MitglNr2, MitglNr3, MitglNr4, tMitglnr, GmitglNr As Integer
+  Dim Preis As Float
+  Dim rs As Result
+  Dim k, strTime As String
+  
+  If gridBelegung.Column Mod 2 = 1 Then 
+    Music.Load(b)
+    Music.Play
+    tRow = gridBelegung.Row
+    tCol = gridBelegung.Column \ 2 + 1
+    tempPi = tRow + tCol * 100
+    If Admin_Fl > 0 Then
+      Select Case Admin_Fl
+        Case 2
+          Mid(strSperrPlz, tCol, 1) = 1
+          lbplzSperre[tCol - 1].Visible = True
+          hLabAktSpieler[tCol - 1].text = "Platzpflege"  
+          SqlCom = "DELETE From "
+          SqlTab = "_Buchung_aktiv "
+          SqlP = "WHERE Platz_idx BETWEEN " & Str(tCol * 100) & " AND " & Str(tCol * 100 + 96) & " AND Event_fl = " & 0
+          rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+          ' belGridOneCol(tCol)
+          SqlCom = "UPDATE  "
+          SqlTab = "_PlatzSperre "
+          SqlP = "SET SperrePlz = '" & strSperrPlz & "'"
+          rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+          ' cDBVerbindung.Close() 
+          
+        Case 3
+          SqlCom = "SELECT * From "
+          SqlTab = "_Buchung_aktiv "
+          SqlP = "WHERE " & Str(tempPi) & " BETWEEN Platz_idx AND Platz_idx+hight_nr " 
+          rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+          If rs.count > 0 Then
+            plz = rs!Platz_idx \ 100
+            bRow = rs!Platz_idx Mod 100
+            tRow = bRow + rs!hight_nr
+            If bRow Mod 4 = 0 Then
+              strTime = Str(bRow \ 4) & ":00"
+            Else
+              strTime = Str(bRow \ 4) & ":" & Str((bRow Mod 4) * 15)
+            Endif
+            
+            If tRow Mod 4 = 0 Then
+              k = Str(tRow \ 4) & ":00"
+            Else
+              k = Str(tRow \ 4) & ":" & Str((tRow Mod 4) * 15)
+            Endif
+            Select Message.Question("Soll das Spiel auf<font size=4 color=Red><br> Platz " & Str(tCol) & " von " & strTime & " bis " & K & " Uhr<br></font> gelöscht werden?", "Ja", "Nein")
+              Case 1
+                plzIdx = rs!Platz_idx
+                hnr = rs!hight_nr
+                SqlCom = "INSERT INTO "
+                SqlTab = "_delBuchung "
+                SqlP = "(Platz_idx) VALUES ('" & rs!Platz_idx & "')"                        
+                rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+                delBelegung(plzidx, hnr)
+              Case 2
+                i = i
+            End Select
+            ' i = rs!Platz_idx
+          Endif
+      End Select
+      Return
+    Endif
+    tx = gridBelegung.Current.X
+    ty = gridBelegung.Current.Y
+    rs = seekMitgl(MitglNr) 
+    If rs.count > 0 Then
+      i = rs!Platz_idx / 100
+      k = Left(Str(rs!Beginn), 5)
+      
+      Message.Info("<font size=4 color=Red>Du bist bereits auf Platz " & i & " ab " & k & " eingebucht!" & Chr(10) & "Mehrfachbuchungen sind nicht erlaubt</font>")
+      Return            
+      'Mehrachbelegung-- Hinweis anzeigen
+    Endif
+    ' Endif
+    plzIdx = seekBuchung(tempPi)
+    If plzIdx = 0 Then
+      For i = 0 To 9
+        If aryDelZeit[i, 0] \ 100 = tCol And aryDelZeit[i, 3] > 0 And aryDelZeit[i, 1] = MitglNr Then
+          k = Str(aryDelZeit[i, 0] \ 100)
+          j = (aryDelZeit[i, 0] Mod 100) 
+          m = (j Mod 4) * 15
+          strTime = Str(j \ 4) & ":" & Str(m)
+          Message.Info("<font size=4>Deine Buchung auf</font>" & Chr(10) & Chr(10) & "<font size=4 color=Red> Platz " & k & " um " & strTime & Chr(10) & Chr(10) & "</font>" & "war  <font size=4 color=Red>nicht vollständig</font> und wurde gelöscht!" & Chr(10) & 
+            "Um sich wieder einbuchen zu können, muss sich Dein(e) PartnerIn als erste(r) einbuchen!")
+          
+          Return
+        Endif
+      Next
+      
+      comEinbuchung(tCol)
+      If tRow = 999 Then Return
+      ' tRow = tRow Mod 100
+      panEinzelDoppel.X = tx 
+      panEinzelDoppel.w = gridBelegung.Current.Width
+      panEinzelDoppel.Y = (tRow - firstRow + 1) * 35 + picFmainTop.Height
+      panEinzelDoppel.Visible = True
+      panEinzelDoppel.Raise
+    Else
+      gridUpdate() 
+    Endif
+  Endif 
+  
+End
+
+'==========================================================================
+' Sub:  delBelegung(plzIdx As Integer)
+'	
+'
+'==========================================================================
+Public Sub delBelegung(plzIdx As Integer, hnr As Integer)
+  
+  Dim bRow, bCol, plz, i, j, sp, m As Integer
+  Dim strTime As String
+  Dim rs As Result
+  Dim delTime As Date
+
+  bRow = plzIdx Mod 100
+  plz = (plzIdx \ 100)
+  bCol = plz * 2 - 1
+  sp = hnr - 1      'bRow + hnr - firstRow
+  For i = bRow To bRow + sp     ' - 1
+    gridBelegung[i, bCol].RowSpan = 1
+    m = i \ 4
+    j = i Mod 4 
+    j = j * 15
+    If i Mod 4 = 0 Then
+      ' .Column = bCol
+      With gridBelegung[i, bCol]
+        .Alignment = Align.Center
+        .Font.Size = 14
+        .Background = Color.RGB(114, 159, 207) '&HFF8080
+        .Foreground = Color.White '&H80000005
+        .Font.Bold = True
+        strTime = Str(m) & ":00"
+        .Text = strTime
+      End With
+    Else
+      ' .Column = bCol
+      With gridBelegung[i, bCol]
+        .Alignment = Align.Center
+        .Font.Size = 12
+        .Font.Bold = False
+        .Background = Color.White '&H8000000E
+        .Foreground = Color.Black '&H80000012
+        strTime = Str(m) & ":" & Str(j)
+        .Text = strTime
+      End With
+    End If
+    hPicPlatz[plz - 1].Background = Color.DarkGreen
+    picDraw(plz - 1)
+    hLabAktSpieler[plz - 1].Caption = ""
+    
+  Next  
+  DatabaseService.AktivLoad(plzIdx)
+  delTime = Format(Time, "hh:nn:ss")
+  With StrucType.Belegung
+    SqlCom = "INSERT INTO "
+    SqlTab = "_Buchung_hist "
+    SqlP = ""
+    SqlP = "(Einbuch_Datum, Einbuch_Zeit, Datum_Beginn, Datum_Ende, loesch_zeit, Platz_idx, mitgl_nr1, mitgl_nr2, mitgl_nr3, mitgl_nr4, Beginn, Ende, Belegungs_sts, anz_Spieler, Einzel_Doppel, hight_nr, Event_fl) values ('" 
+    SqlP = SqlP & .Einbuch_Datum & "','" & .Einbuch_Zeit & "','" & .Datum_Beginn & "','" & .Datum_Ende & "','" & delTime & " ', '" & .Platz_idx & "', '" & .mitgl_nr1 & "','" & .mitgl_nr2 & "','" & .mitgl_nr3 & "','" & .mitgl_nr4 & "','" & 
+      .Beginn & "', '" & .Ende & "','" & .Belegungs_sts & "','" & .anz_spieler & "','" & .Einzel_Doppel & "','" & .hight_nr & "','" 
+    SqlP &= .event_fl & "' )"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  End With           
+  SqlCom = "DELETE From "
+  SqlTab = "_Buchung_aktiv "
+  SqlP = "WHERE Platz_idx = '" & plzIdx & "'"  
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+  btnGast.Visible = False
+  btnDelete.Visible = False
+
+End
+
+'==========================================================================
+' Event:   Function seekMitgl() As Result
+'	
+'
+'==========================================================================
+
+Public Function seekMitgl(mgNr As Integer) As Result
+  
+  Dim rs As Result
+  Dim PlzIdx As Integer
+  
+  SqlCom = "SELECT * FROM "
+  SqlTab = "_Buchung_aktiv "
+  SqlP = "WHERE mitgl_nr1 = " & Str(mgNr) & " Or mitgl_nr2 = " & Str(mgNr) & " Or mitgl_nr3 = " & Str(mgNr) & " Or mitgl_nr4 = " & Str(mgNr) 
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  If rs.Count > 0 Then structBuch(rs) 
+  Return rs 
+  ' Endif
+  
+End
+'==========================================================================
+' Event:   seekBuchung(tPi As Integer) As Integer
+'	
+'
+'==========================================================================
+
+Public Function seekBuchung(tPi As Integer) As Integer
+  
+  Dim rs As Result
+  Dim i, PlzIdx, col, row, MitglNrGast As Integer
+  Dim SpNamen As String
+  
+  SqlCom = "SELECT * FROM "
+  SqlTab = "_Buchung_aktiv "
+  SqlP = "WHERE " & Str(tPi) & " BETWEEN Platz_idx AND Platz_idx + hight_nr-1"
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  If rs.Count > 0 Then
+    With StrucType.Belegung
+      structBuch(rs)      
+      ' .Platz_idx = rs!Platz_idx 
+      PlzIdx = .Platz_idx
+      ' .Belegungs_sts = rs!Belegungs_sts
+      If .Belegungs_sts = 2 Or .Belegungs_sts = 4 Then 
+        Return 999
+      Endif
+      ' .anz_spieler = rs!anz_spieler
+      ' .Einzel_Doppel = rs!Einzel_Doppel
+      .anz_spieler = .anz_spieler + 1
+      col = (PlzIdx \ 100) * 2 
+      col = col - 1
+      row = PlzIdx Mod 100
+      
+      SpNamen = gridBelegung[row, col].Text
+      SpNamen = SpNamen & Vname.Caption
+      gridBelegung[row, col].Text = SpNamen & Chr(10)
+      If .Einzel_Doppel = 0 Then
+        If .anz_spieler = 2 Then
+          .Belegungs_sts = 2
+          gridBelegung[row, col].Background = Color.Red
+          gridBelegung[row, col].Foreground = Color.White
+          gridBelegung[row, col].Font.Bold = False
+          gridBelegung[row, col].Font.Size = 12
+          gridBelegung[row, col].Font.Italic = False
+          Music.Load(s)
+          Music.Play
+        Endif
+      Else
+        If .anz_spieler = 4 Then
+          .Belegungs_sts = 4
+          gridBelegung[row, col].Background = Color.Red
+          gridBelegung[row, col].Foreground = Color.White
+          gridBelegung[row, col].Font.Bold = False
+          gridBelegung[row, col].Font.Size = 12
+          gridBelegung[row, col].Font.Italic = False
+          Music.Load(s)
+          Music.Play
+        Endif
+      Endif
+      If .Belegungs_sts = 2 Or .Belegungs_sts = 4 Then
+        ' RolloCloseTime()
+        For i = 0 To 9
+          If aryDelZeit[i, 0] = PlzIdx Then
+            aryDelZeit[i, 0] = 0
+            aryDelZeit[i, 1] = 0
+            aryDelZeit[i, 2] = 0
+            aryDelZeit[i, 3] = 0
+            Break
+          Endif
+        Next
+        
+      Endif
+      gridBelegung.Refresh
+      MitglNrGast = MitglNr
+      If GastFl = True Then MitglNrGast = MitglNr + 5000
+      SqlCom = "UPDATE "
+      SqlTab = "_Buchung_aktiv "
+      SqlP = "SET mitgl_nr" & Str(.anz_spieler) & " = " & Str(MitglNrGast) & ", Belegungs_sts = " & Str(.Belegungs_sts) & ",anz_spieler = " & Str(.anz_spieler) & " WHERE Platz_idx = " & Str(.Platz_idx)
+      rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+      GastFl = False
+      btnMainInit(Berecht)
+    End With
+    RolloClosedTime()
+    Return PlzIdx 
+  Endif
+  
+  Return 0 
+  
+End
+'==========================================================================
+' Event:  RolloClose()
+'	
+'
+'==========================================================================
+
+'==========================================================================
+' Event:  btnEinzDopp_Click()
+'	
+'
+'==========================================================================
+Public Sub btnEinzDopp_Click()
+  
+  Dim i, r, c, std, min, PlzIdx As Integer
+  Dim rs As Result
+
+  structBuchLeer()
+  r = tRow
+  c = tcol * 2 - 1
+  With StrucType.Belegung
+    .Platz_idx = tCol * 100 + tRow
+    For i = 0 To 9
+      If aryDelZeit[i, 0] = 0 Then
+        aryDelZeit[i, 0] = .Platz_idx
+        aryDelZeit[i, 1] = MitglNr
+        aryDelZeit[i, 2] = StrucType.RegelnNormSpz.DelAnwZeit * 60
+        Break
+      Endif
+    Next
+    .mitgl_nr1 = MitglNr
+    .Einbuch_Datum = Format(Date, "yyyy.mm.dd")
+    .Einbuch_Zeit = Format(Time(), "hh:nn:ss")
+    .Datum_Beginn = Format(Date, "yyyy.mm.dd")
+    .Datum_Ende = Format(Date, "yyyy.mm.dd")
+    std = tRow \ 4
+    If std >= 24 Then 
+      std -= 24
+    Endif
+    min = (tRow Mod 4) * 15
+    .Beginn = Format(Time(std, min, 0), "hh:nn")
+    .Event_fl = 0
+    Select Case Last.Tag
+      Case 0
+        .hight_nr = StrucType.RegelnNormSpz.ZeitEinzel / 15
+        If PlzFreeIdx > .hight_nr Then
+          gridBelegung[r, c].RowSpan = .hight_nr
+        Else
+          r = r - 1
+          .Platz_idx = tCol * 100 + tRow - 1
+          gridBelegung[r, c].RowSpan = PlzFreeIdx
+          .hight_nr = PlzFreeIdx
+        Endif
+        .Einzel_Doppel = 0
+        ' .hight_dec_inc = .hight_nr - 1
+      Case 1
+        .hight_nr = StrucType.RegelnNormSpz.ZeitDoppel / 15    
+        If PlzFreeIdx > .hight_nr Then
+          gridBelegung[r, c].RowSpan = .hight_nr
+        Else
+          r = r - 1
+          .Platz_idx = tCol * 100 + tRow - 1
+          gridBelegung[r, c].RowSpan = PlzFreeIdx
+          .hight_nr = PlzFreeIdx
+        Endif
+        .Einzel_Doppel = 1
+        ' .hight_dec_inc = .hight_nr - 1
+    End Select
+    std = (tRow + .hight_nr) \ 4
+    If std >= 24 Then 
+      std -= 24
+    Endif
+    min = ((tRow + .hight_nr) Mod 4) * 15
+    .Ende = Format(Time(std, min, 0), "hh:nn")
+    ' .Erwachsen = Erwachs_FL
+    .anz_spieler = 1
+    .Belegungs_sts = 1
+    gridBelegung[r, c].Text = FirstName & " " & LastName & Chr(10)
+    gridBelegung[r, c].Background = Color.Yellow
+    gridBelegung[r, c].Foreground = Color.Black
+    gridBelegung[r, c].Font.Bold = False
+    gridBelegung[r, c].Font.Size = 12
+    gridBelegung[r, c].Font.Italic = True
+    SqlCom = "INSERT INTO "
+    SqlTab = "_Buchung_aktiv "
+    SqlP = "(Einbuch_Datum, Einbuch_Zeit, Datum_Beginn, Datum_Ende, loesch_zeit, Platz_idx, mitgl_nr1, Beginn, Ende, Belegungs_sts, anz_Spieler, Einzel_Doppel, hight_nr, Event_fl ,Mannschaft, InfoText) values ('"
+    SqlP = SqlP & .Einbuch_Datum & "','" & .Einbuch_Zeit & "','" & .Datum_Beginn & "','" & .Datum_Ende & "','" & Str(0) & " ', '" & .Platz_idx & "', '" & .mitgl_nr1 & "','" & .Beginn & "', '" & .Ende & "','"  
+    SqlP = SqlP & .Belegungs_sts & "','" & .anz_spieler & "','" & .Einzel_Doppel & "','" & .hight_nr & "','" 
+    SqlP = SqlP & .Event_fl & "','" & .Mannschaft & "','" & .InfoText & "' )"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    btnMainInit(Berecht)
+  End With
+  'Music.Stop
+  Music.Load(a)
+  Music.Play
+  
+  panEinzelDoppel.Visible = False  
+  mnuBtn = ""
+  
+End
+'==========================================================================
+' delLoadAktBel():
+'	
+'
+'==========================================================================
+
+Public Sub delLoadAktBel(fRow As Integer)
+  
+  Dim rs, rs1 As Result
+  Dim h, i, k, j, m, n, r, plzIdx As Integer
+  Dim delTime As Date
+  Dim strTime As String
+  
+  SqlCom = "SELECT * FROM "
+  SqlTab = "_Buchung_aktiv "
+  
+  SqlP = "WHERE ((Platz_idx Mod 100)  + hight_nr-1) < " & fRow & " OR Datum_Ende <> '" & Format(Date, "yyyy-mm-dd") & "'"
+  ' SqlP = "WHERE ((Platz_idx + hight_nr-1) Mod 100) < " & fRow & " OR Datum_Ende <> '" & Date & "'"
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  If rs.count > 0 Then
+    For r = 0 To rs.count - 1
+      plzIdx = rs!Platz_idx
+      DatabaseService.AktivLoad(plzIdx)
+      h = rs!hight_nr - 1
+      k = (plzIdx \ 100) - 1
+      hLabAktSpieler[k].Caption = ""
+      n = (k + 1) * 2 - 1
+      m = plzIdx Mod 100
+      m = m + h
+      i = m \ 4
+      j = (m Mod 4) * 15
+      If j = 0 Then 
+        With gridBelegung[m, n]
+          strTime = Str(i) & ":00"
+          .Alignment = Align.Center
+          .Font.Size = 14
+          .Background = Color.RGB(114, 159, 207) '&HFF8080
+          .Foreground = Color.White '&H80000005
+          .Font.Bold = True
+          .Text = strTime
+        End With
+      Else  
+        With gridBelegung[m, n]
+          strTime = Str(i) & ":" & Str(j)
+          .Alignment = Align.Center
+          .Font.Size = 12
+          .Font.Bold = False
+          .Background = Color.White '&H8000000E
+          .Foreground = Color.Black '&H80000012
+          .Text = strTime
+        End With
+      Endif
+      delTime = Format(Time, "hh:nn:ss")
+      With StrucType.Belegung
+        ' .Einbuch_Zeit = Time(Now)
+        SqlCom = "INSERT INTO "
+        SqlTab = "_Buchung_hist "
+        SqlP = ""
+        SqlP = "(Einbuch_Datum, Einbuch_Zeit, Datum_Beginn, Datum_Ende, loesch_zeit, Platz_idx, mitgl_nr1, mitgl_nr2, mitgl_nr3, mitgl_nr4, Beginn, Ende, Belegungs_sts, anz_Spieler, Einzel_Doppel, hight_nr, Event_fl,Mannschaft, InfoText) values ('" 
+        SqlP = SqlP & .Einbuch_Datum & "','" & .Einbuch_Zeit & "','" & .Datum_Beginn & "','" & .Datum_Ende & "','" & delTime & " ', '" & .Platz_idx & "', '" & .mitgl_nr1 & "','" & .mitgl_nr2 & "','" & .mitgl_nr3 & "','" & .mitgl_nr4 & "','" & 
+          .Beginn & "', '" & .Ende & "','" & .Belegungs_sts & "','" & .anz_spieler & "','" & .Einzel_Doppel & "','" & .hight_nr & "','" 
+        SqlP &= .event_fl & "','" & .Mannschaft & "','" & .InfoText & "')"
+        rs1 = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+      End With           
+      SqlCom = "DELETE From "
+      SqlTab = "_Buchung_aktiv "
+      SqlP = "WHERE Platz_idx = '" & plzIdx & "' OR Datum_Ende < '" & Date & "'"
+      rs1 = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+      hPicPlatz[k].Background = Color.DarkGreen
+      picDraw(k)
+      hLabAktSpieler[k].Caption = ""
+      rs.MoveNext
+    Next
+    
+  Else
+    Return  
+  Endif
+  
+End
+'==========================================================================
+' gridUpdate:
+'	
+'
+'==========================================================================
+
+Public Sub gridUpdate()
+  
+  Dim rs As Result
+  Dim rs1 As Result
+  Dim bCol, bRow, sp, i, j, k, plz, bgC, fgC, stsFl As Integer
+  Dim Titel, Vorname, Name, strTime As String
+  
+  SqlCom = "SELECT * FROM "
+  SqlTab = "_Buchung_aktiv "
+  SqlP = "ORDER by Platz_idx"    
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+  If rs.count > 0 Then
+    With StrucType.Belegung
+      For k = 0 To rs.count - 1
+        structBuch(rs)
+        aryMgl[0] = .mitgl_nr1
+        aryMgl[1] = .mitgl_nr2
+        aryMgl[2] = .mitgl_nr3
+        aryMgl[3] = .mitgl_nr4
+        bRow = .Platz_idx Mod 100
+        plz = (.Platz_idx \ 100)
+        bCol = plz * 2 - 1
+        ' Select Case .Event_fl
+        '     Case 0, 1, 2
+        If rs!Belegungs_sts = 2 Or rs!Belegungs_sts = 4 Then
+          For i = 0 To 9
+            If aryDelZeit[i, 0] = rs!Platz_idx Then
+              aryDelZeit[i, 0] = 0
+              aryDelZeit[i, 1] = 0
+              aryDelZeit[i, 2] = 0
+              aryDelZeit[i, 3] = 0
+              Break
+            Endif
+          Next
+          If bRow = firstRow Then
+            stsFl = 1
+            hPicPlatz[plz - 1].Background = Color.DarkRed
+            picDraw(plz - 1)
+            hLabAktSpieler[plz - 1].Caption = ""
+            'firstRow = erste Zeile im Grid, bRow=erste row der aktuellen Belegung
+            sp = .hight_nr
+            bgC = Color.Red
+            fgC = Color.White
+            gridRedYel(firstRow, sp, bgC, fgC, bCol, stsFl)
+            ' Endif
+          Else If bRow < firstRow Then
+            stsFl = 2
+            hPicPlatz[plz - 1].Background = Color.DarkRed
+            picDraw(plz - 1)
+            hLabAktSpieler[plz - 1].Caption = ""
+            sp = bRow + .hight_nr - firstRow      'firstRow = erste Zeile im Grid, bRow=erste row der aktuellen Belegung
+            gridBelegung[(firstRow - 1), bCol].RowSpan = 1
+            i = (firstRow - 1) \ 4
+            j = ((firstRow - 1) Mod 4) * 15
+            If j = 0 Then 
+              With gridBelegung[(firstRow - 1), bCol]
+                strTime = Str(i) & ":00"
+                .Alignment = Align.Center
+                .Font.Size = 14
+                .Background = Color.SelectedBackground '&HFF8080
+                .Foreground = Color.White '&H80000005
+                .Font.Bold = True
+                .Text = strTime
+              End With
+            Else  
+              With gridBelegung[(firstRow - 1), bCol]
+                strTime = Str(i) & ":" & Str(j)
+                .Alignment = Align.Center
+                .Font.Size = 12
+                .Font.Bold = False
+                .Background = Color.White '&H8000000E
+                .Foreground = Color.Black '&H80000012
+                .Text = strTime
+              End With
+            Endif
+            
+            bgC = Color.Red
+            fgC = Color.White
+            For i = 0 To .hight_nr
+              gridBelegung[brow + i, bCol].RowSpan = 1            
+            Next
+            gridRedYel(firstRow, sp, bgC, fgC, bCol, stsFl)
+            ' Endif
+          Else If bRow > firstRow Then
+            stsFl = 3
+            bgC = Color.Red
+            fgC = Color.White
+            sp = .hight_nr
+            gridRedYel(bRow, sp, bgC, fgC, bCol, stsFl)
+            
+          Endif
+        Else
+          stsFl = 4
+          If bRow < firstRow Then
+            SqlCom = "DELETE From "
+            SqlTab = "_Buchung_aktiv "
+            SqlP = "WHERE Platz_idx = '" & .Platz_idx & "'"  
+            rs1 = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+            
+          Else
+            bgC = Color.Yellow
+            fgC = Color.Black
+            sp = .hight_nr
+            gridRedYel(bRow, sp, bgC, fgC, bCol, stsFl)
+          Endif
+        Endif
+        
+        '     Case 1      
+        ' End Select
+        rs.MoveNext
+      Next
+    End With
+  Endif 
+  cDBVerbindung.Close()
+  
+End
+
+'==========================================================================
+' Event:  TimerRFID_Timer()
+'	
+'
+'==========================================================================
+Public Sub TimerRFID_Timer()
+  
+  If hRS232.Status <> Net.Active Or vRFID = "" Then
+    zRFID -= 1
+    If zRFID = 0 Then
+      rfid = ""
+      mnuBtn = ""
+      temp_rfid = ""
+      FirstName = ""
+      LastName = ""
+      MitglNr = 0
+      Vname.Caption = ""
+      fmAdmin.Close
+      Admin_Fl = 0
+      Vname.Visible = False
+      panEinzelDoppel.Visible = False
+      gridBelegung.Enabled = False
+      btnDelete.Visible = False
+      btnGast.Visible = False
+      btnRollo.Visible = False
+      btnAdmin.Visible = False
+      btnSpielBetr.Visible = False
+      TimerRFID.Stop
+    Endif
+  Else
+    If Left(vRFID, 1) = Chr(2) Then
+      rfid = Mid(vRFID, 3, 10)
+      zRFID = 5
+      If temp_rfid <> rfid Then
+        temp_rfid = rfid
+        datenMitglLesen(rfid)
+      Endif
+    Endif
+    vRFID = ""
+  Endif
+  
+End
+
+Public Sub gridRedYel(fRow As Integer, spann As Integer, bgrC As Integer, fgrC As Integer, begCol As Integer, sts As Integer)
+  
+  Dim rs As Result
+  Dim plz, j As Integer
+  Dim vorname, Titel, name As String
+  
+  gridBelegung[fRow, begCol].RowSpan = spann
+  gridBelegung[fRow, begCol].Background = bgrC
+  gridBelegung[fRow, begCol].Foreground = fgrC
+  gridBelegung[fRow, begCol].Font.Bold = True
+  gridBelegung[fRow, begCol].Font.Size = 10
+  gridBelegung[fRow, begCol].Font.Name = "Sans Serif"
+  gridBelegung[fRow, begCol].Font.Italic = False
+  gridBelegung[fRow, begCol].Alignment = Align.Center
+  gridBelegung[fRow, begCol].text = ""
+  With StrucType.Belegung
+    gridBelegung[fRow, begCol].text = Left(Str(.Beginn), 5) & " bis " & Left(Str(.Ende), 5)
+    gridBelegung[fRow, begCol].Refresh
+    ' bRow = .Platz_idx Mod 100
+    plz = (.Platz_idx \ 100)
+    ' StartFl = True Then
+    Select Case .Event_fl
+      Case 0       
+        SqlCom = "SELECT Titel, Vorname, Name FROM "
+        SqlTab = "Mitglieder "
+        For j = 0 To 3
+          If aryMgl[j] > 0 Then
+            If aryMgl[j] < 7000 Then
+              SqlP = "WHERE mitgl_nr" & " = " & aryMgl[j]    
+              rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+              If rs.count > 0 Then
+                Titel = rs!Titel
+                vorname = rs!Vorname
+                name = rs!Name
+              Endif
+            Else
+              Titel = ""
+              Vorname = "GAST"
+              Name = ""
+            Endif
+            Select Case sts
+              Case 1, 2
+                hLabAktSpieler[plz - 1].Caption &= Titel & " " & Vorname & " " & Name    
+                If .Belegungs_sts = 2 And j < 1 Then hLabAktSpieler[plz - 1].Caption &= Chr(10)
+                If .Belegungs_sts = 4 And j < 3 Then hLabAktSpieler[plz - 1].Caption &= Chr(10)
+              Case 3
+                If j = 0 Then gridBelegung[fRow, begCol].text &= Chr(10) & Chr(10)
+                gridBelegung[fRow, begCol].text &= Titel & " " & Vorname & " " & Name   
+                If .Belegungs_sts = 2 And j < 1 Then gridBelegung[fRow, begCol].text &= Chr(10)
+                If .Belegungs_sts = 4 And j < 3 Then gridBelegung[fRow, begCol].text &= Chr(10)
+              Case 4
+                If j = 0 Then gridBelegung[fRow, begCol].text &= Chr(10) & Chr(10)
+                gridBelegung[fRow, begCol].text &= Titel & " " & Vorname & " " & Name   
+                If .Einzel_Doppel = 0 And j < 1 Then gridBelegung[fRow, begCol].text &= Chr(10)
+                If .Einzel_Doppel = 1 And j < 3 Then gridBelegung[fRow, begCol].text &= Chr(10)
+            End Select
+            Titel = ""
+            Vorname = ""
+            Name = ""
+          Else
+            Break
+          Endif          
+        Next 
+        ' hLabAktSpieler[plz - 1].Caption = gridBelegung[firstRow, begCol].Text
+      Case 1
+        Select Case sts
+          Case 1, 2
+            hLabAktSpieler[plz - 1].Font.Bold = True
+            hLabAktSpieler[plz - 1].Caption = .InfoText & Chr(10) & Chr(10) & .Mannschaft 
+          Case 3
+            gridBelegung[fRow, begCol].Font.Bold = True
+            gridBelegung[fRow, begCol].text &= Chr(10) & Chr(10) & .InfoText & Chr(10) & Chr(10) & .Mannschaft 
+        End Select
+      Case 2
+        Select Case sts
+          Case 1, 2
+            hLabAktSpieler[plz - 1].Font.Bold = True
+            hLabAktSpieler[plz - 1].Caption = .InfoText & Chr(10) & .Mannschaft & Chr(10) & "vs" & Chr(10) & .Gast
+          Case 3
+            gridBelegung[fRow, begCol].Font.Bold = True
+            gridBelegung[fRow, begCol].text &= Chr(10) & Chr(10) & .InfoText & Chr(10) & Chr(10) & .Mannschaft & Chr(10) & "vs" & Chr(10) & .Gast
+        End Select
+    End Select
+  End With
+  
+End
+
+'==========================================================================
+' Event:  TimerGridZeit_Timer()
+'	
+'
+'==========================================================================
+Public Sub TimerGridZeit_Timer()
+  
+  Dim rs As Result
+  Dim rs1 As Result
+  Dim bCol As Integer
+  Dim bRow As Integer
+  Dim strTime, plaetze As String
+  Dim sp As Integer
+  Dim i, j, k, m As Integer
+  Dim plz, rGlz, rDelay As Integer
+  Dim tag, sDatum As String
+  Dim datum As Date
+
+  i = topRow()
+  If altTime <> i Then
+    If i = 96 Then
+      i = 0
+    Endif
+    delLoadAktBel(i) 
+    ' belGridInit()
+    ' loadTrVbsEv()
+    gridUpdate()  
+    altTime = i
+    SqlCom = "SELECT * FROM "
+    SqlTab = "_AltDatTag "
+    SqlP = ""
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    If rs.count > 0 Then
+      tag = rs!AltTag
+      datum = rs!AltDatum
+      If datum <> Date Then
+        
+        ' delLoadAktBel(i) 
+        
+        SqlCom = "DELETE From "
+        SqlTab = "_Buchung_aktiv "
+        SqlP = ""
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+        
+        SqlCom = "DELETE FROM "
+        SqlTab = "_delBuchung "
+        SqlP = ""                        
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+        AltDate()
+        belGridInit()
+        loadTrVbsEv()
+        gridUpdate()  
+        ' tag = Trim(aWeekDay[WeekDay(Now)])
+        ' sDatum = Format(Date, "yyyy-mm-dd")
+        ' SqlCom = "UPDATE "
+        ' SqlTab = "_AltDatTag "
+        ' SqlP = "SET AltTag = '" & tag & "' ,AltDatum = '" & sDatum & "'"
+        ' rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+        ' plzSperreInit()
+        ' belGridInit
+        ' Form_Open()
+      Endif
+    Endif
+    k = i Mod 100
+    m = k Mod 4
+    If m = 0 Then
+      strTime = Str(k \ 4) & ":" & "00"
+    Else
+      strTime = Str(k \ 4) & ":" & Str((k Mod 4) * 15) 
+    Endif
+    If Mid(strTime, 2, 1) = ":" Then
+      strTime = "0" & strTime
+    Endif
+    cDBVerbindung.Close()
+    ModsAndRules.RegnerAuto()
+    ModsAndRules.RegnerManu()
+    For k = 0 To StrucType.RegnerAuto.Max
+      With StrucType.RegnerAuto[k]
+        If .Beginn = strTime And .Aktiv = "aktiv" Then
+          With StrucType.RegnerManu
+            rGlz = .RegnerGlZ
+            plaetze = .RegnerPlzSts
+            rDelay = .RegDelay
+          End With
+          j = 0
+          For i = 0 To StrucType.GlobRegeln.AnzPlatzVal - 1
+            If Mid(plaetze, i + 1, 1) = 1 Then                            
+              RegnerCach[j, 0] = i
+              RegnerCach[j, 1] = .Dauer * 60 * 2
+              RegnerCach[j, 2] = rDelay * 2
+              j += 1
+              hPicRegner[i].Visible = True
+              hLabRegnerNr[i].Visible = True
+              hLabRegnerNr[i].Raise
+              TimerRegner.Start
+            Endif
+          Next
+          Break
+        Endif
+      End With
+    Next
+  Endif
+  
+  For i = 0 To 9
+    If aryDelZeit[i, 0] > 0 Then
+      If aryDelZeit[i, 2] > 0 Then
+        aryDelZeit[i, 2] -= 1
+        Debug aryDelZeit[i, 2]
+        If aryDelZeit[i, 2] <= 0 Then
+          SqlCom = "SELECT hight_nr FROM "
+          SqlTab = "_Buchung_aktiv "
+          SqlP = "WHERE Platz_idx = " & aryDelZeit[i, 0]
+          rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+          If rs.count > 0 Then
+            delBelegung(aryDelZeit[i, 0], rs!hight_nr)
+            aryDelZeit[i, 3] = StrucType.RegelnNormSpz.GelbSpZeit * 60
+          Endif
+        Endif
+      Else If aryDelZeit[i, 3] > 0 Then
+        aryDelZeit[i, 3] -= 1
+        ' Message.Info("Gelbsperre")
+      Endif
+    Endif
+  Next
+  
+End
+
+'==========================================================================
+' Event:  TimerRegner_Timer()
+'	
+'
+'==========================================================================
+Public Sub TimerRegner_Timer()
+  
+  Dim i, j, k As Integer
+  ' digitalWrite(secure, True)
+  For i = 0 To StrucType.RegnerManu.RegnerGlZ - 1
+    j = RegnerCach[i, 0]
+    If RegnerCach[i, 1] > 0 Then
+      If RegnerCach[i, 2] = 0 Then
+        RegnerCach[i, 1] -= 1
+        If hPicRegner[j].Picture = picRegCopy1.Picture Then
+          hPicRegner[j].Picture = picRegCopy2.Picture
+        Else
+          hPicRegner[j].Picture = picRegCopy1.Picture
+        Endif
+        If RegnerCach[i, 1] <= 0 Then
+          hPicRegner[j].Visible = False
+          hLabRegnerNr[j].Visible = False
+          OutByte[j, 0] = 0
+          RegnerRollo(0, clock0)
+          ' regWrite(clock0, gpioD8[j], 0)      'Regner Aus
+          
+          RegnerCach[i, 1] = 0
+          RegnerCach[i, 0] = 0
+          While RegnerCach[i, 1] <= 0 And i < StrucType.RegnerManu.RegnerGlZ
+            i += 1
+          Wend
+          While RegnerCach[i, 1] > 0
+            RegnerCach[i - 1, 0] = RegnerCach[i, 0]
+            RegnerCach[i - 1, 1] = RegnerCach[i, 1]
+            RegnerCach[i - 1, 2] = RegnerCach[i, 2]
+            RegnerCach[i, 0] = 0
+            RegnerCach[i, 1] = 0
+            RegnerCach[i, 2] = 0
+            i += 1
+          Wend
+          If RegnerCach[0, 1] = 0 Then
+            TimerRegner.Stop
+          Endif
+        Endif
+        
+      Else
+        RegnerCach[i, 2] -= 1
+        If RegnerCach[i, 2] <= 0 Then
+          OutByte[RegnerCach[i, 0], 0] = 1
+          RegnerRollo(0, clock0)
+          ' regWrite(clock0, gpioD8[RegnerCach[i, 0]], 1)       'Regner ein
+        Endif
+      Endif
+    Endif
+  Next
+  i = 0
+  ' digitalWrite(secure, False)
+  
+End
+
+'==========================================================================
+' Event:  TimerRollo_Timer()
+'	
+'
+'==========================================================================
+
+Public Sub RegnerRollo(i As Integer, clk As Integer)
+  
+  Dim k As Integer
+
+  ZeitDatum.Stop
+  TimerRegner.Stop
+  TimerRFID.Stop
+  ' TimerGridZeit.Stop
+  For k = 0 To 7
+    Wait 0.001
+    digitalWrite(gpioD8[k], OutByte[k, i])
+  Next
+  digitalWrite(clk, 1)
+  ' Wait 0.01
+  ' digitalWrite(clk, 0)
+  Wait 0.01
+  ZeitDatum.Start
+  TimerRegner.Start
+  TimerRFID.start
+  ' TimerGridZeit.start
+  
+End
+
+'==========================================================================
+' Event:  ZeitDatum_Timer()
+'	
+'
+'==========================================================================
+Public Sub ZeitDatum_Timer()
+  
+  Dim i, l As Integer
+  Dim tLedUhr_std, tLedUhr_min, msg_out As String
+  ' digitalWrite(secure, 1)
+  ' Wait 0.001
+  ' digitalWrite(secure, 0)
+  ' Wait 0.001
+  dDate = Now()
+  lbZeitDatum.Caption = Format(Time, "hh:nn:ss") & Chr(10) & Chr(10) & aTagesListe[WeekDay(dDate)] & " " & Format$(dDate, " dd.mm.yyyy ") 
+  tLedUhr_std = Format(Time, "hh") 
+  tLedUhr_min = Format(Time, "nn") 
+  If altLedUhr_min <> tLedUhr_min Then
+    altLedUhr_min = tLedUhr_min
+    l = Len(Chr(2) & tLedUhr_std & "," & tLedUhr_min)
+    l += 1
+    msg_out = Chr(2) & Chr(l) & tLedUhr_std & "," & tLedUhr_min
+    
+    Write #hRS232, msg_out, Len(msg_out)
+    ' Wait 0.1
+  Endif
+  If RolloBtnSperre > 0 Then RolloBtnSperre -= 1
+  If RolloClosed <= Time And OutByte[7, 0] = 1 Then 
+    RolloBtnSperre = 30 * 10
+    ' OutByte[0, 1] = 0
+    ' OutByte[1, 1] = 0
+    ' Wait 0.001
+    ' RegnerRollo(1, clock1)
+    OutByte[7, 0] = 0
+    Wait 0.001
+    RegnerRollo(0, clock0)
+  Endif
+  ' digitalWrite(secure, 0)
+  
+End
+
+Public Sub TimerSecure_Timer()
+  
+  digitalWrite(secure, 1)
+  Wait 0.001
+  digitalWrite(secure, 0)
+  Wait 0.001
+  
+End
+
+' Public Sub mainBtn_MouseDown()
+'   Shell "gpio -g mode 21 out"
+'   Shell "gpio -g write 21 0"
+'   Shell "gpio -g write 21 1" 
+' End
+
+Public Sub btnMain_Click()
+  
+  Dim anzsp, belegsts, bRow, bCol, plz, hnr, sp, j, m As Integer
+  Dim MitglNr1, MitglNr2, MitglNr3, MitglNr4, tMitglnr, GmitglNr As Integer
+  Dim rs As Result
+  Dim plzIdx, i, Erwachsen, GastNr As Integer
+  Dim Preis As Float
+  Dim n, sPreis As String
+  
+  mnuBtn = Last.Tag
+  Music.Load(b)
+  Music.Play 
+  Select mnuBtn
+    Case "Del"
+      GmitglNr = MitglNr + 5000
+      rs = seekMitgl(GmitglNr) 
+      If rs.count <= 0 Then
+        GmitglNr = MitglNr
+        rs = seekMitgl(MitglNr)
+        If rs.count <= 0 Then Return
+      Endif
+      plzIdx = rs!Platz_idx
+      anzsp = rs!anz_spieler - 1
+      If anzsp = 0 Then
+        hnr = rs!hight_nr
+        delBelegung(plzIdx, hnr)
+        
+      Else              
+        rcMitglNr[0] = rs!mitgl_nr1
+        rcMitglNr[1] = rs!mitgl_nr2
+        rcMitglNr[2] = rs!mitgl_nr3
+        rcMitglNr[3] = rs!mitgl_nr4
+        For i = 0 To 3
+          If rcMitglNr[i] = GmitglNr Then rcMitglNr[i] = 0
+        Next
+        For i = 0 To 2
+          If rcMitglNr[i] = 0 Then
+            For j = i + 1 To 3
+              If rcMitglNr[j] > 0 Then
+                rcMitglNr[i] = rcMitglNr[j]
+                rcMitglNr[j] = 0
+                Break
+              Endif
+            Next
+          Endif
+        Next
+        belegsts = 1
+        SqlCom = "UPDATE "
+        SqlTab = "_Buchung_aktiv "
+        SqlP = "SET mitgl_nr1 = '" & Str(rcMitglNr[0]) & "', mitgl_nr2 = '" & Str(rcMitglNr[1]) & "', mitgl_nr3 = '" & Str(rcMitglNr[2]) & "', mitgl_nr4 = '" & Str(rcMitglNr[3]) & "', Belegungs_sts = " & belegsts & ", anz_spieler = " & anzsp & 
+          " WHERE Platz_idx = " & Str(plzIdx) & ""
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+        gridUpdate()
+      Endif
+      i = topRow()
+      Return 
+    Case "SBetr"
+      fmSpielbetrieb.ShowModal
+    Case "Admin"
+      fmAdmin.ShowModal
+      
+    Case "Gast"
+      rs = seekMitgl(MitglNr) 
+      If rs.count <= 0 Then Return       
+      plzIdx = rs!Platz_idx
+      
+      If Temp_Jahre >= StrucType.SpMitGast.ErwachsenAb Then
+        sPreis = Format(StrucType.SpMitGast.GastPrErw, "#,##0.00")
+        Erwachs_FL = 1
+      Else
+        sPreis = Format(StrucType.SpMitGast.GastPrJug, "#,##0.00")
+        Erwachs_FL = 0
+      Endif
+      Preis = Val(sPreis)
+      With StrucType.Belegung
+        Select Case Message.Question("<font size=4 color=Red><b>Die Gastgebühr beträgt " & sPreis & " €  diese wird von Deinem Konto abgebucht!</b></font><br>" &
+              "<font size=4 color=Black>Wenn Du damit einverstanden bist, drücke JA.<br>" &
+              " Wenn nicht, drücke Nein!</b></font>", " JA ", " Nein ")
+            
+          Case 1
+            GastFl = True
+            i = seekBuchung(plzidx)
+            GastNr = MitglNr + 5000
+            SqlCom = "INSERT INTO " 
+            SqlTab = "_GastSpieler "
+            SqlP = "(Platz_idx, einbuch_zeit, Datum_Beginn, Beginn, Ende, Mitgl_Nr, Name, Vorname, Mitgl_NrGast, Einzel_Doppel, Erwachsen, Preis) VALUES ('"  
+            SqlP &= plzIdx & "', '" & .Einbuch_Zeit & "','" & Format(Date, "yyyy.mm.dd") & "','" & .Beginn & " ', '" & .Ende & "', '" & MitglNr & "','" 
+            SqlP &= LastName & "','" & FirstName & "','" & GastNr & "','" & .Einzel_Doppel & "','" & Erwachs_FL & "','" & Preis & "')" 
+            rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+            gridUpdate()
+          Case 2
+            GastFl = False
+            delBelegung(.Platz_idx, .hight_nr)
+        End Select    
+      End With
+  End Select
+  
+End
+
+Public Sub strucTrainBuch(rs As Result)
+  
+  With StrucType.Belegung
+    ' .Platz_idx = rs!Platz_idx
+    .Einbuch_Datum = Format(Now, "yyyy.mm.dd")
+    .Einbuch_Zeit = "01:00:00"
+    .Datum_Beginn = Format(Now, "yyyy.mm.dd")
+    .Datum_Ende = Format(Now, "yyyy.mm.dd")
+    .Beginn = rs!Beginn
+    .Ende = rs!Ende
+    ' .ID_Mann = rs!ID_Mann
+    .Mannschaft = rs!Mannschaft
+    If rs!Event_fl = 2 Then
+      .Gast = rs!Gast
+      .Einzel_Doppel = rs!ED
+      .EinbuchPflicht = "N"
+    Else
+      .Gast = ""
+      .Einzel_Doppel = 0
+      .EinbuchPflicht = rs!EinbuchPfl
+    Endif
+    .InfoText = rs!InfoText
+    .Belegungs_sts = 2
+    .Event_fl = rs!Event_fl
+    ' .hight_nr = 0
+    ' .loesch_zeit = Null
+  End With  
+  
+End
+
+Public Sub structBuch(rs As Result)
+  
+  With StrucType.Belegung
+    .Platz_idx = rs!Platz_idx
+    .Einbuch_Datum = rs!Einbuch_Datum
+    .Einbuch_Zeit = rs!Einbuch_Zeit
+    .Datum_Beginn = rs!Datum_Beginn
+    .Datum_Ende = rs!Datum_Ende
+    .Beginn = rs!Beginn
+    .Ende = rs!Ende
+    .ID_Mann = rs!ID_Mann
+    .Mannschaft = rs!Mannschaft
+    .Gast = rs!Gast
+    .EinbuchPflicht = rs!EinbuchPflicht
+    .InfoText = rs!InfoText
+    .mitgl_nr1 = rs!mitgl_nr1
+    .mitgl_nr2 = rs!mitgl_nr2
+    .mitgl_nr3 = rs!mitgl_nr3
+    .mitgl_nr4 = rs!mitgl_nr4
+    .Belegungs_sts = rs!Belegungs_sts
+    .anz_spieler = rs!anz_spieler
+    .Einzel_Doppel = rs!Einzel_Doppel
+    .Event_fl = rs!Event_fl
+    .hight_nr = rs!hight_nr
+    .loesch_zeit = rs!loesch_zeit
+  End With  
+  
+End
+
+Public Sub structBuchLeer()
+  
+  With StrucType.Belegung
+    .Platz_idx = 0
+    .Einbuch_Datum = ""
+    .Einbuch_Zeit = "00:00:00"
+    .Datum_Beginn = Null
+    .Datum_Ende = Null
+    .Beginn = Null
+    .Ende = Null
+    .ID_Mann = 0
+    .Mannschaft = ""
+    .Gast = ""
+    .EinbuchPflicht = ""
+    .InfoText = ""
+    .mitgl_nr1 = 0
+    .mitgl_nr2 = 0
+    .mitgl_nr3 = 0
+    .mitgl_nr4 = 0
+    .Belegungs_sts = 0
+    .anz_spieler = 0
+    .Einzel_Doppel = 0
+    .Event_fl = 0
+    .hight_nr = 0
+    .loesch_zeit = Null
+  End With  
+  
+End
+
+Public Sub btnRollo_MouseDown()
+
+  If RolloBtnSperre = 0 Then
+    RolloClosed = Time
+  Endif
+
+End
+

@@ -1,0 +1,389 @@
+' Gambas class file
+
+Public MitglDat As Label
+Public btnMDmnu[6] As Button
+Public txtMitgDat[4] As TextBox
+Public Xpos As Integer
+Public Ypos As Integer
+Public txtBoxW[4] As Integer
+Public TastaturFl As Boolean = False
+Public neuMitglNr As Integer
+Public SqlP As Variant
+Public SqlCom As Variant
+Public SqlTab As Variant
+Public rs As Result
+Public saveFl As Integer = 0
+Public changFl As Boolean
+Public IDNr As Integer
+Public vzbBetrag As Float
+
+Public Sub Form_Open()
+Dim i As Integer
+SqlCom = "SELECT * FROM "
+SqlTab = "VZB "
+SqlP = "ORDER BY id DESC LIMIT 1"
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.Count > 0 Then
+    vzbBetrag = rs!VZBbetrag
+Endif
+IDNr = fmAdminMitglVerw.recID
+' fmAdmin.formMitglFl = True
+VZB_Betr.Visible = False
+panDat.Enabled = False
+rbBtnVZB.Visible = False
+Xpos = 340
+Ypos = 60
+txtBoxW[0] = 70
+txtBoxW[1] = 200
+txtBoxW[2] = 200
+txtBoxW[3] = 120
+fmMitgl.X = Xpos
+fmMitgl.Y = Ypos
+fmMitgl.Maximized = False
+fmMitgl.Minimized = False
+fmMitgl.Resizable = False
+comGeshl.List = ["w", "m"]
+comBerecht.List = ["X", "A", "B", "W"]
+comMitglStatus.List = ["A", "F", "S"]
+comVZB.List = ["Y", "N"]
+For i = 0 To 5
+  btnMDmnu[i] = New Button(Me) As "MyMitgl"
+  With btnMDmnu[i]
+    .H = 60
+    .W = 100
+    .X = 0 + i * 100 
+    .Y = 0
+    .Font.Size = 9
+    .Tag = i
+    .Background = Color.Black
+    .Foreground = Color.White
+      Select Case i
+        Case 0
+            .Text = "Mitgl-Neu"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/User.ico")
+        Case 1
+            .Text = "Ändern"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Pen.ico")
+       Case 2
+            .Text = "Löschen."
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Trash.ico")
+        Case 3
+            .Text = "Tast."
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Keyboard.ico")
+        Case 4
+            .Text = "Speichern"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Save.ico")
+            .Enabled = False
+        Case 5
+            .Text = "Ende"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Home.ico")
+      End Select
+  End With
+  Next
+  txtMitgNr.X = 117
+  txtMitgNr.Y = 80
+  comGeshl.X = 117
+  comGeshl.Y = 120
+  For i = 0 To 3
+    txtMitgDat[i] = New TextBox(panDat) As "MyMDat"
+    With txtMitgDat[i]
+      .Tag = i
+      .Background = Color.White
+      .Foreground = Color.Black
+      .Font.Name = "Sans Serif"
+      .Font.Size = 11
+      .H = 25
+      .W = txtBoxW[i]
+      .X = 117
+      .Y = i * 40 + 160
+    End With
+  Next
+If fmAdminMitglVerw.MDary[0] Then
+  With fmAdminMitglVerw
+    txtMitgNr.text = .MDary[0]
+    comGeshl.ReadOnly = True
+    comGeshl.Text = .MDary[1]
+    txtMitgDat[0].text = .MDary[2]
+    txtMitgDat[1].text = .MDary[3]
+    txtMitgDat[2].text = .MDary[4]
+    txtMitgDat[3].text = .MDary[5]
+    txtTranspID.text = .MDary[6]
+    comBerecht.Text = .MDary[7]
+    comMitglStatus.text = .MDary[8]
+    comVZB.Text = .MDary[9]
+    ' txtMitgDat[3].text = .MDary[5]
+    
+  End With
+Endif
+End
+
+Public Sub MyMitgl_MouseDown()
+Dim i, j, tRow As Integer
+Dim sGebDat As String
+Dim gebDat As Date
+i = Last.Tag  
+Select Case i
+  Case 0    'Neu
+    saveFl = 1
+    btnMDmnu[4].Enabled = True
+    panDat.Enabled = True
+    btnMDmnu[i].Background = Color.Cyan
+    btnMDmnu[i].Foreground = Color.Black
+    txtMitgNr.text = ""
+    comGeshl.ReadOnly = True
+    comGeshl.Text = ""
+    txtMitgDat[0].text = ""
+    txtMitgDat[1].text = ""
+    txtMitgDat[2].text = ""
+    txtMitgDat[3].text = ""
+    txtTranspID.text = ""
+    comBerecht.Text = ""
+    comMitglStatus.text = ""
+    comVZB.Text = ""
+    SqlCom = "SELECT Mitgl_Nr FROM "
+    SqlTab = "Mitglieder "
+    SqlP = "  ORDER BY Mitgl_Nr ASC"
+    rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+    If rs.count > 0 Then
+      For i = 0 To rs.count - 1
+        j = rs!Mitgl_Nr
+        rs.MoveNext
+        If rs!Mitgl_Nr - j > 1 Then
+          neuMitglNr = j + 1
+          txtMitgNr.Text = neuMitglNr
+          Return
+        Endif
+      Next
+    Endif
+   
+  Case 1    'Ändern
+    saveFl = 2
+    txtNeuTrID.Text = txtTranspID.Text
+    btnMDmnu[4].Enabled = True
+    panDat.Enabled = True
+    btnMDmnu[i].Background = Color.Cyan
+    btnMDmnu[i].Foreground = Color.Black
+  Case 2    'Löschen
+    btnMDmnu[2].Background = Color.Cyan
+    btnMDmnu[2].Foreground = Color.Black
+    Message.Title = "Mitglieder"
+    Select Message.Question("Soll das Mitglied <font color='red'>< b >" & fmAdminMitglVerw.MDary[3] & ", " & fmAdminMitglVerw.MDary[4] & "</b></font> gelöscht werden?", "Ja", "Nein")
+      Case 1
+            SqlCom = "DELETE FROM "
+            SqlTab = "Mitglieder "
+            SqlP = "WHERE id = " & fmAdminMitglVerw.recID
+            rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            comGeshl.Text = ""
+            txtMitgDat[0].text = ""
+            txtMitgDat[1].text = ""
+            txtMitgDat[2].text = ""
+            txtMitgDat[3].text = ""
+            txtTranspID.text = ""
+            comBerecht.Text = ""
+            comMitglStatus.text = ""
+            comVZB.Text = ""
+              With fmAdminMitglVerw
+              For j = 0 To 9
+                .MDary[j] = ""
+              Next
+              End With              
+      Case 2
+    End Select
+    fmAdminMitglVerw.SetGridViewProperty()
+    btnMDmnu[2].Background = Color.Black
+    btnMDmnu[2].Foreground = Color.White
+  Case 3    'Tastatur
+    If saveFl > 0 Then
+      If TastaturFl = False Then
+        btnMDmnu[i].Background = Color.Cyan
+        btnMDmnu[i].Foreground = Color.Black
+        txtMitgDat[2].SetFocus
+        TastaturFl = True
+      Else
+        TastaturFl = False
+        btnMDmnu[i].Background = Color.Black
+        btnMDmnu[i].Foreground = Color.White
+      Endif  
+    Endif
+  Case 4    'Speichern
+    Select Case saveFl
+      Case 1    'Neu
+        changFl = True
+         If Not comGeshl.Text Then changFl = False
+         If Not txtMitgDat[1].text Then changFl = False
+         If Not txtMitgDat[2].text Then changFl = False
+         If Not txtMitgDat[3].text Then changFl = False
+         If Not txtNeuTrID Then changFl = False
+         If Not comBerecht.Text Then changFl = False
+         If Not comMitglStatus.text Then changFl = False
+         If Not comVZB.Text Then changFl = False
+         If changFl = True Then
+            sGebDat = Replace(txtMitgDat[3].text, ".", "/")
+            gebDat = CDate(sGebDat)
+            SqlCom = "INSERT INTO "
+            SqlTab = "Mitglieder  "
+            SqlP = "(ID_Nr, Mitgl_Nr, Berechtigung, Aktiv, VZB, m_w, Titel, Name, Vorname, GeburtsDat ) VALUES ( '" &
+            txtNeuTrID.Text & "', '" & Val(txtMitgNr.Text) & "', '" & 
+            comMitglStatus.text & "', '" & comBerecht.text & "', '" & 
+            comVZB.Text & "', '" & comGeshl.Text & "', '" & 
+            txtMitgDat[0].Text & "', '" & 
+            txtMitgDat[1].Text & "', '" & txtMitgDat[2].Text & "', '" & Format(gebDat, "yyyy/mm/dd") & "')"
+            rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            
+            SqlCom = "SELECT * From "
+            SqlTab = "Mitglieder "
+            SqlP = "WHERE ID_Nr = '" & txtNeuTrID.Text & "'"
+            rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            If rs.count > 0 Then 
+              With fmAdminMitglVerw
+                .recID = rs!id
+                .MDary[0] = rs!Mitgl_Nr
+                .MDary[1] = rs!m_w
+                .MDary[2] = rs!Titel
+                .MDary[3] = rs!Name
+                .MDary[4] = rs!Vorname
+                .MDary[5] = Format(rs!GeburtsDat, "dd.mm.yyyy")
+                .MDary[6] = rs!ID_Nr
+                .MDary[7] = rs!Berechtigung
+                .MDary[8] = rs!Aktiv
+                .MDary[9] = rs!VZB
+              End With              
+            Endif
+            
+          Else
+          Endif
+          changFl = False
+          fmAdminMitglVerw.SetGridViewProperty()
+          For j = 0 To fmAdminMitglVerw.GridMitgl.rows.count - 1
+            If fmAdminMitglVerw.GridMitgl[j, 1].Text = txtMitgNr.Text Then
+              tRow = j
+              j = fmAdminMitglVerw.GridMitgl.rows.count
+            Endif
+          Next
+          fmAdminMitglVerw.RowMark(tRow)
+          btnMDmnu[4].Enabled = False
+          panDat.Enabled = False
+          btnMDmnu[0].Background = Color.Black
+          btnMDmnu[0].Foreground = Color.White
+      Case 2    'Ändern
+        With fmAdminMitglVerw
+            comGeshl.ReadOnly = True
+            If comGeshl.Text <> .MDary[1] Then changFl = True
+            If txtMitgDat[0].text <> .MDary[2] Then changFl = True
+            If txtMitgDat[1].text <> .MDary[3] Then changFl = True
+            If txtMitgDat[2].text <> .MDary[4] Then changFl = True
+            If txtMitgDat[3].text <> .MDary[5] Then changFl = True
+            If txtNeuTrID.Text <> .MDary[6] Then changFl = True
+            If comBerecht.Text <> .MDary[7] Then changFl = True
+            If comMitglStatus.text <> .MDary[8] Then changFl = True
+            If comVZB.Text <> .MDary[9] Then changFl = True
+            If changFl = True Then
+                sGebDat = Replace(txtMitgDat[3].text, ".", "/")
+                gebDat = CDate(sGebDat)
+                SqlCom = "UPDATE "
+                SqlTab = "Mitglieder SET "
+                SqlP = "m_w = '" & comGeshl.Text & "',Titel = '" & txtMitgDat[0].text & "',Name = '" & txtMitgDat[1].text & "',Vorname = '" & txtMitgDat[2].text &  
+                "',GeburtsDat = '" & Format(gebDat, "yyyy/mm/dd") & "',ID_Nr = '" & txtNeuTrID.text & "',Berechtigung = '" & comBerecht.Text & "',Aktiv = '" & comMitglStatus.text & 
+                "',VZB = '" & comVZB.Text & "' WHERE id = " & IDNr
+                rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            Else
+            Endif
+            changFl = False
+            saveFl = 0
+            If rbBtnVZB.Value = True Then
+                SqlCom = "UPDATE "
+                SqlTab = "Mitglieder SET "
+                SqlP = "Chip_Val = " & vzbBetrag & ", " & "Chip_lade_val = " & 0 & " WHERE id = " & IDNr
+                rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            Endif
+        
+      End With
+          fmAdminMitglVerw.SetGridViewProperty()
+          For j = 0 To fmAdminMitglVerw.GridMitgl.rows.count - 1
+            If fmAdminMitglVerw.GridMitgl[j, 1].Text = fmAdminMitglVerw.MDary[0] Then
+              tRow = j
+              j = fmAdminMitglVerw.GridMitgl.rows.count
+            Endif
+          Next
+          fmAdminMitglVerw.RowMark(tRow)
+          SqlCom = "SELECT * From "
+          SqlTab = "Mitglieder "
+          SqlP = "WHERE id = " & IDNr
+          rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+          If rs.count > 0 Then
+            With fmAdminMitglVerw
+              .MDary[0] = rs!Mitgl_Nr
+              .MDary[1] = rs!m_w
+              .MDary[2] = rs!Titel
+              .MDary[3] = rs!Name
+              .MDary[4] = rs!Vorname
+              .MDary[5] = Format(rs!GeburtsDat, "dd.mm.yyyy")
+              .MDary[6] = rs!ID_Nr
+              .MDary[7] = rs!Berechtigung
+              .MDary[8] = rs!Aktiv
+              .MDary[9] = rs!VZB
+            End With
+          Endif
+          btnMDmnu[4].Enabled = False
+          panDat.Enabled = False
+          btnMDmnu[1].Background = Color.Black
+          btnMDmnu[1].Foreground = Color.White
+          fmAdminMitglVerw.Show
+          fmMitgl.Close
+    End Select
+  Case 5    'Ende
+     ' fmAdmin.formMitglFl = False
+     fmAdminMitglVerw.Show
+     fmMitgl.Close
+End Select
+End
+Public Sub MyMDat_MouseDown()
+Dim i, j As Integer  
+i = Last.tag
+For j = 0 To 3
+    txtMitgDat[j].Background = Color.White 
+Next
+txtMitgDat[i].Background = Color.Yellow
+' Tastatur.objTastatur = txtMitgDat[i]
+If TastaturFl = True Then
+    fmTastatur.Xpos = 340
+    fmTastatur.Ypos = 450
+    fmTastatur.objTastatur = txtMitgDat[i]    
+    fmTastatur.ShowModal
+Endif
+End
+
+
+
+Public Sub comVZB_Change()
+Dim i As String
+i = comVZB.text
+If i = "Y" Then
+    rbBtnVZB.Visible = True
+    VZB_Betr.Text = "30€"   
+    VZB_Betr.Visible = True
+Else
+    VZB_Betr.Visible = False
+    rbBtnVZB.Visible = False
+Endif
+End
+
+Public Sub rbBtnVZB_MouseDown()
+Dim i As Integer
+If rbBtnVZB.Value = True Then
+    i = rbBtnVZB.Value
+Else
+    i = rbBtnVZB.Value
+Endif    
+End
+
+Public Sub txtNeuTrID_KeyPress()
+Dim i As Integer
+
+    i = rbBtnVZB.Value
+    
+
+End
+
+
+

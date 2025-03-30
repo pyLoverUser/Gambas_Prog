@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,142.2222,80)
+  Background = Color.LightGray
+  FullScreen = True
+  { frPlatz Frame
+    MoveScaled(3,25,83,17)
+    Background = Color.DarkGray
+    Foreground = Color.Yellow
+    Text = ("  Platz-Regeln")
+  }
+  { frGlob Frame
+    MoveScaled(3,7,83,15)
+    Background = Color.DarkGray
+    Foreground = Color.Yellow
+    Text = ("  Global-Regeln")
+  }
+  { frGast Frame
+    MoveScaled(3,47,83,18)
+    Background = Color.DarkGray
+    Foreground = Color.Yellow
+    Text = ("  Gastspieler-Regeln")
+  }
+}

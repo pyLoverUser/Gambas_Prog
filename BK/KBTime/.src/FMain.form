@@ -1,0 +1,32 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  Move(0,0,297,198)
+  #Scaled = False
+  Text = ("Kühlung-Boiler")
+  Persistent = True
+  { !Timer1 #Timer
+    #Move(180,441)
+    #Public = True
+    Enabled = True
+  }
+  { lbTimeNow Label
+    Move(-27,27,234,36)
+    Font = Font["Sans Serif,14"]
+    Alignment = Align.Center
+  }
+  { lbOnOffK Label
+    Move(153,99,27,27)
+  }
+  { lbOnOffB Label
+    Move(153,135,27,27)
+  }
+  { lbGerB Label
+    Move(45,99,81,27)
+    Text = ("Kühlung")
+  }
+  { lbGerK Label
+    Move(45,135,54,27)
+    Text = ("Boiler")
+  }
+}

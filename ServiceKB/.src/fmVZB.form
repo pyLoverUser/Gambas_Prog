@@ -1,0 +1,171 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,66.6667,44)
+  Background = Color.Gray
+  Text = ("Verzehrbon")
+  { tbVZB TextBox bVZB
+    Name = "tbVZB"
+    MoveScaled(28,10,8,3)
+    Font = Font["Sans Serif,16"]
+    Alignment = Align.Right
+  }
+  { Label1 Label
+    MoveScaled(16,10,10,3)
+    Font = Font["Sans Serif,12"]
+    Foreground = Color.White
+    Text = ("Betrag VZB")
+  }
+  { Label2 Label
+    MoveScaled(36,10,2,3)
+    Font = Font["Sans Serif,13"]
+    Foreground = Color.White
+    Text = ("€")
+  }
+  { Label3 Label
+    MoveScaled(44,39,4,3)
+    Visible = False
+    Font = Font["Sans Serif,11"]
+    Foreground = Color.White
+    Text = ("€")
+  }
+  { Label4 Label
+    MoveScaled(21,39,13,3)
+    Visible = False
+    Font = Font["Sans Serif,11"]
+    Foreground = Color.White
+    Text = ("Betrag VZB alt")
+  }
+  { Frame1 Frame
+    MoveScaled(15,15,36,24)
+    Font = Font["Sans Serif,12"]
+    Background = Color.Black
+    Foreground = Color.Red
+    Text = ("Guthaben wie übernehmen?")
+    { Pan2 Panel
+      MoveScaled(3,19,31.1111,4)
+      Border = Border.Raised
+      { Label5 Label
+        MoveScaled(6,0,25,4)
+        Font = Font["Sans Serif,9"]
+        Foreground = Color.White
+        Text = ("Guthaben NICHT übernehmen!")
+      }
+    }
+    { pan0 Panel
+      MoveScaled(3,3,31.1111,4)
+      Border = Border.Raised
+      { Label6 Label
+        MoveScaled(6,0,25,4)
+        Font = Font["Sans Serif,9"]
+        Foreground = Color.White
+        Text = ("Guthaben KOMPLETT übernehmen!")
+      }
+    }
+    { Pan1 Panel
+      MoveScaled(3,11,31.1111,4)
+      Border = Border.Raised
+      { Label7 Label
+        MoveScaled(6,0,25,4)
+        Font = Font["Sans Serif,9"]
+        Foreground = Color.White
+        Text = ("Guthaben nur übernehmen wenn \nVZB-Betrag verbraucht wurde!")
+      }
+    }
+  }
+  { lbVZBalt Label
+    MoveScaled(36,39,8,3)
+    Visible = False
+    Font = Font["Sans Serif,11"]
+    Background = Color.LightGray
+    Alignment = Align.Right
+  }
+  { Panel1 Panel
+    MoveScaled(56,8,26,32)
+    Background = Color.Gray
+    { btnNum Button NumBtn
+      Name = "btnNum"
+      MoveScaled(1,2,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "7"
+      Text = ("7")
+    }
+    { btnNum2 Button NumBtn
+      Name = "btnNum2"
+      MoveScaled(9,2,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "8"
+      Text = ("8")
+    }
+    { btnNum3 Button NumBtn
+      Name = "btnNum3"
+      MoveScaled(17,2,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "9"
+      Text = ("9")
+    }
+    { btnNum4 Button NumBtn
+      Name = "btnNum4"
+      MoveScaled(1,9,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "4"
+      Text = ("4")
+    }
+    { btnNum5 Button NumBtn
+      Name = "btnNum5"
+      MoveScaled(9,9,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "5"
+      Text = ("5")
+    }
+    { btnNum6 Button NumBtn
+      Name = "btnNum6"
+      MoveScaled(17,9,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "6"
+      Text = ("6")
+    }
+    { btnNum7 Button NumBtn
+      Name = "btnNum7"
+      MoveScaled(1,16,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "1"
+      Text = ("1")
+    }
+    { btnNum8 Button NumBtn
+      Name = "btnNum8"
+      MoveScaled(9,16,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "2"
+      Text = ("2")
+    }
+    { btnNum9 Button NumBtn
+      Name = "btnNum9"
+      MoveScaled(17,16,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "3"
+      Text = ("3")
+    }
+    { btnNum10 Button NumBtn
+      Name = "btnNum10"
+      MoveScaled(1,23,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "0"
+      Text = ("0")
+    }
+    { btnNum11 Button NumBtn
+      Name = "btnNum11"
+      MoveScaled(9,23,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = ","
+      Text = (",")
+    }
+    { btnNum12 Button NumBtn
+      Name = "btnNum12"
+      MoveScaled(17,23,8,7)
+      Font = Font["Sans Serif,18"]
+      Tag = "C"
+      Text = ("C")
+    }
+  }
+}

@@ -1,0 +1,132 @@
+' Gambas module file
+
+' Public Struct stcVerb
+' idHeim As Integer
+' Mannschaft As String
+' Gast As String
+' InfoText As String
+' ED As Integer
+' Tag As String
+' SpTermin As String
+' Beginn As Date
+' Ende As Date
+' Platz As String
+' Event_fl As Integer
+' End Struct
+' Public stcHeimGast[2] As Struct StcVerb
+
+Public Struct SpielZeiten   'Platzregeln
+    ZeitEinzel As Integer
+    ZeitDoppel As Integer
+    MaxPause As Integer
+    DelAnwZeit As Integer
+    DelAktiv As Integer
+    GelbSpZeit As Integer
+End Struct
+Public RegelnNormSpz As Struct SpielZeiten
+
+Public Struct TSpieler
+    Platz_idx As Integer
+    Einbuch_Datum As String
+    Einbuch_Zeit As Date
+    Datum_Beginn As String
+    Datum_Ende As String
+    Beginn As Date
+    Ende As Date
+    ID_Mann As Integer
+    Mannschaft As String
+    Gast As String
+    EinbuchPflicht As String
+    InfoText As String
+    mitgl_nr1 As Integer
+    mitgl_nr2 As Integer
+    mitgl_nr3 As Integer
+    mitgl_nr4 As Integer
+    Belegungs_sts As Integer
+    anz_spieler As Integer
+    Einzel_Doppel As Integer
+    Event_fl As Integer
+    hight_nr As Integer
+    loesch_zeit As Date
+End Struct
+Public beleg_leer As Struct TSpieler
+Public Belegung As Struct TSpieler
+' 
+
+
+Public Struct TGlobRegeln
+    AnzPlatzVal As Integer
+    RegnerSigFL As String
+    SysRolloEin As Date
+    SysRolloAus As Date
+    DauerOE As Integer
+End Struct
+Public GlobRegeln As Struct TGlobRegeln
+
+' 
+Public Struct ManuelRegner
+    AllePlz As String
+    RegnerZeitMan As Integer
+    RegnerGlZ As Integer
+    RegnerSens As Integer
+    RegnerPlzSts As String
+    RegDelay As Integer
+End Struct
+Public RegnerManu As Struct ManuelRegner
+' 
+Public Struct AutoRegner
+    Aktiv As String
+    Beginn As String
+    Dauer As Integer
+    raPlzSts As String
+    rMo As Integer
+    rDi As Integer
+    rMi As Integer
+    rDo As Integer
+    rFr As Integer
+    rSa As Integer
+    rSo As Integer
+End Struct
+Public RegnerAuto[10] As Struct AutoRegner
+
+' 
+' Public Struct TTraining
+'     EinbuchPflichtFl As String
+'     TrainingNotCompl As Integer
+'     BuchenSperrFl As String
+'     TrPlatzRestrFl As String
+'     TrainingPlzSts As String
+' End Struct
+' Public RegelnTraining As Struct TTraining
+' 
+Public Struct TBerechtJugend
+    RegJgdFl As String
+    RestrAbZeit As Date
+    PlatzRestrJgd As String
+    ' JugendPlzSts[1, 10] As Integer
+    JgdBisAlter As Integer
+End Struct
+Public RegelnJugend As Struct TBerechtJugend
+
+Public Struct RegGast
+    genErlaubt As String
+    AnzRestr As String
+    AnzGast As Integer
+    ErwachsenAb As Integer
+    GastPrErw As Single
+    GastPrJug As Single
+End Struct
+Public SpMitGast As Struct RegGast
+'     
+
+' '-----------------------------------
+' Public Type AutoReg
+'     ID As Integer
+'     BegStd As Integer
+'     BegMin As Integer
+'     Dauer As Integer
+'     Platz As String
+'     Wtag As String
+' End Type
+' Public SendAutoRegData(1 To 10) As AutoReg
+' '-----------------------------------

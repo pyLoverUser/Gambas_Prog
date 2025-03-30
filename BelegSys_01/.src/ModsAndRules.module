@@ -1,0 +1,198 @@
+' Gambas module file
+
+Private SqlP As Variant
+Private SqlCom As Variant
+Private SqlTab As Variant
+
+'==========================================================================
+' Sub GetRules()
+'	
+'
+'==========================================================================
+Public Sub GetRules()
+Dim rs As Result
+Dim sSQL_Anweisung As String
+Dim i As Integer
+    SqlCom = "SELECT * From "
+    SqlTab = "r_Global "
+    SqlP = "" 
+  ' sSQL_Anweisung = "Select * from r_Global"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+    If rs.Count > 0 Then
+    With StrucType.GlobRegeln
+        .AnzPlatzVal = rs!AnzPlaetze
+        .RegnerSigFL = rs!RegnerSigFl
+        .SysRolloEin = rs!SysRolloEin
+        .SysRolloAus = rs!SysRolloAus
+        .DauerOE = rs!DauerOE
+    End With
+    Endif
+
+
+    SqlCom = "SELECT * From "
+    SqlTab = "r_Platz "
+    SqlP = "" 
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+    If rs.count > 0 Then
+        With StrucType.RegelnNormSpz
+            .ZeitEinzel = rs!Einzel
+            .ZeitDoppel = rs!Doppel
+            .MaxPause = rs!maxPause
+            .DelAnwZeit = rs!delNotComplete
+            .DelAktiv = rs!delActive
+            .GelbSpZeit = rs!GelbSperre
+         End With
+    Endif
+    SqlCom = "SELECT * From "
+    SqlTab = "r_Gastspieler "
+    SqlP = "" 
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+    With StrucType.SpMitGast
+        .genErlaubt = rs!Gast_Erlaubt
+        .AnzRestr = rs!Gast_Anz_Eingesch
+        .AnzGast = rs!Gast_Anz
+        .ErwachsenAb = rs!Erwachsen_ab
+        .GastPrErw = rs!GastPrErw
+        .GastPrJug = rs!GastPrJug
+    End With
+
+    SqlCom = "SELECT * From "
+    SqlTab = "r_Jugend "
+    SqlP = "" 
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+    If rs.Count > 0 Then
+        With StrucType.RegelnJugend
+            .RegJgdFl = rs!RegJgdFl
+            .RestrAbZeit = rs!RestrAbZeit
+            .PlatzRestrJgd = rs!PlatzRestrJgd
+            .JgdBisAlter = rs!JgdBisAlter
+        End With
+    End If
+    Fmain.cDBVerbindung.Close()
+End
+'==========================================================================
+' Sub RegnerManu()
+'	
+'
+'==========================================================================
+Public Sub RegnerManu()
+Dim rs As Result
+Dim sSQL_Anweisung As String
+    SqlCom = "SELECT * From "
+    SqlTab = "r_RegnerGlob "
+    SqlP = "" 
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+    With StrucType.RegnerManu
+        .AllePlz = rs!RegAllePlz
+        .RegnerZeitMan = rs!RegZeitMan
+        .RegnerGlZ = rs!RegGleichz
+        .RegnerSens = rs!RegSensFL
+        .RegnerPlzSts = rs!RegnerPlzSts
+        .RegDelay = rs!RegDelay
+    End With
+    Fmain.cDBVerbindung.Close()
+End
+'==========================================================================
+' Sub RegnerAuto()
+'	
+'
+'==========================================================================
+Public Sub RegnerAuto()
+Dim rs As Result
+Dim sSQL_Anweisung As String
+Dim i As Integer
+    SqlCom = "SELECT * From "
+    SqlTab = "r_RegnerAuto "
+    SqlP = "" 
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+    If rs.count > 0 Then
+      For i = 0 To rs.count - 1
+          With StrucType.RegnerAuto[i]
+              .Aktiv = rs!Aktiv
+              .Beginn = Format(rs!Beginn, "hh:nn")
+              .Dauer = rs!Dauer
+              .rMo = rs!Mo
+              .rDi = rs!Di
+              .rMi = rs!Mi
+              .rDo = rs!Do
+              .rFr = rs!Fr
+              .rSa = rs!Sa
+              .rSo = rs!So
+          End With
+          rs.MoveNext
+      Next
+    Endif
+    Fmain.cDBVerbindung.Close()
+End
+' Set rs = Nothing
+' '''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' 'Trainingsregeln laden
+' '''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Fmain.cDBVerbindung.Open()
+'   If Error Then
+'     Message.Error("Eine DB-Verbindung zum DB-Server konnte NICHT hergestellt werden!")
+'   Endif 
+' sSQL_Anweisung = "Select * from r_Training"
+' rs = Fmain.cDBVerbindung.Exec(sSQL_Anweisung)
+' If rs.Count > 0 Then
+'     With StrucType.RegelnTraining
+'         .EinbuchPflichtFl = rs!EinbuchPflichtFL
+'         .TrainingNotCompl = rs!TrainingNotCompl
+'         .BuchenSperrFl = rs!BuchenSperrFl
+'         .TrPlatzRestrFl = rs!TrPlatzRestrFl
+'         .TrainingPlzSts = rs!TrainingPlzSts
+'     End With
+' End If
+' Fmain.cDBVerbindung.Close()
+'     
+' '''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' 'Berechtigungen Jugend laden
+' '''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Public Sub 
+' rs = con.Execute("Select * from r_Jugend ")
+' If rs.Count > 0 Then
+'     With RegelnJugend
+'         .RegJgdFl = rs!RegJgdFl
+'         .RestrAbZeit = rs!RestrAbZeit
+'         .PlatzRestrJgd = rs!PlatzRestrJgd
+'         For i = 1 To GlobRegeln.AnzPlatzVal
+'             .JugendPlzSts(i) = Val(Mid(rs!JugendPl_sts, i, 1))
+'         Next 
+'         .JgdBisAlter = rs!JgdBisAlter
+'     End With
+' End If
+' End Sub
+
+' Public Sub SpielZeitCheck(BtnSpielZ As Date, TagNr As Integer, tZeitEinzel As Integer, tZeitDoppel As Integer)
+' Dim i As Integer
+' ZeitEinzel = RegelnNormSpz(0).ZeitEinzel
+' ZeitDoppel = RegelnNormSpz(0).ZeitDoppel
+' For i = 1 To UBound(RegelnNormSpz)
+'     If RegelnNormSpz(i).nrTag = TagNr Then
+'         If BtnSpielZ >= RegelnNormSpz(i).Uhrzeit And BtnSpielZ < RegelnNormSpz(i).Ende Then
+'             tZeitEinzel = RegelnNormSpz(i).ZeitEinzel
+'             tZeitDoppel = RegelnNormSpz(i).ZeitDoppel
+'         End If
+'     End If
+' Next i
+' End Sub
+
+' Public Sub GetSpielzeit()
+' Dim i As Integer
+' ZeitEinzel = RegelnNormSpz(0).ZeitEinzel
+' ZeitDoppel = RegelnNormSpz(0).ZeitDoppel
+' AnwZeit = RegelnNormSpz(0).DelAnwZeit
+' Aktiv = RegelnNormSpz(0).DelAktiv
+' MaxPause = RegelnNormSpz(0).MaxPause
+' For i = 1 To UBound(RegelnNormSpz)
+'     If RegelnNormSpz(i).nrTag = WeekDay(Date, vbMonday) Then
+'         If Time >= RegelnNormSpz(i).Uhrzeit Then
+'             ZeitEinzel = RegelnNormSpz(i).ZeitEinzel
+'             ZeitDoppel = RegelnNormSpz(i).ZeitDoppel
+'             AnwZeit = RegelnNormSpz(i).DelAnwZeit
+'             Aktiv = RegelnNormSpz(i).DelAktiv
+'             MaxPause = RegelnNormSpz(i).MaxPause
+'         End If
+'     End If
+' Next i
+' End Sub

@@ -1,0 +1,214 @@
+' Gambas class file
+
+Public cDBVerbindung As New Connection
+Public rs As Result
+Public rs1 As Result
+Public rs2 As Result
+Public dayNow As Integer
+Public SqlCom As String 
+Public SqlTab As String 
+Public SqlP As String
+
+Public Sub Form_Open()
+Me.Height = 600
+Me.Width = 700
+txtDatum.text = Year(Now)
+btnDB.Background = Color.ButtonBackground
+initGrd()
+DBInit()
+End
+Public Sub initGrd()
+Dim i As Integer
+With grdGeladen  
+  .Header = 1
+  .Columns.Count = 6
+  .Rows.Count = 15
+  .Rows.Height = 20
+  .Columns[0].W = 60
+  .Columns[0].Alignment = 3
+  .Columns[0].Title = "MitglNr"  
+  .Columns[1].w = 120
+  .Columns[1].Alignment = 3
+  .Columns[1].Title = "Name"  
+  .Columns[2].w = 120
+  .Columns[2].Alignment = 3
+  .Columns[2].Title = "Vorname"  
+  .Columns[3].Alignment = 3
+  .Columns[3].w = 100
+  .Columns[3].Alignment = 3
+  .Columns[3].Title = "Datum"  
+  .Columns[4].Alignment = 3
+  .Columns[4].w = 80
+  .Columns[4].Title = "Zeit"  
+  .Columns[5].Alignment = 3
+  .Columns[5].w = 60
+  .Columns[5].Title = "Wert"  
+  .Font.Size = 10
+  .w = 0
+  For i = 0 To 5
+    .W += .Columns[i].w
+  Next
+  .w += 20
+  .H = .Rows.Count * 20 + 20
+  .x = (FMain.w - .w) \ 2
+  panBtn.x = .x
+  btnEnde.x = (FMain.w - btnEnde.w) \ 2
+  .ScrollBar = 2
+  
+End With
+  
+End
+
+Public Sub DBInit()
+  Dim sSQL_Anweisung As String
+
+  cDBVerbindung.Close()
+  cDBVerbindung.Type = "mysql" ' Der Typ muss klein geschrieben werden!
+  ' cDBVerbindung.Host = Application.Path &/ "SQL/GVT"  ' User.Home &/ "GVT"
+  cDBVerbindung.Host = "192.168.2.205"
+  cDBVerbindung.Name = "Belegung" ' Das ist der Datenbank-Name
+  cDBVerbindung.User = "root" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+  cDBVerbindung.Password = "asperg" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+  cDBVerbindung.Port = "3306" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+
+' Versuch, eine DB-Verbindung herzustellen
+  Try cDBVerbindung.Open()
+  If Error Then
+    Message.Error("Eine DB-Verbindung zum DB-Server konnte NICHT hergestellt werden!")
+  Endif
+
+End ' DBDatenAuslesen
+
+Public Function ExecuteSql(SqlCom As String, SqlTab As String, SqlP As String) As Result
+Dim i As Integer
+Dim rs As Result
+Dim sSQL_Anweisung As String
+
+For i = 1 To 10
+  If FMain.cDBVerbindung.Opened Then Break
+  FMain.cDBVerbindung.Open()
+Next
+sSQL_Anweisung = SqlCom & SqlTab & SqlP
+Debug sSQL_Anweisung
+rs = cDBVerbindung.Exec(sSQL_Anweisung)
+Return rs
+End
+
+Public Sub btnDB_Click()
+Dim i, tMitglNr, tGeladen As Integer
+Dim r, s, t As String
+  btnDB.Background = Color.Red
+  Wait 0.1
+  SqlCom = "TRUNCATE TABLE "
+  SqlTab = "ChipWertMitgl "
+  SqlP = "" 
+  rs = ExecuteSql(SqlCom, SqlTab, SqlP)
+  
+  SqlCom = "SELECT * FROM "
+  SqlTab = "CWTabelle "
+  SqlP = "WHERE BarChip = '" & "ChipLaden" & "' AND YEAR(Datum) = '" & txtDatum.text & "' ORDER BY MitglNr " 
+  ' SqlP = "WHERE BarChip = '" & "ChipLaden" & "'" 'AND YEAR(Datum) = '" & txtDatum.text & "' ORDER BY MitglNr " 
+  rs = ExecuteSql(SqlCom, SqlTab, SqlP)
+  For i = 0 To rs.Count - 1    
+    SqlCom = "SELECT Name,Vorname FROM "
+    SqlTab = "Mitglieder "
+    SqlP = "WHERE Mitgl_Nr = " & rs!MitglNr 
+    rs2 = ExecuteSql(SqlCom, SqlTab, SqlP)
+    
+    SqlCom = "INSERT INTO "
+    SqlTab = "ChipWertMitgl "
+    SqlP = "(MitglNr,Name,Vorname,Datum,Time,geladen) VALUES ('" & rs!MitglNr & "', '" & rs2!Name & "', '" & rs2!Vorname & "', '" & Format(rs!Datum, "yyyy/mm/dd") & "', '" & rs!Zeit & "', '" & rs!GPreis & "')"
+    rs1 = ExecuteSql(SqlCom, SqlTab, SqlP)
+    ' grdDisplay(rs.count, i)
+    grdGeladen.Rows.Count = rs.Count
+    grdGeladen.Column = 1
+    grdGeladen[i, 0].Text = rs!MitglNr
+    grdGeladen[i, 1].Alignment = 1
+    grdGeladen[i, 1].Text = rs2!Name
+    grdGeladen[i, 2].Alignment = 1
+    grdGeladen[i, 2].Text = rs2!Vorname
+    grdGeladen[i, 3].Text = Format(rs!Datum, "yyyy/mm/dd")
+    grdGeladen[i, 4].Text = rs!Zeit
+    grdGeladen[i, 5].Alignment = 2
+    grdGeladen[i, 5].Text = Format(rs!GPreis, "0.00")
+    rs.MoveNext
+  Next
+  SqlCom = "SELECT * FROM "
+  SqlTab = "ChipWertMitgl "
+  SqlP = "ORDER BY MitglNr " 
+  rs = ExecuteSql(SqlCom, SqlTab, SqlP)
+  SqlCom = "UPDATE "
+  SqlTab = "Mitglieder "
+  SqlP = "SET Chip_lade_val = '" & Str(0) & "'" 
+  rs1 = ExecuteSql(SqlCom, SqlTab, SqlP)
+  If rs.count > 0 Then
+    For i = 0 To rs.Count - 1
+       If tMitglNr <> rs!MitglNr Then
+         If tMitglNr > 0 Then
+           SqlCom = "UPDATE "
+           SqlTab = "Mitglieder "
+           SqlP = "SET Chip_lade_val = " & tGeladen & " WHERE Mitgl_Nr = '" & tMitglNr & "'" 
+           rs1 = ExecuteSql(SqlCom, SqlTab, SqlP)
+           
+         Endif
+         tMitglNr = rs!MitglNr
+         tGeladen = 0
+         tGeladen = rs!geladen
+       Else
+         tGeladen += rs!geladen
+       Endif
+       rs.MoveNext
+     Next    
+     SqlCom = "UPDATE "
+     SqlTab = "Mitglieder "
+     SqlP = "SET Chip_lade_val = " & tGeladen & " WHERE Mitgl_Nr = '" & tMitglNr & "'" 
+     rs1 = ExecuteSql(SqlCom, SqlTab, SqlP)
+  Endif
+btnDB.Background = Color.Green
+End
+Public Sub grdDisplay(i As Integer)
+  
+  grdGeladen[i, 0].Text = rs!MitglNr
+  grdGeladen[i, 1].Alignment = 1
+  grdGeladen[i, 1].Text = rs!Name
+  grdGeladen[i, 2].Alignment = 1
+  grdGeladen[i, 2].Text = rs!Vorname
+  grdGeladen[i, 3].Text = Format(rs!Datum, "yyyy/mm/dd")
+  grdGeladen[i, 4].Text = rs!Time
+  grdGeladen[i, 5].Alignment = 2
+  grdGeladen[i, 5].Text = Format(rs!geladen, "0.00")
+
+End
+
+Public Sub btnEnde_Click()
+
+  FMain.Close
+
+End
+
+Public Sub grdGeladen_Click()
+Dim i As Integer
+SqlCom = "SELECT * FROM "
+SqlTab = "ChipWertMitgl "
+SqlP = ""
+  With grdGeladen
+    Select Case .Column
+      Case 0
+         SqlP = "ORDER BY MitglNr "
+      Case 1, 2
+         SqlP = "ORDER BY Name,Vorname"
+      Case 3, 4
+         SqlP = "ORDER BY Datum,Time"
+      Case 5   
+         SqlP = "ORDER BY geladen"
+    End Select
+    If SqlP <> "" Then
+      rs = ExecuteSql(SqlCom, SqlTab, SqlP)
+      For i = 0 To rs.count - 1
+        grdDisplay(i)
+        rs.MoveNext
+      Next
+    Endif
+  End With
+
+End

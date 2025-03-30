@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=KBTime
+Type=Application
+Exec=/home/pi/Gambas_Beisp/KBTime.gambas
+Terminal=false
+

@@ -1,0 +1,197 @@
+' Gambas class file
+
+Public cDBVerbindung As New Connection
+Public rs As Result
+Public OnOffB As String 
+Public OnOffK As String 
+Public dayNow As Integer
+Public SqlCom As String 
+Public SqlTab As String 
+Public SqlP As String
+Public onB As String
+Public offB As String
+Public OnBZ As Integer
+Public OffBZ As Integer
+Public OnKZ As Integer
+Public OffKZ As Integer
+Public nowOnOffZ As Integer
+Public nowOnOffKZ As Integer
+Public nowZ As String
+Public onK As String
+Public offK As String
+' hButton As Button
+' nPanel As Panel
+Public hHTTPClientDataB As HttpClient
+Public hHTTPClientDataK As HttpClient
+
+Public Sub Form_Open()
+Dim sB, sK As String
+Me.Height = 200
+Me.Width = 300
+lbTimeNow.w = 150
+OnOffB = "led_off"
+OnOffK = "led_off"
+lbTimeNow.x = (FMain.w - lbTimeNow.w) / 2
+' nPanel = New Panel(Me)
+' nPanel.Expand = True
+' nPanel.Arrangement = Arrange.Row
+DBInit()
+OnOffSts()
+End
+
+Public Sub OnOffSts()
+Dim sB, sK As String
+OnOffB = "PortSts"
+OnOffK = "PortSts"
+sB = SendReceiveMassB()
+sK = SendReceiveMassK()
+If sK = "ON" Then
+  lbOnOffK.Background = Color.Green
+Else
+  lbOnOffK.Background = Color.Red
+  
+Endif
+If sB = "ON" Then
+  lbOnOffB.Background = Color.Green
+Else
+  lbOnOffB.Background = Color.Red
+  
+Endif
+  
+  
+  
+End
+
+Public Sub DBInit()
+  Dim sSQL_Anweisung As String
+
+  cDBVerbindung.Close()
+  cDBVerbindung.Type = "mysql" ' Der Typ muss klein geschrieben werden!
+  ' cDBVerbindung.Host = Application.Path &/ "SQL/GVT"  ' User.Home &/ "GVT"
+  ' cDBVerbindung.Host = "192.168.2.205"
+  cDBVerbindung.Host = "localhost"  '" 192.168.178.2 "
+  cDBVerbindung.Name = "Belegung" ' Das ist der Datenbank-Name
+  cDBVerbindung.User = "root" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+  cDBVerbindung.Password = "asperg" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+  cDBVerbindung.Port = "3306" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+
+' Versuch, eine DB-Verbindung herzustellen
+  Try cDBVerbindung.Open()
+  If Error Then
+    Message.Error("Eine DB-Verbindung zum DB-Server konnte NICHT hergestellt werden!")
+  Endif
+
+End ' DBDatenAuslesen
+
+Public Function ExecuteSql(SqlCom As String, SqlTab As String, SqlP As String) As Result
+Dim i As Integer
+Dim sSQL_Anweisung As String
+
+For i = 1 To 10
+  If FMain.cDBVerbindung.Opened Then Break
+  FMain.cDBVerbindung.Open()
+Next
+sSQL_Anweisung = SqlCom & SqlTab & SqlP
+' Debug sSQL_Anweisung
+rs = cDBVerbindung.Exec(sSQL_Anweisung)
+Return rs
+End
+
+Public Function SendReceiveMassB() As String
+Dim sURL As String
+' sURL = "192.168.2.225/" & OnOffB
+sURL = "192.168.178.5/" & OnOffB
+With hHTTPClientDataB = New HttpClient
+  .URL = sURL
+  .Async = False
+  .Timeout = 1
+  .Get()
+  Return .Peek()
+End With
+End
+
+Public Function SendReceiveMassK() As String
+Dim sURL As String
+' sURL = "192.168.2.226/" & OnOffK
+sURL = "192.168.178.6/" & OnOffB
+With hHTTPClientDataK = New HttpClient
+  .URL = sURL
+  .Async = False
+  .Timeout = 1
+  .Get()
+  Return .Peek()
+End With
+End
+' Public Sub AllButtons_Click()
+' 
+' SendReceiveMass
+' Me.close
+' End
+Public Sub readDaySwitch(dayidx As Integer)
+Dim r As Integer
+dayNow = dayidx
+SqlCom = "SELECT Geraet, Ein, Aus FROM "
+SqlTab = "BK_OnOff "
+SqlP = "WHERE tIdx = " & Str(dayidx)
+ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.Count > 0 Then
+  For r = 0 To rs.Count - 1
+    If rs!Geraet = "B" Then
+      onB = Format(rs!Ein, "hh:nn")
+      offB = Format(rs!Aus, "hh:nn")
+      OnBZ = Val(Mid(onB, 1, 2)) * 60 + Val(Mid(onB, 4, 2))
+      OffBZ = Val(Mid(offB, 1, 2)) * 60 + Val(Mid(offB, 4, 2))
+    Endif
+    If rs!Geraet = "K" Then
+      onK = Format(rs!Ein, "hh:nn")
+      offK = Format(rs!Aus, "hh:nn")
+      OnKZ = Val(Mid(onK, 1, 2)) * 60 + Val(Mid(onK, 4, 2))
+      OffKZ = Val(Mid(offK, 1, 2)) * 60 + Val(Mid(offK, 4, 2))
+    Endif
+    rs.MoveNext
+  Next
+Endif  
+End
+
+
+
+Public Sub Timer1_Timer()
+Dim d As Integer
+Dim sp As String
+' Print Now
+lbTimeNow.text = Format(Now, "hh:nn:ss")
+  d = WeekDay(Now)
+  If d = 0 Then
+    d = 6
+  Else
+    d -= 1
+  Endif
+  readDaySwitch(d)
+  OnOffSts()
+  nowZ = Format(Now, "hh:nn")
+  nowOnOffZ = Val(Mid(nowZ, 1, 2)) * 60 + Val(Mid(nowZ, 4, 2))
+  ' If Format(Now, "hh:nn") = onB Then 'OnOffB = "led_off" Then 
+  If onBZ >= nowOnOffZ And offBZ < nowOnOffZ Then
+    OnOffB = "led_on"  
+    sp = SendReceiveMassB()
+   ' Wait 0.01
+    OnOffSts()
+  Else
+    OnOffB = "led_off"  
+    sp = SendReceiveMassB()
+    ' Wait 0.01
+    OnOffSts()
+  Endif
+  
+  If onKZ >= nowOnOffZ And offKZ < nowOnOffZ Then
+    OnOffK = "led_on"  
+    sp = SendReceiveMassK()
+   ' Wait 0.01
+    OnOffSts()
+  Else
+    OnOffK = "led_off"  
+    sp = SendReceiveMassK()
+    ' Wait 0.01
+    OnOffSts()
+  Endif
+End

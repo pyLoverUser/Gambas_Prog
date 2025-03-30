@@ -1,0 +1,298 @@
+' Gambas class file
+
+Public btnHoehe As Integer = 60
+Public btnBreite As Integer = 150
+Public cellSpace As Integer
+
+Public btnAdMitgVerw[6] As Button
+
+Public Zeichen As String
+Public SqlCom As String
+Public SqlTab As String
+Public SqlP As String
+
+Public rs As Result
+Public h1[14] As String
+Public HeaderMitgl[14] As Label
+Public w3[14] As Integer
+Public altRow As Integer
+Public MDary[11] As String
+Public recID As Integer
+
+Public Sub Form_Open()
+' Dim i As Integer
+fmAdminMitglVerw.Visible = True
+InitForm()
+End
+Public Sub InitForm()
+Dim i As Integer
+For i = 0 To 5
+  btnAdMitgVerw[i] = New Button(Me) As "MyMitgl"
+  With btnAdMitgVerw[i]
+    .H = 60
+    .W = 150
+    .X = 0 + i * 150 
+    .Y = 0
+    If i = 5 Then .W = 1280 - .X + 150
+    .Tag = i
+    .Background = Color.DarkGray
+    .Foreground = Color.White
+      Select Case i
+        Case 0
+            .Text = "Statistik."
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Stats.ico")
+        Case 1
+            .Text = "Verrechnung"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Document spreadsheet.ico")
+        Case 2
+            .Text = "Transponder"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Key.ico")
+       Case 3
+            .Text = "Formular."
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Document text.ico")
+        Case 4
+            .Text = "Ende"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Home.ico")
+      End Select
+  End With
+  Next
+  SetGridViewProperty()
+
+End
+Public Sub SetGridViewProperty()
+Dim i, j, BackCol As Integer 
+DBMitglieder()
+ h1[0] = "Transp._ID"
+ h1[1] = "M_Nr"
+ h1[2] = "Akt"
+ h1[3] = "Ber"
+ h1[4] = "VZB"
+ h1[5] = "VB"
+ h1[6] = "GA"
+ h1[7] = "m_w"
+ h1[8] = "Titel"
+ h1[9] = "Name"
+ h1[10] = "Vorname"
+ h1[11] = "Geb_Dat"
+ h1[12] = "ChipVal"
+ h1[13] = "ChipGela"
+
+ w3[0] = 120
+ w3[1] = 50
+ w3[2] = 50
+ w3[3] = 50
+ w3[4] = 50
+ w3[5] = 50
+ w3[6] = 50
+ w3[7] = 50
+ w3[8] = 50
+ w3[9] = 200
+ w3[10] = 150
+ w3[11] = 100
+ w3[12] = 100
+ w3[13] = 100
+
+  With GridMitgl
+   .Clear
+  .top = 100
+  .w = 1170
+  .H = 802
+  .Left = Screen.w \ 2 - GridMitgl.w \ 2
+  .Columns.Count = 14
+  .Rows.count = rs.count
+  .Rows.H = 20
+  ' .Font.Name = "Sans Serif"
+  .Columns.Resizable = False
+  .ScrollBar = Scroll.None
+  .Enabled = True
+  .Mode = 0
+  .SetFocus
+  For i = 0 To 13
+  .Columns[i].Width = w3[i] 
+  If i < 8 Or (i > 10 And i < 12) Then
+    .Columns[i].Alignment = Align.Center
+  Else
+    .Columns[i].Alignment = Align.Left
+  Endif     
+  If i > 11 Then .Columns[i].Alignment = Align.Right
+
+  HeaderMitgl[i] = New Label(Me) As "MyLab2"
+  HeaderMitgl[i].Foreground = Color.White
+  HeaderMitgl[i].Alignment = Align.Center
+  HeaderMitgl[i].Font.Size = 12
+  HeaderMitgl[i].H = 20
+  HeaderMitgl[i].Tag = i
+  HeaderMitgl[i].w = w3[i] - 1
+  HeaderMitgl[i].Left = GridMitgl[0, i].Left + GridMitgl.Left
+  HeaderMitgl[i].top = GridMitgl.top - 20
+  HeaderMitgl[i].Background = Color.DarkBlue
+  HeaderMitgl[i].Visible = True
+  HeaderMitgl[i].Text = h1[i]
+  Next
+  For i = 0 To rs.count - 1
+    GridMitgl[i, 0].text = rs!ID_Nr
+    GridMitgl[i, 1].text = rs!Mitgl_Nr
+    GridMitgl[i, 2].text = rs!Aktiv
+    GridMitgl[i, 3].text = rs!Berechtigung
+    GridMitgl[i, 4].text = rs!VZB
+    GridMitgl[i, 5].text = rs!Vorb_Berechtigung
+    GridMitgl[i, 6].text = rs!GastAnz
+    GridMitgl[i, 7].text = rs!m_w
+    GridMitgl[i, 8].text = rs!Titel
+    GridMitgl[i, 9].text = rs!Name
+    GridMitgl[i, 10].text = rs!Vorname
+    GridMitgl[i, 11].text = Format(rs!GeburtsDat, "dd/mm/yyyy")
+    GridMitgl[i, 12].text = Format(rs!Chip_Val, "#,##0.00")
+    GridMitgl[i, 13].text = Format(rs!Chip_lade_val, "#,##0.00")
+    rs.MoveNext   
+  Next
+  For i = 0 To rs.count - 1
+    If i Mod 2 = 1 Then
+      BackCol = Color.Yellow
+    Else
+      BackCol = Color.White
+    Endif
+    For j = 0 To 13
+        If j = 0 And Left(GridMitgl[i, 0].Text, 1) = "X" Then
+            GridMitgl[i, 0].Background = Color.Red
+            GridMitgl[i, 0].Foreground = Color.White
+        Else
+            GridMitgl[i, j].Background = BackCol
+        End If
+    Next
+  Next
+' RowMark(0) 
+End With
+End
+
+Public Sub RowMark(row As Integer)
+Dim i As Integer
+ For i = 0 To 13
+  GridMitgl[row, i].Foreground = Color.White
+  GridMitgl[row, i].Background = Color.Red
+Next
+GridMitgl.MoveTo(row, 0)
+End
+
+Public Sub DBMitglieder()
+  SqlCom = "SELECT * FROM "
+  SqlTab = "Mitglieder "
+  SqlP = " ORDER BY Name,Vorname"
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+End
+
+Public Sub MyMitgl_MouseDown()
+Dim i As Integer  
+i = Last.Tag  
+Select Case i
+Case 0
+Case 1
+    fmVerrechnung.ShowModal
+Case 2
+    fmTranspNeuSperre.ShowModal
+Case 3
+    fmMitgl.ShowModal
+Case 4
+    fmAdmin.Show
+    fmAdminMitglVerw.Close  
+End Select  
+End
+Public Sub Transponder()
+Dim row, col As Integer    
+row = GridMitgl.Row
+col = GridMitgl.Column
+If row < 0 Or col < 0 Then
+    
+Else
+Endif    
+End
+
+Public Sub GridMitgl_MouseDown()
+Dim i, j, k, n As Integer
+i = GridMitgl.row 
+j = GridMitgl.Column 
+GridMitgl.row = altRow
+For k = 0 To 13
+        If k = 0 And Left(GridMitgl[altRow, 0].Text, 1) = "X" Then
+            GridMitgl[altRow, 0].Background = Color.Red
+            GridMitgl[altRow, k].Foreground = Color.White
+        Else
+            If altRow Mod 2 = 1 Then
+              GridMitgl[altRow, k].Background = Color.Yellow
+              GridMitgl[altRow, k].Foreground = Color.Black
+            Else
+              GridMitgl[altRow, k].Background = Color.White   
+              GridMitgl[altRow, k].Foreground = Color.Black
+            Endif 
+            GridMitgl[i, k].Background = Color.Red
+            GridMitgl[i, k].Foreground = Color.White
+        End If
+Next
+GridMitgl.Row = i
+n = Val(GridMitgl[i, 1].Text)
+SqlCom = "SELECT id, Mitgl_Nr, m_w, Titel, Name, Vorname, GeburtsDat, ID_Nr, Berechtigung, Aktiv, VZB FROM "
+SqlTab = "Mitglieder "
+SqlP = " WHERE Mitgl_Nr = " & n
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.count > 0 Then
+  recID = rs!id
+  MDary[0] = rs!Mitgl_Nr
+  MDary[1] = rs!m_w
+  MDary[2] = rs!Titel
+  MDary[3] = rs!Name
+  MDary[4] = rs!Vorname
+  MDary[5] = Format(rs!GeburtsDat, "dd.mm.yyyy")
+  MDary[6] = rs!ID_Nr
+  MDary[7] = rs!Berechtigung
+  MDary[8] = rs!Aktiv
+  MDary[9] = rs!VZB
+Endif
+altRow = i
+End
+Public Sub MarkZeile()
+Dim i, j, k As Integer
+i = GridMitgl.row 
+j = GridMitgl.Column 
+' GridMitgl.row = altRow
+For k = 0 To 13
+        If k = 0 And Left(GridMitgl[altRow, 0].Text, 1) = "X" Then
+            GridMitgl[altRow, 0].Background = Color.Red
+            GridMitgl[altRow, k].Foreground = Color.White
+        Else
+            If altRow Mod 2 = 1 Then
+              GridMitgl[altRow, k].Background = Color.Yellow
+              GridMitgl[altRow, k].Foreground = Color.Black
+            Else
+              GridMitgl[altRow, k].Background = Color.White   
+              GridMitgl[altRow, k].Foreground = Color.Black
+            Endif 
+            GridMitgl[i, k].Background = Color.Red
+            GridMitgl[i, k].Foreground = Color.White
+        End If
+Next
+altRow = i
+End
+
+Public Sub MyLab2_MouseDown()
+Dim i As Integer
+i = Last.Tag    
+End
+Public Sub GridMitgl_KeyPress()
+Dim i, k As Integer
+Dim s As String
+If Key.code > Asc("Z") Then Return
+s = UCase$(Chr(Key.Code))
+If s >= "A" And s <= "Z" Then
+For k = 0 To GridMitgl.rows.Count - 1 
+    If Left(GridMitgl[k, 9].Text, 1) = s Then
+        GridMitgl.row = k
+        GridMitgl.MoveTo(k, 0)        
+        i = GridMitgl.Rows[k].y 
+        GridMitgl.Scroll(0, i)
+        MarkZeile()
+        Break
+    Endif
+Next  
+End If  
+End
+

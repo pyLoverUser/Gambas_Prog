@@ -1,0 +1,206 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  Move(0,0,1377,819)
+  #Scaled = False
+  #Translate = False
+  Font = Font["Sans Serif,12"]
+  Background = Color.LightGray
+  Text = "Trainingszeiten"
+  Border = False
+  Maximized = True
+  FullScreen = True
+  SkipTaskbar = True
+  { Panel1 Panel
+    Move(0,-9,1017,783)
+    Visible = False
+    Font = Font["Sans Serif,12"]
+    Background = Color.Transparent
+    { LbwdDate Label
+      Move(882,99,306,27)
+      Font = Font["Sans Serif,Bold,12"]
+      Background = Color.Blue
+      Foreground = Color.White
+      Alignment = Align.Center
+    }
+    { gridTraining GridView
+      Move(837,126,306,621)
+      Visible = False
+      Font = Font["Sans Serif,10"]
+      Padding = 1
+      Header = GridView.Both
+      ScrollBar = Scroll.None
+    }
+    { Panel2 Panel
+      Move(36,63,765,711)
+      Background = Color.Black
+      { Label9 Label
+        Move(72,54,117,27)
+        Font = Font["Sans Serif,14"]
+        Foreground = Color.White
+        Text = ("Mannschaft")
+      }
+      { combMannsch ComboBox
+        Move(198,45,315,45)
+        Font = Font["Sans Serif,18"]
+        ReadOnly = True
+      }
+      { panZeit Panel
+        Move(27,432,711,153)
+        Background = Color.Transparent
+        Border = Border.Plain
+        { lbBegZeit Label
+          Move(234,54,99,45)
+          Font = Font["Sans Serif,18"]
+          Background = Color.White
+          Foreground = Color.Black
+          Alignment = Align.Center
+        }
+        { lbEndZeit Label
+          Move(396,54,108,45)
+          Font = Font["Sans Serif,18"]
+          Background = Color.White
+          Foreground = Color.Black
+          Alignment = Align.Center
+        }
+        { Label4 Label
+          Move(347,63,36,27)
+          Font = Font["Sans Serif,14"]
+          Foreground = Color.White
+          Text = ("bis")
+          Alignment = Align.Center
+        }
+        { Label3 Label
+          Move(90,63,126,27)
+          Font = Font["Sans Serif,14"]
+          Foreground = Color.White
+          Text = ("Zeit       von")
+        }
+        { btnZeitNeu Button
+          Move(612,9,72,54)
+          Font = Font["Sans Serif,12"]
+          Background = Color.ButtonBackground
+          Text = ("Neu")
+        }
+        { btnZeitOK Button
+          Move(612,90,72,54)
+          Font = Font["Sans Serif"]
+          Text = ("OK")
+        }
+      }
+      { panPlz Panel
+        Move(27,603,711,153)
+        Background = Color.Transparent
+        Border = Border.Plain
+        { Label10 Label
+          Move(99,63,99,27)
+          Font = Font["Sans Serif,14"]
+          Foreground = Color.White
+          Text = ("Plätze")
+        }
+      }
+      { panDatum Panel
+        Move(27,153,711,261)
+        Background = Color.Transparent
+        Border = Border.Plain
+        { dateEnde TextBox
+          Move(234,81,270,45)
+          Font = Font["Sans Serif,18"]
+          Background = Color.White
+          Foreground = Color.Black
+          Alignment = Align.Center
+        }
+        { Label2 Label
+          Move(45,81,153,27)
+          Font = Font["Sans Serif,14"]
+          Foreground = Color.White
+          Text = ("Datum-Ende")
+        }
+        { dateBeginn TextBox
+          Move(234,18,270,45)
+          Font = Font["Sans Serif,18"]
+          Background = Color.White
+          Foreground = Color.Black
+          Alignment = Align.Center
+        }
+        { Label1 Label
+          Move(45,27,171,27)
+          Font = Font["Sans Serif,14"]
+          Foreground = Color.White
+          Text = ("Datum-Beginn")
+        }
+        { btnDatNeu Button
+          Move(612,9,72,54)
+          Font = Font["Sans Serif,12"]
+          Background = Color.ButtonBackground
+          Text = ("Neu")
+        }
+        { btnDatOK Button
+          Move(612,90,72,54)
+          Font = Font["Sans Serif"]
+          Text = ("OK")
+        }
+        { Label16 Label
+          Move(45,207,135,27)
+          Visible = False
+          Font = Font["Sans Serif,14"]
+          Foreground = Color.White
+          Text = ("Trainings-Tag")
+        }
+        { Separator1 Separator
+          Move(0,180,711,1)
+          Background = Color.White
+        }
+      }
+      { DateChooser1 DateChooser
+        Move(117,648,504,378)
+        Font = Font["Sans Serif,12"]
+        Background = Color.Red
+      }
+      { comFreigabe ComboBox
+        Move(630,45,72,45)
+        Font = Font["Sans Serif,18"]
+        ReadOnly = True
+        List = [("J"), ("N")]
+      }
+      { Label5 Label
+        Move(531,54,90,27)
+        Font = Font["Sans Serif,14"]
+        Foreground = Color.White
+        Text = ("Freigabe")
+      }
+    }
+  }
+  { Panel3 Panel
+    Move(1026,297,324,396)
+    Background = Color.Transparent
+    { gridMannsch GridView
+      Move(27,126,144,162)
+      Font = Font["Sans Serif,20"]
+    }
+    { Header1 Label
+      Move(27,9,117,27)
+      Font = Font["Sans Serif,Bold,15"]
+      Background = Color.Blue
+      Foreground = Color.White
+      Text = ("Mannschaften")
+      Alignment = Align.Center
+    }
+    { Header2 Label
+      Move(27,54,117,27)
+      Font = Font["Sans Serif,Bold,15"]
+      Background = Color.Blue
+      Foreground = Color.White
+      Text = ("Mannschaften")
+      Alignment = Align.Center
+    }
+    { ScrollBar1 ScrollBar
+      Move(180,45,45,234)
+    }
+    { tbManNeu TextBox
+      Move(54,315,81,36)
+      Font = Font["Sans Serif,15"]
+      Background = Color.Yellow
+    }
+  }
+}

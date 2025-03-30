@@ -1,0 +1,1207 @@
+' Gambas class file
+
+Private BelZeitBeschr[60] As String
+Private altTime As Integer
+Private SqlP As Variant
+Private SqlCom As Variant
+Private SqlTab As Variant
+Private rs As Result
+Public dDatum As Date
+Private aWeekDay As String[]
+Private dateTxt As Integer
+Private sBegZeit As String[]
+Private sEndZeit As String[]
+Private col As Integer
+Private hight_nr As Integer
+Private plz[7] As Integer
+Private AnzPlz As Integer
+Private Plaetze[7] As Label
+Private strPlz As String
+Private btnAdEdMannsch[7] As Button
+
+Private selMansch As String
+Private dateVon As String
+Private dateBis As String
+Private timeVon As Date
+Private timeBis As Date
+Private aWD As String
+Private EinbPFL As String
+Private Event_Fl As Integer
+Public TastSaveFl As Boolean
+Public plCom As Integer
+Public strSaveAry[2, 7] As String
+Public tagWoche[7] As Label
+
+'==========================================================================
+' Form_Open()
+'	
+'
+'==========================================================================
+
+Public Sub Form_Open()
+    
+    Dim i As Integer
+    fmTraining.Visible = True
+    fmTraining.W = Screen.W
+    fmTraining.H = Screen.H
+    fmTraining.Top = 5
+    fmTraining.Center
+    ScrollBar1.Visible = True
+    Panel1.h = Screen.H
+    Panel1.w = Screen.w
+    Panel1.Visible = True
+    Panel3.w = Screen.W
+    Panel3.X = 0
+    Panel3.H = Screen.H - 80
+    Panel3.Y = 80
+    Panel3.Visible = False
+    fmTraining.Resizable = False
+    DateChooser1.Mode = DateChooser.DateOnly
+    aWeekDay = Split("So, Mo, Di, Mi, Do, Fr, Sa", ",")
+    InitMenu()
+    TrainingInit()
+End
+Public Sub TrainingInit()
+Dim i As Integer
+    gridTraiInit()
+    PlzInit()
+    panDatum.Visible = False
+    panZeit.Visible = False
+    panPlz.Visible = False
+    DateChooser1.Visible = False
+    lbBegZeit.Enabled = False
+    lbEndZeit.Enabled = False
+    btnDatOK.Enabled = False
+    btnZeitOK.Enabled = False
+    dateBeginn.Enabled = False
+    dateEnde.Enabled = False
+    btnZeitNeu.Background = Color.ButtonBackground
+    Panel1.Visible = False
+    For i = 0 To 6
+        tagWoche[i] = New Label(panDatum) As "myTag"
+        With tagWoche[i]
+            .W = 50
+            .H = 50
+            .x = 190 + i * 70
+            .y = 200
+            .Tag = i
+            .Font.Name = "Sans Serif"
+            .Font.size = 12
+            .Font.Bold = False
+            .Alignment = Align.Center
+            .Text = aWeekDay[i]
+            .Background = Color.White
+            .Foreground = Color.Black
+            .Visible = False
+        End With
+    Next
+End
+
+Public Sub InitMenu()
+    
+    Dim i As Integer
+    Dim k As Integer
+
+    For i = 0 To 6
+        btnAdEdMannsch[i] = New Button(Me) As "MyMannsch"
+        With btnAdEdMannsch[i]
+            .H = 80
+            .W = 200
+            .X = 0 + i * 200 
+            .Y = 0
+            If i = 6 Then .W = 1920 - .X + 200
+            .Tag = i
+            .Background = Color.DarkRed
+            .Foreground = Color.White
+            Select Case i
+                Case 0
+                    .Text = "Mannschaften"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Users.ico")
+                Case 1
+                    .Text = "Planung"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Document spreadsheet.ico")
+                Case 2
+                    .Text = "Speichern"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Save.ico")
+                Case 3
+                    .Text = "Löschen"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Trash.ico")
+                    btnAdEdMannsch[3].Enabled = False
+                Case 4
+                    .Text = "B-Tastatur"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Calc.ico")
+                Case 5
+                    .Text = "Ende"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Home.ico")
+            End Select
+        End With
+    Next
+    
+End
+
+'==========================================================================
+' Initialisierung:  PlzInit()
+'	
+'
+'==========================================================================
+
+Public Sub PlzInit()
+    
+    Dim i, x, y As Integer
+    
+    x = 200
+    For i = 0 To 6
+        Plaetze[i] = New Label(panPlz) As "mdPlaetze"
+        With Plaetze[i]
+            .X = x + i * 70
+            .Y = 50
+            .W = 50
+            .H = 50
+            .Tag = i
+            .Background = Color.ButtonBackground
+            .Foreground = Color.Black
+            .Font.name = "Sans Serif"
+            .Font.size = 15
+            .Text = Str(i + 1)
+            .Alignment = Align.Center
+        End With
+        
+    Next
+    
+End
+
+Public Sub mdPlaetze_MouseDown()
+    
+    Dim i As Integer
+    
+    If Plaetze[Last.tag].Background = Color.Red Then
+        Plaetze[Last.tag].Background = Color.ButtonBackground
+        Plaetze[Last.tag].Foreground = Color.Black 
+        col = Last.Tag
+        delBelPlz()
+    Else
+        Plaetze[Last.tag].Background = Color.Red
+        Plaetze[Last.tag].Foreground = Color.White
+        col = Last.Tag
+        belTraining()
+    Endif
+    strPlz = ""
+    For i = 0 To 6
+        If Plaetze[i].Background = Color.Red Then
+            strPlz &= 1
+        Else
+            strPlz &= 0
+        Endif
+    Next
+    strPlz = Trim(strPlz)
+    strSaveAry[1, 5] = strPlz
+End
+
+'==========================================================================
+' dateBeginn_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub dateBeginn_MouseDown()
+    
+    dateTxt = 1
+    dateBeginn.Background = Color.Yellow
+    dateEnde.Background = Color.White
+    
+End
+'==========================================================================
+' dateEnde_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub dateEnde_MouseDown()
+    
+    dateTxt = 2 
+    dateEnde.Background = Color.Yellow
+    dateBeginn.Background = Color.White
+    
+End
+
+'==========================================================================
+'DateChooser1_Click()
+'	
+'
+'==========================================================================
+
+Public Sub DateChooser1_Click()
+    
+    dDatum = DateChooser1.Value
+    Select Case dateTxt
+        Case 1
+            aWD = aWeekDay[WeekDay(DateChooser1.Value)] 
+            aWD = Trim(aWD)
+            dateVon = Format(DateChooser1.Value, "yyyy.mm.dd")
+            dateBeginn.Text = aWeekDay[WeekDay(DateChooser1.Value)] & " - " & Format(DateChooser1.Value, "dd.mm.yyyy")
+            strSaveAry[1, 1] = dateBeginn.Text
+            dateEnde.Background = Color.Yellow
+            dateBeginn.Background = Color.White
+            loadTrTag(aWD)
+            
+            dateTxt = 2
+        Case 2
+            dateBis = Format(DateChooser1.Value, "yyyy.mm.dd")
+            dateEnde.Text = aWeekDay[WeekDay(DateChooser1.Value)] & " - " & Format(DateChooser1.Value, "dd.mm.yyyy")
+            strSaveAry[1, 2] = dateBeginn.Text
+    End Select
+    
+End
+'==========================================================================
+' Initialisierung: gridMannschInit()
+'	
+'
+'==========================================================================
+
+Public Sub gridMannschInit()
+    
+    Dim i As Integer
+    Dim k As Integer
+    Dim h As Integer
+    Dim m As Integer
+    ' gridTraining = New GridView(Me) As "gridTraining"
+    h = 7 
+    m = 0 
+    With gridMannsch
+        .Visible = False
+        .Border = False
+        tbManNeu.Visible = False
+        ' .Header = 1
+        .ScrollBar = 0
+        ' .Font.Name = "Sans Serif"
+        .Font.Size = 20
+        .Font.Bold = False
+        .X = 100
+        .Y = 20
+        .Clear
+        .Top = 150
+        .Columns.Count = 3
+        .Columns[0].W = 0
+        .Columns[1].W = 300
+        .Columns[2].W = 300
+        .Columns[2].Alignment = Align.Center
+        .Width = 600
+        .Visible = True
+        .Rows.H = 50
+        .H = 12 * 50
+        ' .H = 0
+        .X = (Screen.W - .W) \ 2 - 100
+        ScrollBar1.x = gridMannsch.w + gridMannsch.x
+        ScrollBar1.Y = gridMannsch.Y ' + 80
+        ScrollBar1.H = .H
+        ScrollBar1.Visible = False 
+        .Rows.Count = 1
+        SqlCom = "SELECT * FROM "
+        SqlTab = "MannschTrain "
+        SqlP = "ORDER BY Mannschaft"
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+        Header1.W = gridMannsch[0, 1].w
+        Header1.H = 30
+        Header1.x = .X
+        Header1.Y = .Y - Header1.H
+        Header1.Text = "Mannschaften"
+        
+        Header2.W = gridMannsch[0, 2].w
+        Header2.H = 30
+        Header2.x = .X + gridMannsch[0, 1].w
+        Header2.Y = .Y - Header2.H
+        Header2.Text = "InfoText"
+        ' .Columns[1].Title = "Mannschaften"
+        If rs.count > 0 Then
+            For i = 0 To rs.count - 1
+                ' .H += .Rows.H
+                .Rows.count += 1 
+                gridMannsch[i, 0].Text = rs!id
+                gridMannsch[i, 1].Text = rs!Mannschaft
+                gridMannsch[i, 2].Text = rs!InfoText
+                rs.MoveNext
+            Next
+            ' .H += .Rows.H
+            ' .Rows.count += 1 
+        Endif
+        ' ScrollBar1.MaxValue = .Rows.Count 
+    End With
+End
+
+Public Sub gridMannsch_MouseDown()
+Dim i, x, y, row, col, l, t, id As Integer
+Dim tfl As Boolean
+    row = gridMannsch.Row
+    col = gridMannsch.Column
+    ' l = gridMannsch.X
+    ' t = gridMannsch.Y
+    
+    SqlCom = "SELECT * FROM "
+    SqlTab = "MannschTrain "
+    SqlP = "ORDER BY Mannschaft"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    If rs.count > 0 Then 
+        For i = 0 To rs.count - 1
+            gridMannsch[i, 0].Text = rs!id
+            gridMannsch[i, 1].Text = rs!Mannschaft
+            gridMannsch[i, 2].Text = rs!InfoText
+            rs.MoveNext
+        Next
+    Endif
+    If btnAdEdMannsch[3].Background = Color.DarkRed
+        With gridMannsch[row, col]
+            gridMannsch.Enabled = False
+            i = Mouse.y
+            l = gridMannsch.X
+            t = gridMannsch.Y
+            x = .X + l
+            y = (Mouse.Y \ 50) * 50 + 150
+            ' Y = .Y + t - ScrollBar1.Value * 50
+            tbManNeu.X = x
+            tbManNeu.Y = y 
+            tbManNeu.H = 50 
+            tbManNeu.W = .w
+            tbManNeu.Background = Color.yellow
+            tbManNeu.Text = .Text
+            tbManNeu.Visible = True
+            tbManNeu.SetFocus
+            If btnAdEdMannsch[4].Background = Color.Cyan Then
+                fmTastatur.Xpos = gridMannsch.X + gridMannsch.W + 100
+                fmTastatur.Ypos = gridMannsch.Y + 80
+                fmTastatur.objTastatur = tbManNeu
+                fmTastatur.ShowModal
+                fmTraining.Activate
+                gridMannsch.Enabled = True
+
+                If TastSaveFl = True Then 
+                    SaveMannschaft(row, col)
+                Endif
+                tbManNeu.Visible = False
+
+            Else
+                
+            Endif
+        End With
+        '     tbManNeu.Visible = False
+    Else
+        If gridMannsch[row, 0].text Then
+            id = Val(gridMannsch[row, 0].text)
+            Select Case Message.Question("Soll die Mannschaft <font size=4 color=Red><b> " & gridMannsch[row, 1].text & "</font></b> gelöscht werden?", "Ja", "Nein")
+                Case 1
+                    SqlCom = "DELETE FROM "
+                    SqlTab = "MannschTrain "
+                    SqlP = "WHERE id = " & id
+                    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+                    gridMannschInit()
+                    btnAdEdMannsch[3].Background = Color.DarkRed
+                    btnAdEdMannsch[3].Foreground = Color.White
+                    fmTraining.Activate
+                Case 2
+                    fmTraining.Activate
+            End Select
+        Endif
+    Endif
+        ' fmTraining.Visible = True
+End
+
+'==========================================================================
+' SaveMannschaft(row As Integer, col As Integer)
+'	
+'
+'==========================================================================
+Public Sub SaveMannschaft(row As Integer, col As Integer)
+    
+    ' If TastSaveFl = True Then
+Dim id As Integer
+With gridMannsch[row, col]
+    Select Case col
+        Case 1
+            .Text = tbManNeu.Text
+            If gridMannsch[row, 0].text = "" Then
+                SqlCom = "INSERT INTO "
+                SqlTab = "MannschTrain "
+                SqlP = "(Mannschaft) VALUES   ('" & gridMannsch[row, 1].Text & "')"
+                rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+                gridMannsch.Rows.count += 1
+                gridMannsch.Refresh
+            Else
+                id = Val(gridMannsch[row, 0].text)
+                SqlCom = "UPDATE "
+                SqlTab = "MannschTrain "
+                SqlP = "SET Mannschaft = '" & .Text & "' WHERE id = " & id
+                rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+            Endif
+        Case 2
+            .Text = tbManNeu.Text
+            If gridMannsch[row, 0].text = "" Then
+                SqlCom = "INSERT INTO "
+                SqlTab = "MannschTrain "
+                SqlP = "(InfoText) VALUES   ('" & .Text & "')"
+                rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+                gridMannsch.Rows.count += 1
+                gridMannsch.Refresh
+            Else
+                id = Val(gridMannsch[row, 0].text)
+                SqlCom = "UPDATE "
+                SqlTab = "MannschTrain "
+                SqlP = "SET InfoText = '" & .Text & "' WHERE id = " & id
+                rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+            Endif
+    End Select
+    ' Endif
+End With
+tbManNeu.Visible = False
+End
+
+'==========================================================================
+' Initialisierung:  gridTraiInit()
+'	
+'
+'==========================================================================
+
+Public Sub gridTraiInit()
+    
+    Dim i As Integer
+    Dim k As Integer
+    Dim h As Integer
+    Dim m As Integer
+    Dim strTime As String
+    Dim btnBreite As Integer
+    'Dim btnWidth As Integer
+    Dim leftMin As Integer
+    Dim cellSpace As Integer
+    ' gridTraining = New GridView(Me) As "gridTraining"
+    AnzPlz = 7   ' StrucType.GlobRegeln.AnzPlatzVal    
+    leftMin = 0
+    btnBreite = 50
+    h = 7 
+    m = 0 
+    With gridTraining
+        .Visible = False
+        .Border = False
+        .Header = 3
+        .ScrollBar = 0
+        .Font.Name = "Sans Serif"
+        .Font.Size = 10
+        .Font.Bold = False
+        .X = 135 + Panel2.w + 135
+        .Y = 20
+        .Clear
+        .Top = 150
+        .Columns.Count = AnzPlz
+        .Columns.W = 100
+        .Width = .Columns.W * AnzPlz + 50
+
+        .Rows.Count = (22 - 7) * 4 + 1 '115
+        .Height = 35 * 25 + 25
+        .Left = 980
+        LbwdDate.Y = .Top - LbwdDate.H
+        LbwdDate.Left = .Left
+        LbwdDate.W = .W
+        Panel2.x = 135
+        Panel2.Y = LbwdDate.Y
+        Panel2.H = .Height + LbwdDate.H
+        DateChooser1.Y = 500
+        If m = 0 Then
+            strTime = Trim(Str(h)) & ":00"
+        Else
+            strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+        End If
+        For i = 0 To 60
+            .Row = i
+            .Rows[i].Height = 25
+            .Font.Name = "Sans Serif"
+            If i Mod 4 = 0 Then
+                For k = 0 To AnzPlz - 1
+                    gridTraining[i, k].RowSpan = 1
+                    .Column = k
+                    With gridTraining[i, k]
+                        .Alignment = Align.Center
+                        .Font.Size = 8
+                        .Background = Color.RGB(114, 159, 207) '&HFF8080
+                        .Foreground = Color.White '&H80000005
+                        .Font.Bold = True
+                        .Text = strTime
+                    End With
+                Next 
+            Else
+                For k = 0 To AnzPlz - 1
+                    gridTraining[i, k].RowSpan = 1
+                    .Column = k
+                    With gridTraining[i, k]
+                        .Alignment = Align.Center
+                        .Background = Color.White '&H8000000E
+                        .Foreground = Color.Black '&H80000012
+                    End With
+                Next 
+            End If
+            For k = 0 To AnzPlz
+                .Column = k
+                .Background = &H808080
+            Next 
+            m = m + 15
+            If m = 60 Then
+                m = 0
+                h = h + 1
+                If h = 24 Then h = 0
+            End If
+            If m = 0 Then
+                strTime = Trim(Str(h)) & ":00"
+            Else
+                strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+            End If
+        Next 
+        i = FMain.topRow()
+        altTime = i
+    End With
+    With gridTraining
+        For i = 0 To AnzPlz - 1
+            .Columns[i].Alignment = Align.Center    
+            .Columns[i].Title = Str(i + 1)
+        Next
+        m = 0
+        h = 6
+        For i = 0 To 60
+            If i Mod 4 = 0 Then
+                h += 1
+                .Rows[i].Title = Str(h) & ":00"
+                m = 0
+            Else
+                m += 15
+                .Rows[i].Title = Str(m)
+            Endif
+        Next
+        .Visible = True
+        .Enabled = True
+    End With
+    
+End
+'==========================================================================
+' gridTraining_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub gridTraining_MouseDown()
+    
+    Dim i, h, m As Integer
+    Dim beZeit As String
+    
+    If btnZeitNeu.Background = Color.ButtonBackground Then Return
+    With gridTraining
+        i = .Row
+        col = .Column   
+        h = (i + 28) \ 4
+        m = ((i + 28) Mod 4) * 15
+        
+        If m = 0 Then
+            beZeit = Str(h) & ":" & "00"
+        Else
+            beZeit = Str(h) & ":" & Str(m)
+        Endif
+    End With
+    If lbBegZeit.Background = Color.yellow Then
+        lbBegZeit.text = beZeit
+        lbEndZeit.Background = Color.yellow
+        lbBegZeit.Background = Color.White
+    Else
+        lbEndZeit.text = beZeit
+    Endif
+    
+End
+'==========================================================================
+'  lbBegZeit_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub lbBegZeit_MouseDown()
+    
+    lbBegZeit.Background = Color.Yellow
+    lbEndZeit.Background = Color.White
+    
+End
+
+'==========================================================================
+' lbEndZeit_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub lbEndZeit_MouseDown()
+    
+    lbEndZeit.Background = Color.Yellow
+    lbBegZeit.Background = Color.White
+    
+End
+'==========================================================================
+' manSave()
+'	
+'
+'==========================================================================
+
+Public Sub manSave()
+Dim info As String
+Dim i, j As Integer
+    strPlz = ""
+    For i = 0 To 6
+        If Plaetze[i].Background = Color.Red Then
+            strPlz &= 1
+        Else
+            strPlz &= 0
+        Endif
+    Next
+
+    info = "TRAINING"
+    selMansch = combMannsch.Text
+    timeVon = lbBegZeit.Text
+    timeBis = lbEndZeit.text
+    EinbPFL = "N"
+    Event_Fl = 1
+    SqlCom = "UPDATE "
+    SqlTab = "MannschTrain SET "
+    SqlP = "EinbuchPfl = '" & EinbPfl & "',Tag = '" & aWD & "', DatumVon = '" & dateVon & "', DatumBis = '" & dateBis & "', Beginn = '" & timeVon & "', Ende = '" & timeBis & "', Platz = '" & strPlz & "' ,Event_fl = " & Event_Fl & ",InfoText = '" & info &
+                "' , Freigabe = '" & comFreigabe.Text & "' WHERE Mannschaft = '" & selMansch & "'"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    For i = 0 To 1
+        For j = 0 To 6
+            strSaveAry[i, j] = ""
+        Next
+    Next
+End
+
+'==========================================================================
+' loadTrTag()
+'	
+'
+'==========================================================================
+
+Public Sub loadTrTag(day As String)
+    
+    Dim s, tag, Platz As String
+    Dim rs As Result
+    Dim b, e, h, m, i, k, j, col As Integer
+    
+    gridTraiInit()
+    SqlCom = "SELECT * FROM "
+    SqlTab = "MannschTrain "
+    SqlP = "WHERE Tag = '" & Day & "'"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    If rs.count > 0 Then
+        For i = 0 To rs.count - 1
+            b = Val(Format(rs!Beginn, "hh")) * 4 + Val(Format(rs!Beginn, "nn")) \ 15
+            e = Val(Format(rs!Ende, "hh")) * 4 + Val(Format(rs!Ende, "nn")) \ 15
+            h = e - b
+            Platz = Trim(rs!Platz)
+            For j = 1 To AnzPlz
+                If Mid(Platz, j, 1) = 1 Then
+                    ' plz[k] = j
+                    k += 1
+                    m = b - 28
+                    col = j - 1
+                    gridTraining[m, col].RowSpan = h
+                    gridTraining[m, col].Background = Color.Red
+                    gridTraining[m, col].Foreground = Color.White
+                    gridTraining[m, col].Font.Size = 10
+                    gridTraining[m, col].Font.name = "Sans Srif"
+                    gridTraining[m, col].Font.Bold = True
+                    gridTraining[m, col].WordWrap = True
+                    gridTraining[m, col].text = rs!Mannschaft
+                Endif
+            Next
+            rs.MoveNext
+        Next
+    Endif
+    
+End
+
+'==========================================================================
+'combMannsch_Click()
+'	
+'
+'==========================================================================
+
+Public Sub combMannsch_Click()
+    
+    Dim s, tag, Platz, Beg, Ende As String
+    Dim rs1 As Result
+    Dim b, e, h, m, i, k, j, col As Integer
+    If strSaveAry[0, 6] <> combMannsch.Text And strSaveAry[1, 6] <> "" Then
+        For i = 0 To 5
+            If strSaveAry[0, i] <> strSaveAry[1, i] Then
+                combMannsch.text = strSaveAry[0, 6]
+                Select Message.Question("Es wurden Änderungen bei der Mannschaft " & strSaveAry[0, 6] & " durchgeführt. Soll gespeichert werden?", "Ja", "Nein")
+                    Case 1
+                        manSave()
+                        Break
+                    Case 2                       
+                End Select
+            Endif
+        Next
+    Endif
+    fmTraining.Activate
+    gridTraiInit()
+    s = combMannsch.Text
+    strSaveAry[0, 6] = s
+ 
+    SqlCom = "SELECT * FROM "
+    SqlTab = "MannschTrain "
+    SqlP = "WHERE Mannschaft = '" & s & "'"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    If rs.count > 0 Then
+        If rs!Tag Then
+            btnAdEdMannsch[2].Enabled = True
+            SqlCom = "SELECT * FROM "
+            SqlTab = "MannschTrain "
+            SqlP = "WHERE Tag = '" & rs!Tag & "' AND Freigabe = " & "'J'"
+            rs1 = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+            If rs!Freigabe = "J" Then
+                comFreigabe.Background = Color.Green
+            Else
+                comFreigabe.Background = Color.Red
+            Endif
+            If rs1.count > 0 Then 
+                For i = 0 To rs1.count - 1
+                    If rs1!Freigabe = "J" Then
+                        Beg = Format(rs1!Beginn, "hh:nn")
+                        Ende = Format(rs1!Ende, "hh:nn")
+                        b = Val(Format(rs1!Beginn, "hh")) * 4 + Val(Format(rs1!Beginn, "nn")) \ 15
+                        e = Val(Format(rs1!Ende, "hh")) * 4 + Val(Format(rs1!Ende, "nn")) \ 15
+                        h = e - b
+                        Platz = Trim(rs1!Platz)
+                        For j = 1 To AnzPlz
+                            If Mid(Platz, j, 1) = 1 Then
+                                ' plz[k] = j
+                                k += 1
+                                m = b - 28
+                                col = j - 1
+                                gridTraining[m, col].RowSpan = h
+                                If s = rs1!Mannschaft Then
+                                    gridTraining[m, col].Background = Color.Red
+                                Else
+                                    gridTraining[m, col].Background = Color.DarkRed
+                                Endif
+                                gridTraining[m, col].Foreground = Color.White
+                                gridTraining[m, col].Font.Size = 10
+                                gridTraining[m, col].Font.name = "Sans Serif"
+                                gridTraining[m, col].Font.Bold = True
+                                gridTraining[m, col].WordWrap = True
+                                gridTraining[m, col].text = Beg & "-" & Ende & Chr(10) & Chr(10) & rs1!Mannschaft
+                            Endif
+                        Next
+                    Endif
+                    rs1.MoveNext
+                Next
+            Endif    
+        Endif
+        If rs!DatumVon Then
+            DateChooser1.Visible = False
+            comFreigabe.Text = rs!Freigabe
+            strSaveAry[0, 0] = comFreigabe.text
+            
+            tag = aWeekDay[WeekDay(rs!DatumVon)]
+            dateVon = Format(rs!DatumVon, "yyyy-mm-dd")
+            strSaveAry[0, 1] = dateVon
+            dateBis = Format(rs!DatumBis, "yyyy-mm-dd")
+            strSaveAry[0, 2] = dateBis
+            aWD = Trim(Tag)
+            dateBeginn.Text = aWeekDay[WeekDay(rs!DatumVon)] & "-" & Format(rs!DatumVon, "dd.mm.yyyy")
+            dateEnde.text = aWeekDay[WeekDay(rs!DatumBis)] & "-" & Format(rs!DatumBis, "dd.mm.yyyy")
+            lbBegZeit.Text = Format(rs!Beginn, "hh:nn")
+            strSaveAry[0, 3] = lbBegZeit.Text
+            lbEndZeit.Text = Format(rs!Ende, "hh:nn")
+            strSaveAry[0, 4] = lbEndZeit.Text
+            strPlz = Trim(rs!Platz)
+            strSaveAry[0, 5] = strPlz
+            LbwdDate.Text = dateBeginn.Text & "  bis  " & dateEnde.text
+            b = Val(Left(lbBegZeit.Text, 2)) * 4 + Val(Right(lbBegZeit.Text, 2)) \ 15
+            b = b - 28
+            gridTraining.MoveTo(b, 0)
+            i = gridTraining.Rows[b].Y
+            gridTraining.Scroll(0, i)
+            Platz = Trim(rs!Platz)
+            For j = 1 To AnzPlz
+                If Mid(Platz, j, 1) = 1 Then
+                    Plaetze[j - 1].Background = Color.Red
+                    Plaetze[j - 1].Foreground = Color.White
+                Else
+                    Plaetze[j - 1].Background = Color.ButtonBackground
+                    Plaetze[j - 1].Foreground = Color.Black
+                Endif
+            Next
+            For i = 0 To 6
+                 strSaveAry[1, i] = strSaveAry[0, i]  
+            Next
+            panDatum.Visible = True
+            lbBegZeit.Enabled = False
+            lbEndZeit.Enabled = False
+            If lbBegZeit.Text Then 
+                panZeit.Visible = True
+                panPlz.Visible = True
+            Else
+                panZeit.Visible = False
+                panPlz.Visible = False
+            Endif
+        Else
+            dateBeginn.Text = ""
+            dateEnde.Text = ""
+            panZeit.Visible = False
+            panPlz.Visible = False
+            
+            DateChooser1.Visible = True
+        Endif
+        panDatum.Visible = True
+    Endif
+    
+End
+'==========================================================================
+' btnDatOK_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub btnDatOK_MouseDown()
+    
+    panZeit.Visible = True
+    DateChooser1.Visible = False
+    dateEnde.Background = Color.White
+    LbwdDate.Text = dateBeginn.Text & "  bis  " & dateEnde.text
+    lbBegZeit.Background = Color.Yellow
+    lbEndZeit.Background = Color.White
+    btnDatOK.Enabled = False
+End
+'==========================================================================
+'btnZeitOK_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub btnZeitOK_MouseDown()
+    
+    Dim i As Integer
+    
+    btnZeitNeu.Background = Color.ButtonBackground
+    lbBegZeit.Enabled = False
+    lbEndZeit.Enabled = False
+    btnZeitOK.Enabled = False
+    strSaveAry[1, 3] = lbBegZeit.Text
+    strSaveAry[1, 4] = lbEndZeit.Text
+    lbBegZeit.Background = Color.White
+    lbEndZeit.Background = Color.White
+    lbBegZeit.Foreground = Color.Black
+    lbEndZeit.Foreground = Color.Black
+    For i = 0 To 6
+        Plaetze[i].Background = Color.ButtonBackground
+        Plaetze[i].Foreground = Color.Black
+    Next
+    belTraining()
+    
+End
+
+'==========================================================================
+' belTraining()
+'	
+'
+'==========================================================================
+Public Sub belTraining()
+    
+    Dim i, bz, ez As Integer
+    
+    panPlz.Visible = True
+    ' gridTraiInit()
+    sBegZeit = Split(lbBegZeit.text, ":")
+    sEndZeit = Split(lbEndZeit.text, ":")
+    bz = Val(sBegZeit[0]) * 4 + Val(sBegZeit[1]) / 15
+    ez = Val(sEndZeit[0]) * 4 + Val(sEndZeit[1]) / 15
+    hight_nr = ez - bz
+    i = bz - 28
+    gridTraining[i, col].RowSpan = hight_nr
+    gridTraining[i, col].Background = Color.Red
+    gridTraining[i, col].WordWrap = True
+    
+    gridTraining[i, col].text = lbBegZeit.Text & "-" & lbEndZeit.Text & Chr(10) & Chr(10) & combMannsch.Text
+    gridTraining[i, col].Font.Size = 10
+    Plaetze[col].Background = Color.red
+    Plaetze[col].Foreground = Color.White
+    
+End
+'==========================================================================
+' btnDatNeu_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub delBelPlz()
+    
+    Dim i, j, bz, ez, h, m As Integer
+    Dim strTime As String
+    
+    panPlz.Visible = True
+    ' gridTraiInit()
+    sBegZeit = Split(lbBegZeit.text, ":")
+    sEndZeit = Split(lbEndZeit.text, ":")
+    bz = Val(sBegZeit[0]) * 4 + Val(sBegZeit[1]) / 15
+    ez = Val(sEndZeit[0]) * 4 + Val(sEndZeit[1]) / 15
+    hight_nr = ez - bz
+    i = bz - 28
+    h = bz \ 4
+    m = bz Mod 4
+    If m = 0 Then
+        strTime = Trim(Str(h)) & ":00"
+    Else
+        strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+    End If
+    
+    For j = i To i + hight_nr - 1
+        With gridTraining[j, col]
+            .RowSpan = 1
+            If (j + 28) Mod 4 = 0 Then
+                .Alignment = Align.Center
+                .Background = Color.RGB(114, 159, 207) '&HFF8080
+                .Foreground = Color.White '&H80000005
+                .Font.Size = 8
+                .Font.Bold = True
+                .Text = strTime
+            Else
+                .Alignment = Align.Center
+                .Background = Color.White '&H8000000E
+                .Foreground = Color.Black '&H80000012          
+                .Font.Bold = False
+            Endif
+            m = m + 15
+            If m = 60 Then
+                m = 0
+                h = h + 1
+            End If
+            If m = 0 Then
+                strTime = Trim(Str(h)) & ":00"
+            Else
+                strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+            End If
+        End With
+    Next
+    
+End
+
+'==========================================================================
+' btnDatNeu_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub btnDatNeu_MouseDown()
+    panPlz.Visible = False
+    panZeit.Visible = False
+    LbwdDate.Text = ""
+    gridTraining.Columns.Count = 0
+    gridTraining.Rows.count = 0
+    gridTraiInit()
+    dateBeginn.Text = ""
+    dateEnde.text = ""
+    dateBeginn.Background = Color.Yellow
+    DateChooser1.Visible = True
+    dateBeginn_MouseDown()   
+    btnDatOK.Enabled = True
+End
+'==========================================================================
+' belTraining()
+'	
+'
+'==========================================================================
+
+Public Sub btnZeitNeu_MouseDown()
+    Dim i As Integer
+
+    btnZeitNeu.Background = Color.Green
+    lbBegZeit.Enabled = True
+    lbEndZeit.Enabled = True
+    lbBegZeit.SetFocus
+    lbBegZeit.Background = Color.yellow
+    For i = 0 To 6
+        If Plaetze[i].Background = Color.Red Then
+            Plaetze[i].Background = Color.ButtonBackground
+            Plaetze[i].Foreground = Color.Black 
+            col = i
+            delBelPlz()
+        Endif
+    Next 
+    btnZeitOK.Enabled = True  
+End
+'==========================================================================
+' belTraining()
+'	
+'
+'==========================================================================
+
+Public Sub MyMannsch_MouseDown()
+    Dim i As Integer
+    For i = 0 To 3
+        btnAdEdMannsch[i].Background = Color.DarkRed
+        btnAdEdMannsch[i].Foreground = Color.White
+    Next
+    Select Case Last.tag
+        Case 0                          'Mannschaften
+            plCom = 0
+            Panel1.Visible = False
+            Panel3.Visible = True
+            btnAdEdMannsch[0].Background = Color.Cyan
+            btnAdEdMannsch[0].Foreground = Color.Black           
+            btnAdEdMannsch[3].Enabled = True
+            btnAdEdMannsch[2].Enabled = False
+            btnAdEdMannsch[4].Enabled = True
+            gridMannschInit()
+        Case 1                          'Planung
+            plCom = 1
+            Panel1.Visible = True
+            Panel3.Visible = False
+            ' TrainingInit()
+            btnAdEdMannsch[1].Background = Color.Cyan
+            btnAdEdMannsch[1].Foreground = Color.Black  
+            btnAdEdMannsch[2].Background = Color.DarkRed
+            btnAdEdMannsch[2].Foreground = Color.White  
+            btnAdEdMannsch[3].Enabled = False
+            btnAdEdMannsch[4].Enabled = False
+            Panel2.Background = Color.Black
+            SqlCom = "SELECT Mannschaft FROM "
+            SqlTab = "MannschTrain "
+            SqlP = "ORDER BY Mannschaft"
+            rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+            If rs.count > 0 Then
+                combMannsch.Clear()
+                For i = 0 To rs.count - 1
+                    combMannsch.Add(rs!Mannschaft)
+                    rs.MoveNext
+                Next
+            Endif
+        Case 2                          'Speichern
+            ' If btnAdEdMannsch[0].Background = Color.Cyan Then
+            '     SaveMannschaft(gridMannsch.Row, gridMannsch.Column)
+            If plCom = 1 Then
+                btnAdEdMannsch[1].Background = Color.Cyan
+                btnAdEdMannsch[1].Foreground = Color.Black  
+                manSave()
+            Endif
+        Case 3                          'Löschen
+            btnAdEdMannsch[0].Background = Color.Cyan
+            btnAdEdMannsch[0].Foreground = Color.Black  
+            If btnAdEdMannsch[3].Background = Color.DarkRed Then
+                btnAdEdMannsch[3].Background = Color.Cyan
+                btnAdEdMannsch[3].Foreground = Color.Black  
+            Else
+                btnAdEdMannsch[3].Background = Color.DarkRed
+                btnAdEdMannsch[3].Foreground = Color.White                  
+            Endif
+        Case 4                          'B-Tastatur
+            btnAdEdMannsch[0].Background = Color.Cyan
+            btnAdEdMannsch[0].Foreground = Color.Black  
+            If btnAdEdMannsch[4].Background = Color.DarkRed Then
+                btnAdEdMannsch[4].Background = Color.Cyan
+                btnAdEdMannsch[4].Foreground = Color.Black 
+                ScrollBar1.Visible = True 
+            Else
+                btnAdEdMannsch[4].Background = Color.Darkred
+                btnAdEdMannsch[4].Foreground = Color.White
+                ScrollBar1.Visible = False 
+            Endif 
+            btnAdEdMannsch[4].Enabled = True
+        Case 5                           'Ende
+            For i = 0 To 6
+                If strSaveAry[0, i] <> strSaveAry[1, i] Then
+                    Select Message.Question("Es wurden Änderungen durchgeführt. Soll gespeichert werden?", "Ja", "Nein")
+                        Case 1
+                            manSave()
+                            Break
+                        Case 2                       
+                    End Select
+                Endif
+            Next
+            fmTraining.close    
+    End Select    
+End
+
+
+
+'==========================================================================
+' ScrollBar1_Change()
+'	
+'
+'==========================================================================
+Public Sub ScrollBar1_Change()
+Dim i, k As Integer
+k = gridMannsch.Rows.count
+If k > 12 Then
+    ScrollBar1.MaxValue = k - 12
+    ScrollBar1.MinValue = 0
+    i = ScrollBar1.Value * 50
+    gridMannsch.Scroll(0, i)
+Else
+    ScrollBar1.MaxValue = 0
+Endif
+End
+
+'==========================================================================
+' tbManNeu_KeyPress()
+'	
+'
+'==========================================================================
+Public Sub tbManNeu_KeyPress()
+
+Dim id, row, col As Integer
+If Key.code = Key.Esc Then 
+    tbManNeu.Visible = False
+    gridMannsch.Enabled = True
+
+    Return
+Endif
+If Key.Code = Key.Return Then 
+    row = gridMannsch.Row
+    col = gridMannsch.Column
+    gridMannsch.Enabled = True
+    Select Case col
+    Case 1
+        SaveMannschaft(row, col)
+        SqlCom = "SELECT InfoText FROM "
+        SqlTab = "MannschTrain "
+        SqlP = "WHERE Mannschaft = '" & gridMannsch[row, 1].Text & "'"
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+        If rs.count > 0 Then
+            gridMannsch[row, 2].Text = rs!InfoText
+        Endif
+    Case 2
+        SaveMannschaft(row, col)   
+    End Select
+Endif
+End
+
+'==========================================================================
+' comFreigabe_Click()
+'	
+'
+'==========================================================================
+Public Sub comFreigabe_Click()
+    SqlCom = "UPDATE "
+    SqlTab = "MannschTrain SET "
+    SqlP = " Freigabe = '" & comFreigabe.Text & "' WHERE Mannschaft = '" & combMannsch.Text & "'"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    strSaveAry[1, 0] = comFreigabe.Text
+    combMannsch_Click()    
+
+End
+
+'==========================================================================
+' myTag_MouseDown()
+'	
+'
+'==========================================================================
+Public Sub myTag_MouseDown()
+Dim i As Integer
+i = Last.tag   
+With tagWoche[i]
+    If .Background = Color.White Then
+        .Background = Color.Green
+    Else
+        .Background = Color.White
+    Endif
+End With
+End
+

@@ -1,0 +1,129 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,168,120)
+  Background = Color.LightGray
+  Foreground = Color.White
+  FullScreen = True
+  { panMain Panel
+    MoveScaled(4,3,49,26)
+    Background = Color.Black
+    Foreground = Color.White
+    Border = Border.Plain
+  }
+  { panGrid Panel
+    MoveScaled(0,8.8889,213.3333,120)
+    { gridVbSp GridView
+      MoveScaled(117,13,15,17)
+      Mode = Select.Single
+      ScrollBar = Scroll.None
+    }
+    { LbwdDate Label
+      MoveScaled(115,8,20,3.3333)
+      Font = Font["Sans Serif,Bold,14"]
+      Background = Color.Blue
+      Foreground = Color.White
+      Alignment = Align.Center
+    }
+    { panPlan Panel
+      MoveScaled(15,8,85,79)
+      Background = Color.Black
+      { panZeit Panel
+        MoveScaled(3,35,79,10)
+        Background = Color.Transparent
+        Border = Border.Plain
+        { lbBegZeit Label
+          MoveScaled(20,2.4444,11,5)
+          Font = Font["Sans Serif,18"]
+          Background = Color.White
+          Foreground = Color.Black
+          Alignment = Align.Center
+        }
+        { lbEndZeit Label
+          MoveScaled(38,2.4444,12,5)
+          Font = Font["Sans Serif,18"]
+          Background = Color.White
+          Foreground = Color.Black
+          Alignment = Align.Center
+        }
+        { Label4 Label
+          MoveScaled(33,3.4444,4,3)
+          Font = Font["Sans Serif,14"]
+          Foreground = Color.White
+          Text = ("bis")
+          Alignment = Align.Center
+        }
+        { Label3 Label
+          MoveScaled(4,3.4444,14,3)
+          Font = Font["Sans Serif,14"]
+          Foreground = Color.White
+          Text = ("Zeit       von")
+        }
+        { btnZeitNeu Button
+          MoveScaled(58,2,8,6)
+          Font = Font["Sans Serif,12"]
+          Background = Color.ButtonBackground
+          Text = ("Neu")
+        }
+        { btnZeitOK Button
+          MoveScaled(70,2,8,6)
+          Font = Font["Sans Serif"]
+          Text = ("OK")
+        }
+      }
+      { combDate ComboBox
+        MoveScaled(19,7,23,5)
+        Font = Font["Sans Serif,18"]
+      }
+      { gridPlanM TableView
+        MoveScaled(49,7,33,11)
+        Font = Font["Sans Serif,12"]
+        Foreground = Color.Black
+        ScrollBar = Scroll.None
+      }
+      { lbVerSp Label
+        MoveScaled(54,3,20,3.3333)
+        Font = Font["Sans Serif,Bold,14"]
+        Background = Color.Blue
+        Foreground = Color.White
+        Text = ("Verbansspiele")
+        Alignment = Align.Center
+      }
+      { lbDate Label
+        MoveScaled(20,3,20,3.3333)
+        Font = Font["Sans Serif,Bold,14"]
+        Background = Color.Blue
+        Foreground = Color.White
+        Text = ("Spieldatum")
+        Alignment = Align.Center
+      }
+      { panPlz Panel
+        MoveScaled(3,45,79,10)
+        Background = Color.Transparent
+        Border = Border.Plain
+        { Label10 Label
+          MoveScaled(11,3.4444,11,3)
+          Font = Font["Sans Serif,14"]
+          Foreground = Color.White
+          Text = ("Plätze")
+        }
+      }
+      { btnEinzel Button
+        MoveScaled(3,30,10,4)
+        Text = ("Einzel")
+      }
+      { btnDoppel Button
+        MoveScaled(14,30,10,4)
+        Text = ("Doppel")
+      }
+      { lbInfo TextLabel
+        MoveScaled(26,21,27,13)
+        Font = Font["10"]
+        Background = Color.LightBackground
+        Foreground = Color.Black
+        Padding = 7
+        Text = ("<Font size = 5 Color=Red><b>Doppel</font></b>-Taste wird nur bei\nunterschiedlicher Platzbelegung\nzwischen Einzel und Doppel verwendet!<br>\n<font color=Yellow>z.B 4er-Mannschaft<br>4-Einzel-Plz, 2-Doppel  \nPlz")
+      }
+    }
+  }
+}

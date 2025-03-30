@@ -1,0 +1,7 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,142.2222,80)
+  Background = Color.LightGray
+  FullScreen = True
+}

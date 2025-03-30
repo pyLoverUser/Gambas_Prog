@@ -1,0 +1,133 @@
+' Gambas module file
+
+'==========================================================================
+'  AktivLoad(plzIdx As Integer):
+'	
+'
+'==========================================================================
+Public Sub AktivLoad(plzIdx As Integer)
+Dim rs As Result
+Dim SqlCom, SqlTab, SqlP As String
+  SqlCom = "SELECT * From "
+  SqlTab = "_Buchung_aktiv "
+  SqlP = "WHERE Platz_idx = '" & plzIdx & "'"  
+  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+  If rs.count > 0 Then
+    With StrucType.Belegung
+    .Platz_idx = rs!Platz_idx
+    .Einbuch_Datum = Format(rs!Einbuch_Datum, "yyyy.mm.dd")
+    .Einbuch_Zeit = rs!Einbuch_Zeit         'Format(rs!Einbuch_Zeit, "hh:nn:ss")
+    .Datum_Beginn = Format(rs!Datum_Beginn, "yyyy.mm.dd")
+    .Datum_Ende = Format(rs!Datum_Ende, "yyyy.mm.dd")
+    .Beginn = rs!Beginn
+    .Ende = rs!Ende
+    .ID_Mann = rs!ID_Mann
+    .Mannschaft = rs!Mannschaft
+    .Gast = rs!Gast
+    .InfoText = rs!InfoText
+    .EinbuchPflicht = rs!EinbuchPflicht
+    .Mitgl_Nr1 = rs!mitgl_nr1
+    .Mitgl_Nr2 = rs!mitgl_nr2
+    .Mitgl_Nr3 = rs!mitgl_nr3
+    .Mitgl_Nr4 = rs!mitgl_nr4
+    .Belegungs_sts = rs!Belegungs_sts
+    .anz_spieler = rs!anz_spieler
+    .Einzel_doppel = rs!Einzel_Doppel
+    .Event_fl = rs!Event_fl
+    .hight_nr = rs!hight_nr
+    .loesch_Zeit = Time
+    End With
+  End If
+End
+
+'==========================================================================
+'  GetPlayerData(TransID As String):
+'	
+'
+'==========================================================================
+Public Sub GetPlayerData(TransID As String)
+Dim Temp_Jahre As Integer
+'Dim L As Integer
+Dim rs As Result
+Dim SqlP As String
+Dim SqlCom As String
+Dim SqlTab As String
+    ' Transponder_ID_glob = TransID
+    SqlCom = "SELECT * FROM "
+    SqlTab = "Mitglieder "
+    SqlP = "where ID_Nr ='" & TransID & "'"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    If rs.Count >= 0 Then
+        With FMain
+          .MitgNr = rs!Mitgl_Nr
+          .Berecht = rs!Berechtigung
+          .FirstName = rs!Vorname
+          .LastName = rs!Name
+          .Titel = rs!Titel
+        Temp_Jahre = Year(Date) - Year(rs!GeburtsDat)
+
+        Fmain.Vname.Visible = True
+        If .Titel <> "" Then
+            FMain.Vname.Caption = .Titel & " " & .FirstName & " " & .LastName
+        Else
+            .Titel = ""
+            FMain.Vname.Caption = .FirstName & " " & .LastName
+        End If
+        FMain.Vname.Raise
+        FMain.RolloOpenTime = Time
+        Fmain.Rollo_Closed = 0
+        
+        If .Berecht <> "X" Then
+            ' Fmain.MainBtn(0).Visible = True
+'              Master.btnRollo.Visible = True
+        Else
+            ' Fmain.MainBtn(0).Visible = False
+'              Master.btnRollo.Visible = False
+        End If
+'
+       End With
+
+    Else
+      With FMain
+        .MitgNr = 0
+        .Berecht = ""
+        .LastName = ""
+        .FirstName = ""
+        .Titel = ""
+        ' id_DataOK = 0
+        .TransID = ""
+        .TransID_glob = ""
+      End With
+    End If
+  Fmain.cDBVerbindung.Close()
+
+
+End Sub
+
+
+'==========================================================================
+' ExecuteSql(SqlCom As String, SqlTab As String, SqlP As String) As Result:
+'	
+'
+'==========================================================================
+Public Function ExecuteSql(SqlCom As String, SqlTab As String, SqlP As String) As Result
+Dim rs As Result 
+Dim sSQL_Anweisung, dberror As String
+Dim i As Integer
+  For i = 1 To 10
+  If FMain.cDBVerbindung.Opened Then Break
+    FMain.cDBVerbindung.Open()
+  Next
+  sSQL_Anweisung = SqlCom & SqlTab & SqlP
+  Debug sSQL_Anweisung
+  ' rs = Fmain.cDBVerbindung.Exec(sSQL_Anweisung)
+  Try rs = Fmain.cDBVerbindung.Exec(sSQL_Anweisung)
+  If Error Then
+    dberror = sSQL_Anweisung
+    Message.Error(("Error when opening Fmain.cDBVerbindung.Exec(sSQL_Anweisung)!"))
+  Endif
+  ' Fmain.cDBVerbindung.Close()
+  Return rs
+
+End
+

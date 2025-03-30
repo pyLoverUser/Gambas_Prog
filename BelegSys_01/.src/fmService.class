@@ -1,0 +1,73 @@
+' Gambas class file
+
+Public btnService[7] As Button
+
+Public Sub Form_Open()
+    fmService.Visible = True
+    fmService.W = Screen.W
+    fmService.H = Screen.H
+    fmService.Top = 5
+    fmService.Center
+    fmService.Resizable = False
+    InitServMenu()
+End
+Public Sub InitServMenu()
+    
+    Dim i As Integer
+    Dim k As Integer
+
+    For i = 0 To 6
+        btnService[i] = New Button(Me) As "MyService"
+        With btnService[i]
+            .H = 80
+            .W = 200
+            .X = 0 + i * 200 
+            .Y = 0
+            If i = 6 Then .W = 1920 - .X + 200
+            .Tag = i
+            .Background = Color.DarkRed
+            .Foreground = Color.White
+            Select Case i
+                Case 0
+                    .Text = "Training"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Target.ico")
+                Case 1
+                    .Text = "Verbandspiele"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Users.ico")
+                Case 2
+                    .Text = "Evends"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Face happy.ico")
+                Case 3
+                    .Text = "Regeln"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Hand.ico")
+                Case 4
+                    .Text = "Regner"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Star2.ico")
+                Case 5
+                    .Text = "Ende"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Home.ico")
+            End Select
+        End With
+    Next
+    
+End
+Public Sub MyService_MouseDown()
+    Dim i As Integer
+    For i = 0 To 3
+        btnService[i].Background = Color.DarkRed
+        btnService[i].Foreground = Color.White
+    Next
+    Select Case Last.tag
+        Case 0
+            fmTraining.show
+        Case 1
+            fmVerbandspiel.ShowModal
+        Case 2
+        Case 3
+            fmRegeln.Show
+        Case 4
+            fmRegner.Show
+        Case 5
+            fmService.Close
+    End Select
+End

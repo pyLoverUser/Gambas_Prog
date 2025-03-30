@@ -1,0 +1,178 @@
+' Gambas class file
+
+Public SqlCom As String
+Public SqlTab As String
+Public SqlP As String
+Public rs As Result
+Public btnTransp[6] As Button
+Public row As Integer
+Public col As Integer
+Public MitglNr As Integer
+Public trFl As Integer
+Public Sub Form_Open()
+initBtnTransp() 
+lblTrNrAlt2.Visible = False  
+lblTextAlt2.Visible = False
+lblTrNrAlt2.Background = Color.Yellow
+lblTrNrAlt2.Foreground = Color.Black
+row = fmAdminMitglVerw.GridMitgl.row
+If row < 0 Then
+    Message.Title = "Transponder"
+    Message.Info("Es muss erst ein Mitglied ausgewählt werden!", "OK")
+        fmTranspNeuSperre.Close
+        Return    
+Endif
+lblTrNrAlt.Text = fmAdminMitglVerw.GridMitgl[row, 0].text
+MitglNr = Val(fmAdminMitglVerw.GridMitgl[row, 1].text)
+btnTransp[2].Enabled = False
+If Left(lblTrNrAlt.Text, 1) = "X" Then
+            btnTransp[1].Text = "Sperre"
+            btnTransp[1].Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Lock.ico")
+Endif
+End
+Public Sub initBtnTransp()
+Dim i As Integer
+For i = 0 To 5
+btnTransp[i] = New Button(Me) As "MyTransp"
+  With btnTransp[i]
+    .H = 60
+    .W = 150
+    .X = 0 + i * 150 
+    .Y = 0
+    If i = 5 Then .W = fmVZB.W - .X + 150
+    If i < 5 Then fmTranspNeuSperre.w = (i + 1) * 150
+    .Tag = i 
+    .Background = Color.Black
+    .Foreground = Color.White
+      Select Case i 
+        Case 0
+            .Text = "Neu"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Plus.ico")
+        Case 1
+            .Text = "Aktiv"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Lock open.ico")
+        Case 2
+            .Text = "Speichern"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Save.ico")
+        Case 3
+            .Text = "Löschen"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Trash.ico")            
+        Case 4
+            .Text = "Ende"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Home.ico")
+      End Select
+  End With
+  Next
+End
+Public Sub MyTransp_MouseDown()
+Dim i As Integer
+Select Case Last.tag   
+    Case 0      'Neu
+        trFl = 1
+        btnTransp[2].Enabled = True
+        lblTrNrAlt2.Visible = True  
+        lblTextAlt2.Visible = True
+        btnTransp[0].Background = Color.Cyan
+        btnTransp[0].Foreground = Color.Black
+        lblTrNrAlt2.SetFocus
+    Case 1      'Sperre
+        trFl = 2
+        btnTransp[1].Background = Color.Cyan
+        btnTransp[1].Foreground = Color.Black
+        btnTransp[2].Enabled = True
+        If Left(lblTrNrAlt.Text, 1) = "X" Then
+            btnTransp[1].Text = "Aktiv"
+            i = Len(lblTrNrAlt.Text)
+            lblTrNrAlt.Text = Mid(lblTrNrAlt.Text, 2, i)
+            lblTrNrAlt.Background = Color.White
+            lblTrNrAlt.Foreground = Color.Black
+            btnTransp[1].Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Lock open.ico")
+        Else
+            btnTransp[1].Text = "Sperre"
+            btnTransp[1].Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Lock.ico")
+            lblTrNrAlt.Text = "X" & lblTrNrAlt.text
+            lblTrNrAlt.Background = Color.Red
+            lblTrNrAlt.Foreground = Color.White
+        Endif
+    Case 2      'Speichern
+        trSpeichern()
+    Case 3      'Löschen
+        trFl = 0
+        btnTransp[3].Background = Color.Cyan
+        btnTransp[3].Foreground = Color.Black
+        Message.Title = "Transponder"
+        Select Message.Question("Soll die Transponder ID gelöscht werden?", "JA", "Nein")
+            Case 1
+                lblTrNrAlt.Text = ""
+                SqlCom = "UPDATE " 
+                SqlTab = "Mitglieder Set "
+                SqlP = "ID_Nr = '" & lblTrNrAlt.Text & "' WHERE Mitgl_Nr = " & MitglNr 
+                rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+                fmAdminMitglVerw.GridMitgl[row, 0].text = lblTrNrAlt.Text
+                fmAdminMitglVerw.GridMitgl[row, 0].Background = Color.White
+                fmAdminMitglVerw.GridMitgl[row, 0].Foreground = Color.Black 
+                btnTransp[3].Background = Color.Black
+                btnTransp[3].Foreground = Color.White
+            Case 2
+                btnTransp[3].Background = Color.Black
+                btnTransp[3].Foreground = Color.White
+                Return       
+        End Select
+    Case 4      'Ende
+        If trFl > 0 Then
+            Message.Title = "Transponder"
+            Select Case Message.Question("Die Änderung wurde nicht gespeichert! Soll diese gespeichert werden?", "JA", "NEIN")
+                Case 1
+                    trSpeichern()
+                Case 2
+                    fmTranspNeuSperre.Close
+            End Select
+        Endif
+        fmTranspNeuSperre.Close
+End Select    
+End
+Public Sub trSpeichern()
+    If trFl = 1 Then
+        SqlCom = "SELECT * FROM " 
+        SqlTab = "Mitglieder "
+        SqlP = "WHERE ID_Nr = '" & lblTrNrAlt2.Text & "'" 
+        rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+        If rs.count > 0 Then
+            Message.Title = "Transponder"
+            Message.Info("Dieser Transponder ist bereits an <br><font size=4 color=red> " & rs!Vorname & " " & rs!Name & "</font> vergeben!")
+            lblTrNrAlt2.Text = ""
+            trFl = 0
+            Return
+        Endif
+    Endif
+    Select Case trFl
+        Case 1
+            btnTransp[0].Background = Color.Black
+            btnTransp[0].Foreground = Color.White
+            SqlCom = "UPDATE " 
+            SqlTab = "Mitglieder Set "
+            SqlP = "ID_Nr = '" & lblTrNrAlt2.Text & "' WHERE Mitgl_Nr = " & MitglNr 
+            rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            fmAdminMitglVerw.GridMitgl[row, 0].text = lblTrNrAlt2.Text
+            fmAdminMitglVerw.GridMitgl[row, 0].Background = Color.Blue
+            fmAdminMitglVerw.GridMitgl[row, 0].Foreground = Color.White        
+        Case 2
+            btnTransp[1].Background = Color.Black
+            btnTransp[1].Foreground = Color.White
+           SqlCom = "UPDATE " 
+            SqlTab = "Mitglieder Set "
+            SqlP = "ID_Nr = '" & lblTrNrAlt.Text & "' WHERE Mitgl_Nr = " & MitglNr 
+            rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            If Left(lblTrNrAlt.Text, 1) = "X" Then
+                fmAdminMitglVerw.GridMitgl[row, 0].text = lblTrNrAlt.Text
+                fmAdminMitglVerw.GridMitgl[row, 0].Background = Color.Red
+                fmAdminMitglVerw.GridMitgl[row, 0].Foreground = Color.White
+            Else
+                fmAdminMitglVerw.GridMitgl[row, 0].text = lblTrNrAlt.Text
+                fmAdminMitglVerw.GridMitgl[row, 0].Background = Color.White
+                fmAdminMitglVerw.GridMitgl[row, 0].Foreground = Color.Black        
+            Endif
+    End Select
+    trFl = 0
+    btnTransp[2].Enabled = False
+End

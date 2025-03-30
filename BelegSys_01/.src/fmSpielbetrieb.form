@@ -1,0 +1,71 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,213.3333,120)
+  Background = Color.DarkGray
+  FullScreen = True
+  { gridSpielBetr GridView
+    MoveScaled(11,5,16,16)
+    Font = Font["Bold,7"]
+    Header = GridView.Horizontal
+    ScrollBar = Scroll.None
+  }
+  { DateChooser1 DateChooser
+    MoveScaled(9,70,54,41)
+    Background = Color.Black
+    Foreground = Color.White
+    Tracking = True
+  }
+  { panKalHome Panel
+    MoveScaled(86,113,24,6)
+    { btnEnde Button
+      MoveScaled(13,0.5556,10,5)
+      Picture = Picture["icon:/32/home"]
+    }
+    { btnKalender Button
+      MoveScaled(1,0.5556,9,5)
+      Picture = Picture["icon:/32/calendar"]
+    }
+  }
+  { Label1 Label
+    MoveScaled(1,4,6,2)
+    Font = Font["Sans Serif,10"]
+    Foreground = Color.White
+    Alignment = Align.Center
+  }
+  { Panel1 Panel
+    MoveScaled(79,23,50,43)
+    Background = Color.Blue
+    { Button1 Button
+      MoveScaled(19,37,10,5)
+      Text = ("OK")
+    }
+    { gridSpiele GridView
+      MoveScaled(3,6,44,28)
+      Font = Font["Arial,12"]
+      ScrollBar = Scroll.None
+      AutoResize = False
+    }
+    { lbDatum Label
+      MoveScaled(10,1,27,4)
+      Font = Font["Sans Serif,Bold,15"]
+      Foreground = Color.White
+      Alignment = Align.Center
+    }
+    { lbTraining Label
+      MoveScaled(1,38,16,3)
+      Font = Font["Sans Serif,Bold"]
+      Background = Color.Red
+      Foreground = Color.White
+      Text = ("Training")
+      Alignment = Align.Center
+    }
+    { lbVerbsp Label
+      MoveScaled(31,38,16,3)
+      Font = Font["Sans Serif"]
+      Background = Color.Yellow
+      Text = ("Verbandsspiel")
+      Alignment = Align.Center
+    }
+  }
+}

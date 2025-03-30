@@ -1,0 +1,12 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  Move(0,0,603,234)
+  #Scaled = False
+  Text = ("Tastatur")
+  Resizable = False
+  { FrTastatur Frame
+    Move(0,0,603,234)
+    Background = Color.DarkGray
+  }
+}

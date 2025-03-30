@@ -1,0 +1,10 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,79,35)
+  Background = Color.LightBackground
+  { Button1 Button
+    MoveScaled(29,27,16,4)
+    Text = ("OK")
+  }
+}

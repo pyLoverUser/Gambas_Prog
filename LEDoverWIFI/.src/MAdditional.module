@@ -1,0 +1,61 @@
+' Gambas module file
+
+''' Overview:<br>
+''' -----------------------------------------------------------------------------------------------------<br>
+''' ● IsInstalled(argProgram As String)<br>
+''' ● CheckNetwork()<br>
+''' -----------------------------------------------------------------------------------------------------
+
+'' Query whether the specified program is installed.
+'' The required argument is the program name
+Public Sub IsInstalled(argProgramName As String)
+
+    Dim sMessage As String
+    
+    If Not System.Exist(argProgramName) Then
+       sMessage = "<br><b><font size='+1', color='DarkRed'>"
+       sMessage &= Subst("&1 &2&3", ("The application requires the program"), argProgramName, "!")
+       sMessage &= "</b></font><hr>"
+       sMessage &= Subst("&1 &2 &3", ("Installation console (MINT):"), "$ sudo apt-get install", argProgramName)
+       sMessage &= gb.NewLine
+       sMessage &= ("The application is therefore terminated!")
+       Message.Info(sMessage)
+   '-- The (main) program is terminated.
+       Quit
+    Endif
+  
+End
+
+'' Checks the connection to the intranet and the internet
+Public Sub CheckNetwork()
+
+    Dim sResponse, sCommand As String
+    Dim sIPAddress As String
+    
+'-- Mit Desktop.NetworkAvailable (gb.desktop) können Sie grundsätzlich feststellen, ob eine Netzwerkverbindung besteht.
+'-- With Desktop.NetworkAvailable (gb.desktop) you can basically determine whether a network connection exists.
+    If Not Desktop.NetworkAvailable Then
+       Message.Error(("No network available!<hr>The application will be terminated."))
+       Quit
+    Endif
+
+'-- Check connection to local router by trying to obtain the IP address of the gateway
+'-- Test der Verbindung zum lokalen Router durch Ermittlung der Gateway-IP-Adresse
+    sCommand = "route -n | grep ^0.0.0.0 | awk '{print $2}'"
+    Shell sCommand To sIPAddress
+'-- Print "A = "; Trim(sIPAddress)
+    If Not sIPAddress Then
+       Message.Error(("No connection to lokal router!<hr>The application will be terminated."))
+       Quit
+    Endif
+
+    sCommand = "ping -c 1 8.8.8.8"
+    Shell sCommand To sResponse
+'-- Print "B = "; Trim(sResponse)
+    If Not InStr(sResponse, "8.8.8.8 ping") Then    
+       Message.Error(("No connection to the Internet!<hr>The application will be terminated."))
+       Quit
+    Endif 
+
+End
+

@@ -1,0 +1,44 @@
+' Gambas class file
+
+Public btnVerechn[4] As Button
+
+Public Sub Form_Open()
+Dim i As Integer
+For i = 0 To 3
+  btnVerechn[i] = New Button(Me) As "MyVerechn"
+  With btnVerechn[i]
+    .H = 60
+    .W = 150
+    .X = 0 + i * 150 
+    .Y = 0
+    If i = 3 Then .W = 1280 - .X + 150
+    .Font.Size = 12
+    .Tag = i
+    .Background = Color.DarkGray
+    .Foreground = Color.White
+      Select Case i
+        Case 0
+            .Text = "VZB"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Euro.ico")
+        Case 1
+            .Text = "GastSp."
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Users.ico")
+        Case 2
+            .Text = "Ende"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Home.ico")
+      End Select
+  End With
+Next
+End
+Public Sub MyVerechn_MouseDown()
+Dim i As Integer  
+Select Case Last.Tag  
+  Case 0
+    fmVZB.ShowModal
+  Case 1
+    fmAbrGastSpieler.ShowModal
+  Case 2    'Ende
+     fmVerrechnung.Close
+     fmAdminMitglVerw.Show
+End Select
+End

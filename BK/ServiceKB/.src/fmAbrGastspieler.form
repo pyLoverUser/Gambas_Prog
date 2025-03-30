@@ -1,0 +1,7 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,64)
+  Font = Font["Sans Serif,14"]
+  Text = ("Gastspieler")
+}

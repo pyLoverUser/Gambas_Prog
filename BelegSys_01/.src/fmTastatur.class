@@ -1,0 +1,157 @@
+' Gambas class file
+
+Public btnTT[49] As Button
+Public kyAlpha As String = "1234567890ßQWERTZUIOPÜASDFGHJKLÖÄYXCVBNM,.-"
+Public cWindow As String
+Public txtNr As Integer
+Public tWert As String
+Public objTastatur As Object
+Public Xpos As Integer
+Public Ypos As Integer
+Public SaveFl As Boolean
+
+Public Sub Form_Open()
+Dim i As Integer
+Dim cstr As String
+FrTastatur.Visible = False
+fmTastatur.X = Xpos
+fmTastatur.Y = Ypos
+cstr = cWindow
+For i = 0 To 42
+  btnTT[i] = New Button(FrTastatur) As "MyBtnTT"
+  btnTT[i].H = 45
+  btnTT[i].w = 45
+  btnTT[i].Tag = String.Mid(kyAlpha, i + 1, 1)
+  btnTT[i].Text = String.Mid(kyAlpha, i + 1, 1)
+  If i < 11 Then
+    btnTT[i].X = 2 + i * 45
+    btnTT[i].Y = 7
+  Endif
+  If i > 10 And i < 22 Then
+    btnTT[i].X = 18 + (i - 11) * 45
+    btnTT[i].Y = 52
+  Endif
+  If i > 21 And i < 33 Then
+    btnTT[i].X = 36 + (i - 22) * 45 
+    btnTT[i].Y = 97    
+  Endif
+  If i > 32 Then
+    btnTT[i].X = 72 + (i - 33) * 45
+    btnTT[i].Y = 142    
+  Endif
+  btnTT[i].Background = Color.ButtonBackground
+  btnTT[i].Font.Name = "Sans Serif"
+  btnTT[i].Font.Size = 12
+ Next
+'Shift Taste 
+btnTT[43] = New Button(FrTastatur) As "MyBtnTT"
+btnTT[43].H = 45
+btnTT[43].w = 65
+btnTT[43].Tag = "Shift" 
+btnTT[43].Text = "Shift"
+btnTT[43].X = 7
+btnTT[43].Y = 142
+btnTT[43].Background = Color.red
+'Del Taste
+btnTT[44] = New Button(FrTastatur) As "MyBtnTT"
+btnTT[44].H = 45
+btnTT[44].w = 65
+btnTT[44].Tag = "Del" 
+btnTT[44].Text = "Del"
+btnTT[44].X = 513
+btnTT[44].Y = 52
+btnTT[44].Background = Color.ButtonBackground
+
+'Blank Taste
+btnTT[45] = New Button(FrTastatur) As "MyBtnTT"
+btnTT[45].H = 45
+btnTT[45].w = 225
+btnTT[45].Tag = "Blank" 
+btnTT[45].Text = "Blank"
+btnTT[45].X = 162
+btnTT[45].Y = 187
+btnTT[45].Background = Color.ButtonBackground
+'Backspace Taste
+btnTT[46] = New Button(FrTastatur) As "MyBtnTT"
+btnTT[46].H = 45
+btnTT[46].w = 65
+btnTT[46].Tag = "BackSp." 
+btnTT[46].Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Arrow2 - left.ico")
+btnTT[46].X = 497
+btnTT[46].Y = 7
+btnTT[46].Background = Color.ButtonBackground
+
+'Enter Taste
+btnTT[47] = New Button(FrTastatur) As "MyBtnTT"
+btnTT[47].H = 45
+btnTT[47].w = 65
+btnTT[47].Tag = "Enter" 
+btnTT[47].Text = "Enter"
+btnTT[47].X = 522
+btnTT[47].Y = 142
+btnTT[47].Background = Color.ButtonBackground
+FrTastatur.Visible = True 
+
+'Abrechen Taste
+btnTT[48] = New Button(FrTastatur) As "MyBtnTT"
+btnTT[48].H = 45
+btnTT[48].w = 90
+btnTT[48].Tag = "Abrechen" 
+btnTT[48].Text = "Abrechen"
+btnTT[48].X = 457
+btnTT[48].Y = 187
+btnTT[48].Background = Color.Red
+FrTastatur.Visible = True 
+
+End
+
+Public Sub MybtnTT_click()
+Dim i As Integer
+' Dim s As Short
+If Len(Last.Tag) > 2 Then
+  Select Case Last.Tag
+  Case "Shift"
+    If Last.Background = Color.Red Then
+      Last.Background = Color.ButtonBackground
+      For i = 10 To 39
+        btnTT[i].Text = String.LCase(btnTT[i].Text)    
+      Next
+    Else
+      Last.Background = Color.Red
+      For i = 10 To 39
+        btnTT[i].Text = String.UCase(btnTT[i].Text)    
+      Next
+    Endif
+  Case "Del"
+    objTastatur.Text = ""
+  Case "BackSp."
+    i = Len(objTastatur.Text)
+    If Asc(objTastatur.Text, i - 1) = 195 Then
+      objTastatur.Text = Left(objTastatur.Text, Len(objTastatur.Text) - 2)
+    Else
+      objTastatur.Text = Left(objTastatur.Text, Len(objTastatur.Text) - 1)
+    Endif
+  Case "Blank"
+    objTastatur.Text = objTastatur.Text & " "
+  Case "Enter"
+    fmTraining.TastSaveFl = True
+    fmTastatur.Close
+  Case "Abrechen"
+    fmTraining.TastSaveFl = False
+    If objTastatur Then
+      objTastatur.Background = Color.White
+      objTastatur.Foreground = Color.Black
+    Endif ' objTastatur.Text = ""
+    fmTastatur.Close
+  End Select
+Else  
+  If objTastatur Then
+    objTastatur.Text &= Last.Text
+  Endif
+Endif 
+End
+
+
+
+
+

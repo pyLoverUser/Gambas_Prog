@@ -1,0 +1,95 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,88,25)
+  Icon = Picture["Symbols/projekt_icon.png"]
+  Picture = Picture["Symbols/hg.png"]
+  { lblTemperature Label
+    MoveScaled(1,11,24,3)
+    Text = ("Temperature (°C) :")
+  }
+  { lblPressure Label
+    MoveScaled(1,15,24,3)
+    Text = ("Pressure (hPa) :")
+  }
+  { lblCloudiness Label
+    MoveScaled(1,19,24,3)
+    Text = ("Cloudiness (%) :")
+  }
+  { lblWindSpeed Label
+    MoveScaled(45,3,24,3)
+    Text = ("Wind-Speed (m/s) :")
+  }
+  { lblWindDirection Label
+    MoveScaled(45,7,24,3)
+    Text = ("Wind-Direction ( ° ) :")
+  }
+  { lblHumidity Label
+    MoveScaled(45,19,24,3)
+    Text = ("Humidity (%) :")
+  }
+  { lblSunrise Label
+    MoveScaled(45,11,24,3)
+    Text = ("Sunrise :")
+  }
+  { lblSunset Label
+    MoveScaled(45,15,24,3)
+    Text = ("Sunset :")
+  }
+  { pboxWeatherIcon PictureBox
+    MoveScaled(37,1.5714,6,6)
+    Stretch = True
+  }
+  { txbTemperature TextBox
+    MoveScaled(26,11,17,3)
+    Background = &HFFFFE6&
+    ReadOnly = True
+  }
+  { txbPressure TextBox
+    MoveScaled(26,15,17,3)
+    Background = &HFFFFE6&
+    ReadOnly = True
+  }
+  { txbCloudiness TextBox
+    MoveScaled(26,19,17,3)
+    Background = &HFFFFE6&
+    ReadOnly = True
+  }
+  { txbWindSpeed TextBox
+    MoveScaled(70,3,17,3)
+    Background = &HF5FFE6&
+    ReadOnly = True
+  }
+  { txbWindDirection TextBox
+    MoveScaled(70,7,17,3)
+    Background = &HF5FFE6&
+    ReadOnly = True
+  }
+  { txbHumidity TextBox
+    MoveScaled(70,19,17,3)
+    Background = &HF5FFE6&
+    ReadOnly = True
+  }
+  { txbSunRise TextBox
+    MoveScaled(70,11,17,3)
+    Background = &HF5FFE6&
+    ReadOnly = True
+  }
+  { txbSunSet TextBox
+    MoveScaled(70,15,17,3)
+    Background = &HF5FFE6&
+    ReadOnly = True
+  }
+  { lblDescription1 Label
+    MoveScaled(1,3,9,3)
+    Text = ("Weather :")
+  }
+  { lblDescription Label
+    MoveScaled(10,3,26,3)
+    Text = ("Text")
+  }
+  { Separator2 Separator
+    MoveScaled(0,8.8571,43,0)
+    Foreground = &HFFFFFF&
+  }
+}

@@ -1,0 +1,142 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,213.3333,120)
+  FullScreen = True
+  { picFmainBot PictureBox
+    MoveScaled(64,20,42,15)
+    Picture = Picture["PicTasten.jpg"]
+    Stretch = True
+  }
+  { picFmainTop PictureBox
+    MoveScaled(64,0,42,16)
+    Picture = Picture["PicPlaetze.jpg"]
+    Stretch = True
+  }
+  { picRegCopy1 PictureBox PicReg
+    Name = "picRegCopy1"
+    MoveScaled(115,0,32,15)
+    Visible = False
+    Expand = True
+    Border = Border.Raised
+    Picture = Picture["Regner11.JPG"]
+    Stretch = True
+    Alignment = Align.Center
+    Mode = PictureBox.Fill
+  }
+  { picRegCopy2 PictureBox PicReg
+    Name = "picRegCopy2"
+    MoveScaled(115,18,32,15)
+    Visible = False
+    Expand = True
+    Border = Border.Raised
+    Picture = Picture["Regner2.jpg"]
+    Stretch = True
+    Alignment = Align.Justify
+    Mode = PictureBox.Fill
+  }
+  { TimerRegner #Timer
+    #MoveScaled(0,68)
+    Delay = 500
+  }
+  { TimerRFID #Timer
+    #MoveScaled(0,76)
+    Delay = 100
+  }
+  { ZeitDatum #Timer
+    #MoveScaled(0,85)
+    Delay = 100
+  }
+  { panEinzelDoppel Panel
+    MoveScaled(98,50,28.7778,10)
+    Background = Color.Orange
+    Border = Border.Plain
+    { btnEinzel Button btnEinzDopp
+      Name = "btnEinzel"
+      MoveScaled(1,1,10,8)
+      Font = Font["Arial,14"]
+      Background = Color.ButtonBackground
+      Tag = "0"
+      Text = ("Einzel")
+    }
+    { btnDoppel Button btnEinzDopp
+      Name = "btnDoppel"
+      MoveScaled(18,1,10,8)
+      Font = Font["Arial,14"]
+      Background = Color.ButtonBackground
+      Tag = "1"
+      Text = ("Doppel")
+    }
+  }
+  { !gridBelegung GridView
+    MoveScaled(24,9,24,18)
+    #Public = True
+    Enabled = False
+    Mode = Select.Single
+    Padding = 0
+    ScrollBar = Scroll.None
+    AutoResize = False
+  }
+  { frBtnMenue Frame
+    MoveScaled(-3,97,244,24)
+    { !Vname Label
+      MoveScaled(66,0,37.5556,5)
+      #Public = True
+      Font = Font["Sans Serif,18"]
+      Background = Color.Magenta
+      Foreground = Color.SelectedForeground
+      Alignment = Align.Center
+    }
+    { btnDelete Button btnMain
+      Name = "btnDelete"
+      MoveScaled(185,6,13.7778,13.7778)
+      Background = Color.White
+      Tag = "Del"
+      Picture = Picture["Ball_Löschen.png"]
+      Border = False
+    }
+    { btnGast Button btnMain
+      Name = "btnGast"
+      MoveScaled(163,6,13.7778,13.7778)
+      Background = Color.Red
+      Tag = "Gast"
+      Picture = Picture["Ball_Gast.png"]
+      Border = False
+    }
+    { btnAdmin Button btnMain
+      Name = "btnAdmin"
+      MoveScaled(12,4,13.7778,13.7778)
+      Background = Color.Red
+      Tag = "Admin"
+      Picture = Picture["Ball_Admin.png"]
+      Border = False
+    }
+    { btnSpielBetr Button btnMain
+      Name = "btnSpielBetr"
+      MoveScaled(34,4,13.7778,13.7778)
+      Background = Color.Yellow
+      Tag = "SBetr"
+      Picture = Picture["Ball_Spielbetrieb1.png"]
+      Border = False
+    }
+    { lbZeitDatum Label
+      MoveScaled(78,17,24,4)
+      Font = Font["Sans Serif,24"]
+      Foreground = Color.White
+    }
+    { btnRollo Button
+      MoveScaled(207,7,12,11)
+      Font = Font["Sans Serif,15"]
+      Background = Color.DarkRed
+      Foreground = Color.White
+      Text = ("Rollo")
+      Picture = Picture["icon:/32/lock"]
+    }
+  }
+  { !TimerSecure #Timer
+    #MoveScaled(5,48)
+    #Public = True
+    Enabled = True
+    Delay = 100
+  }
+}

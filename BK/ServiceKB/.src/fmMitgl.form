@@ -1,0 +1,125 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,66.6667,38.8889)
+  Background = Color.DarkGray
+  Text = ("Mitglieder Datenformular")
+  { panDat Panel
+    MoveScaled(0,0,67,38.8889)
+    { txtMitgNr TextBox
+      MoveScaled(13,8.8889,7.7778,3)
+      Enabled = False
+      Background = Color.Blue
+      Foreground = Color.White
+      Text = ("2014")
+      Alignment = Align.Center
+    }
+    { comGeshl ComboBox
+      MoveScaled(13,12.2222,8,2.7778)
+      ReadOnly = True
+    }
+    { lblGeshl Label
+      MoveScaled(1.5556,13,10,3)
+      Background = Color.Transparent
+      Foreground = Color.White
+      Text = ("Geschl.")
+    }
+    { lblName Label
+      MoveScaled(1.5556,21,10,3)
+      Background = Color.Transparent
+      Foreground = Color.White
+      Text = ("Name")
+    }
+    { lblVorname Label
+      MoveScaled(1.5556,25,10,3)
+      Background = Color.Transparent
+      Foreground = Color.White
+      Text = ("Vorname")
+    }
+    { lblGebd Label
+      MoveScaled(1.5556,29,10,3)
+      Background = Color.Transparent
+      Foreground = Color.White
+      Text = ("Geb.Datum")
+    }
+    { lblTitel Label
+      MoveScaled(1.5556,17,10,3)
+      Background = Color.Transparent
+      Foreground = Color.White
+      Text = ("Titel")
+    }
+    { lblMitgNr Label
+      MoveScaled(1.5556,9,10,3)
+      Background = Color.Transparent
+      Foreground = Color.White
+      Text = ("Mitgl. Nr")
+    }
+    { Panel1 Panel
+      MoveScaled(39,8,25,20)
+      Background = Color.Gray
+      { comBerecht ComboBox
+        MoveScaled(15,5,7,2.7778)
+      }
+      { comMitglStatus ComboBox
+        MoveScaled(15,9,7,2.7778)
+      }
+      { comVZB ComboBox
+        MoveScaled(15,13,7,2.7778)
+      }
+      { Label7 Label
+        MoveScaled(1,1,10,3)
+        Font = Font["10"]
+        Foreground = Color.White
+        Text = ("Transp-ID")
+      }
+      { Label8 Label
+        MoveScaled(1,5,11,3)
+        Font = Font["10"]
+        Foreground = Color.White
+        Text = ("Berechtigung")
+      }
+      { Label9 Label
+        MoveScaled(1,9,12,3)
+        Font = Font["10"]
+        Foreground = Color.White
+        Text = ("Mitgl.-Status")
+      }
+      { txtTranspID TextBox
+        MoveScaled(10,1,13,2.7778)
+        Enabled = False
+        Background = Color.DarkRed
+        Foreground = Color.White
+        Alignment = Align.Center
+      }
+      { Label10 Label
+        MoveScaled(1,13,4,3)
+        Font = Font["10"]
+        Foreground = Color.White
+        Text = ("VZB")
+      }
+      { VZB_Betr TextLabel
+        MoveScaled(7,13,7,2.7778)
+        Font = Font["Sans Serif,10"]
+        Background = Color.White
+        Alignment = Align.Center
+      }
+      { rbBtnVZB RadioButton
+        MoveScaled(9.6667,16.4444,14,3)
+        Font = Font["Sans Serif,10"]
+        Foreground = Color.Red
+        Text = ("VZB zuweisen")
+      }
+    }
+    { txtNeuTrID TextBox
+      MoveScaled(44,32,13,2.7778)
+      Alignment = Align.Center
+    }
+    { Label11 Label
+      MoveScaled(42,29,17,3)
+      Font = Font["10"]
+      Foreground = Color.White
+      Text = ("Neue Transponder ID")
+      Alignment = Align.Center
+    }
+  }
+}

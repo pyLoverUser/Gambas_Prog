@@ -1,0 +1,63 @@
+' Gambas class file
+
+Private btnAdmin[4] As Button
+
+Public Sub Form_Open()
+Dim i As Integer
+    fmAdmin.h = 150
+    For i = 0 To 3
+        btnAdmin[i] = New Button(Me) As "btnAdmin"
+        With btnAdmin[i]
+            .Tag = i
+            .W = 100
+            .H = 100
+            .X = 20 + i * 120
+            .Y = 25
+            .Background = Color.Yellow
+            ' .Alignment = Align.Center
+            .Font.name = "Sans Serif"
+            .Font.Size = 12
+            .Font.Bold = False
+            .Foreground = Color.Black
+            .Visible = True
+            .Enabled = True
+            Select Case i
+                Case 0
+                    .Text = "Service"
+                Case 1
+                     .Text = "Platz-" & Chr(10) & "Sperre"
+                Case 2
+                    .Text = "Spiel" & Chr(10) & "löschen"
+                Case 3
+            End Select
+        End With
+    Next
+    fmAdmin.W = (i - 1) * 120 + 20
+    If FMain.Berecht = "E" Then
+        btnAdmin[0].Visible = False
+        btnAdmin[1].Visible = True
+        btnAdmin[2].Visible = False
+    Else
+        btnAdmin[0].Visible = True
+        btnAdmin[1].Visible = True
+        btnAdmin[2].Visible = True
+    Endif
+    fmAdmin.Center
+    
+End
+Public Sub btnAdmin_MouseDown()
+Dim i As Integer
+Select Case Last.Tag
+    Case 0
+         fmAdmin.Visible = False
+        ' fmTraining.ShowModal
+        fmService.ShowModal        
+        fmAdmin.Close
+    Case 1
+        FMain.Admin_Fl = 2
+        fmAdmin.Close
+    Case 2
+        FMain.Admin_Fl = 3
+        fmAdmin.Close
+   End Select
+End

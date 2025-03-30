@@ -1,0 +1,501 @@
+' Gambas class file
+
+Public SqlP As Variant
+Public SqlCom As Variant
+Public SqlTab As Variant
+Public rs As Result
+
+Public btnRegeln[6] As Button
+Public comGlob[5] As ComboBox
+Public lblGlob[5] As Label
+Public comPlatz[6] As ComboBox
+Public lblPlatz[6] As Label
+Public comGast[6] As ComboBox
+Public lblGast[6] As Label
+Public spFl As Integer
+Public comSpFl As Boolean
+'==========================================================================
+' Sub:  Form_Open()
+'	
+'
+'==========================================================================
+Public Sub Form_Open()
+frGlob.Enabled = False
+frPlatz.Enabled = False    
+frGast.Enabled = False
+frGlob.X = Screen.W \ 2 - frGlob.W \ 2
+frPlatz.X = Screen.W \ 2 - frGlob.W \ 2
+frGast.X = Screen.W \ 2 - frGlob.W \ 2
+frGast.H = 150
+frGlob.H = frGast.H
+frPlatz.H = frGast.H
+frGlob.Y = 100
+frPlatz.Y = frGlob.Y + frGlob.H + 30
+frGast.Y = frPlatz.Y + frPlatz.H + 30
+initBtnRegeln()
+initComGlob()
+' InitlblGlob()
+InitComPlatz()
+' InitlblPlatz() 
+InitComGast()
+' InitlblGast()
+ rDBglobal()
+ btnRegeln[3].Enabled = False
+End
+'==========================================================================
+' Sub:  rDBglobal()
+'	
+'
+'==========================================================================
+Public Sub rDBglobal()
+SqlCom = "SELECT * FROM "
+SqlTab = "r_Global"
+SqlP = ""
+rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.count > 0 Then    
+    comGlob[0].Text = rs!AnzPlaetze   
+    comGlob[1].Text = rs!RegnerSigFl 
+    comGlob[2].Text = Format(rs!SysRolloEin, "hh:ss")  
+    comGlob[3].Text = Format(rs!SysRolloAus, "hh:ss") 
+    comGlob[4].Text = rs!DauerOE
+Endif  
+SqlCom = "SELECT * FROM "
+SqlTab = "r_Platz"
+SqlP = ""
+rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.count > 0 Then
+    comPlatz[0].Text = rs!Einzel
+    comPlatz[1].Text = rs!Doppel 
+    comPlatz[2].Text = rs!maxPause
+    comPlatz[3].Text = rs!delNotComplete
+    comPlatz[4].Text = rs!delActive  
+    comPlatz[5].Text = rs!GelbSperre  
+Endif
+SqlCom = "SELECT * FROM "
+SqlTab = "r_Gastspieler"
+SqlP = ""
+rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.count > 0 Then
+    comGast[0].Text = rs!Gast_Erlaubt
+    comGast[1].Text = rs!Gast_Anz_Eingesch 
+    comGast[2].Text = rs!Gast_Anz
+    ' comGast[3].Text = rs!Gast_Buch_Min
+    comGast[4].Text = Format(rs!GastPrErw, "#,##0.00")  
+    comGast[5].Text = Format(rs!GastPrJug, "#,##0.00")  
+Endif
+End
+
+'==========================================================================
+' Sub:  initBtnRegeln()
+'	
+'
+'==========================================================================
+Public Sub initBtnRegeln()
+Dim i As Integer
+For i = 0 To 5
+btnRegeln[i] = New Button(Me) As "MyRegeln"
+  With btnRegeln[i]
+    .H = 60
+    .W = 150
+    .X = 0 + i * 150 
+    .Y = 0
+    If i = 5 Then .W = fmRegeln.W - .X + 150
+    ' If i < 5 Then fmTranspNeuSperre.w = (i + 1) * 150
+    .Tag = i 
+    ' .Background = Color.Black
+    ' .Foreground = Color.White
+    .Background = Color.DarkGray
+    .Foreground = Color.White
+      Select Case i 
+        Case 0
+            .Text = "Global"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Globe.ico")
+        Case 1
+            .Text = "Platz"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Target.ico")
+        Case 2
+            .Text = "Gast"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Man.ico")
+        Case 3
+            .Text = "Speichern"
+            .Enabled = False
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Save.ico")            
+        Case 4
+            .Text = "Ende"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Home.ico")
+      End Select
+  End With
+  Next
+End
+'==========================================================================
+' Sub:  MyRegeln_MouseDown()
+'	
+'
+'==========================================================================
+Public Sub MyRegeln_MouseDown()
+Dim i, j As Integer  
+frGlob.Enabled = False
+frPlatz.Enabled = False
+frGast.Enabled = False
+i = Last.Tag 
+For j = 0 To 4 
+    ' btnRegeln[j].Background = Color.Black
+    ' btnRegeln[j].Foreground = Color.White
+    btnRegeln[j].Background = Color.DarkGray
+    btnRegeln[j].Foreground = Color.White
+Next
+btnRegeln[i].Background = Color.Cyan
+btnRegeln[i].Foreground = Color.Black
+frGlob.Background = Color.DarkGray
+frPlatz.Background = Color.DarkGray
+frGast.Background = Color.DarkGray
+Select Case i
+Case 0
+    spFl = 1
+    frGlob.Enabled = True
+    frGlob.Background = Color.Black
+Case 1
+    spFl = 2
+    frPlatz.Enabled = True
+    frPlatz.Background = Color.Black
+Case 2
+    spFl = 3
+    frGast.Enabled = True
+    frGast.Background = Color.Black
+Case 3
+    If comSpFl = True Then
+        RegSave()
+    Endif
+    btnRegeln[i].Background = Color.Black
+    btnRegeln[i].Foreground = Color.White
+    btnRegeln[i].Enabled = False
+    spFl = 0
+    comSpFl = False
+Case 4
+    ' fmAdmin.Show
+    fmRegeln.Close  
+End Select  
+End
+'==========================================================================
+' Sub:  initComGlob()
+'	
+'
+'==========================================================================
+Public Sub initComGlob()
+Dim i, j As Integer
+For i = 0 To 4
+     comGlob[i] = New ComboBox(frGlob) As "MycomGlob"
+     With comGlob[i]
+       .Tag = i
+       .Visible = True
+       .Background = Color.ButtonBackground
+       .Foreground = Color.Black
+       .Font.size = 14
+       .Font.name = "Sans Serif"
+       .H = 36
+       .W = 80
+       .Y = 100
+       Select Case i
+           Case 0       'Anzahl Plätze
+               .X = 18
+               For j = 1 To 12
+                   .Add(Str(j))
+               Next
+           Case 1       'Regnen Sensor
+               .X = 118
+               .List = ["Ja", "Nein"]
+          Case 2        'System-Rollo Ein
+               .X = 399
+               For j = 5 To 10
+                   .Add(Str(j) & ":00")
+               Next
+           Case 3       'System-Rollo Aus
+               .X = 499
+               For j = 19 To 23
+                   .Add(Str(j) & ":00")
+               Next
+           Case 4       'Dauer
+               .X = 649
+               For j = 10 To 60 Step 10
+                   .Add(Str(j))
+               Next
+       End Select
+   End With
+Next
+InitlblGlob()
+End
+'==========================================================================
+' Sub:  InitlblGlob()
+'	
+'
+'==========================================================================
+Public Sub InitlblGlob()
+Dim i As Integer
+ For i = 0 To 4
+      lblGlob[i] = New Label(frGlob) As "MylblGlob"
+      With lblGlob[i]
+        .Font.Size = 10
+        .Visible = True
+        .Alignment = Align.Center
+        .Foreground = Color.Cyan
+        Select Case i
+            Case 0
+                .Text = "Anz." & Chr(10) & "Plätze"
+            Case 1
+                .Text = "Regen-" & Chr(10) & "Sensor"
+           Case 2
+                .W = comGlob[3].X - comGlob[2].X + comGlob[3].W
+                .Text = "System-Rollo" & Chr(10) & "Ein        Aus"
+            Case 3
+                .Text = ""
+            Case 4
+               .Text = "Dauer" & Chr(10) & "in Min"
+        End Select
+    .Adjust
+    If i <> 2 Then
+        .X = comGlob[i].X - (.W \ 2 - comGlob[i].W \ 2)
+    Else
+        .X = comGlob[2].X + ((comGlob[3].X - comGlob[2].X + comGlob[3].W) \ 2 - .W \ 2)
+    Endif
+    .Y = comGlob[0].Y - .H - 15
+    End With
+ Next
+End
+'==========================================================================
+' Sub:  InitComPlatz()
+'	
+'
+'==========================================================================
+Public Sub InitComPlatz()
+Dim i, j As Integer
+ For i = 0 To 5
+      comPlatz[i] = New ComboBox(frPlatz) As "MycomPlatz"
+      With comPlatz[i]
+        .Tag = i
+        .Visible = True
+        .Background = Color.ButtonBackground
+       .Foreground = Color.Black
+       .Font.size = 14
+       .Font.name = "Sans Serif"
+        .H = 36
+        .W = 72
+        .Y = 100
+        Select Case i
+            Case 0
+                .X = 18
+               For j = 30 To 120 Step 15
+                   .Add(Str(j))
+               Next
+            Case 1
+                .X = 117
+               For j = 45 To 120 Step 15
+                   .Add(Str(j))
+               Next
+           Case 2
+                .X = 306
+               For j = 0 To 30 Step 15
+                   .Add(Str(j))
+               Next
+            Case 3
+                .X = 423
+               For j = 1 To 10
+                   .Add(Str(j))
+               Next
+            Case 4
+                .X = 540
+               For j = 1 To 10
+                   .Add(Str(j))
+               Next
+            Case 5
+                .X = 657
+               For j = 0 To 30 Step 15
+                   .Add(Str(j))
+               Next
+        End Select
+    End With
+ Next
+InitlblPlatz() 
+End
+'==========================================================================
+' Sub:  InitlblPlatz()
+'	
+'
+'==========================================================================
+Public Sub InitlblPlatz()
+Dim i As Integer
+ For i = 0 To 5
+      lblPlatz[i] = New Label(frPlatz) As "MylblPlatz"
+      With lblPlatz[i]
+        .Font.Size = 10
+        .Visible = True
+        .Alignment = Align.Center
+        .Foreground = Color.Cyan
+        Select Case i
+            Case 0
+                .Text = "Zeit" & Chr(10) & "Einzel" & Chr(10) & "in Min"
+            Case 1
+                .Text = "Zeit" & Chr(10) & "Doppel" & Chr(10) & "in Min"
+           Case 2
+                .Text = "Max Pause" & Chr(10) & "in Min"
+            Case 3
+                .Text = "löschen" & Chr(10) & "wenn nicht" & Chr(10) & "kompl." & Chr(10) & "in Min"
+            Case 4
+                .Text = "Ausbuchung:" & Chr(10) & "löschen wenn" & Chr(10) & "nicht kompl." & Chr(10) & "in Min"
+            Case 5
+                .Text = "Gelb-" & Chr(10) & "Sperre " & Chr(10) & "in Min"
+       End Select
+        .Adjust
+        .X = comPlatz[i].X - (.W \ 2 - comPlatz[i].W \ 2)
+        .Y = comPlatz[0].Y - .H - 15
+    End With
+ Next
+End
+'==========================================================================
+' Sub:  InitComGast()
+'	
+'
+'==========================================================================
+Public Sub InitComGast()
+Dim i, j As Integer
+Dim k As Float
+ For i = 0 To 5
+      comGast[i] = New ComboBox(frGast) As "MycomGast"
+      With comGast[i]
+        .Tag = i
+        .Visible = True
+        .Background = Color.ButtonBackground
+       .Foreground = Color.Black
+       .Font.size = 14
+       .Font.name = "Sans Serif"
+        .H = 36
+        .W = 72
+        .Y = 100
+        Select Case i
+            Case 0
+                .X = 18
+                .List = ["JA", "Nein"]
+            Case 1
+                .X = 126
+                .List = ["JA", "Nein"]
+           Case 2
+                .X = 234
+               For j = 1 To 10
+                   .Add(Str(j))
+               Next
+            Case 3
+                .X = 342
+               For j = 0 To 10
+                   .Add(Str(j))
+               Next
+            Case 4
+                .X = 549
+               For j = 1 To 10
+                   .Add(Trim(Format(j, "#,##0.00")))
+               Next
+            Case 5
+                .X = 657
+               For j = 2 To 10
+                   k = j / 2
+                   .Add(Trim(Format(k, "#,##0.00")))
+               Next
+        End Select
+    End With
+ Next
+InitlblGast()
+End
+'==========================================================================
+' Sub:  InitlblGast()
+'	
+'
+'==========================================================================
+Public Sub InitlblGast()
+Dim i As Integer
+ For i = 0 To 5
+    lblGast[i] = New Label(frGast) As "MylblGast"
+    With lblGast[i]
+        .Font.Size = 10
+        .Visible = True
+        .Alignment = Align.Center
+        .Foreground = Color.Cyan
+        Select Case i
+            Case 0
+                .Text = "Gast" & Chr(10) & "erlaubt?" 
+            Case 1
+                .Text = "Gast-" & Chr(10) & "anzahl" & Chr(10) & "beschränkt?"
+           Case 2
+                .Text = "Gast-" & Chr(10) & "Anzahl"
+            Case 3
+                .Text = "Gast-" & Chr(10) & "Abrechnung" & Chr(10) & "nach Min." ""
+            Case 4
+                .Text = "Preis für" & Chr(10) & "Erwachsene:"
+            Case 5
+                 .Text = "Preis für" & Chr(10) & "Jugendliche:"
+       End Select
+        .Adjust
+        .X = comGast[i].X - (.W \ 2 - comGast[i].W \ 2)
+        .Y = comGast[0].Y - .H - 15
+    End With
+ Next
+End
+Public Sub RegSave()
+SqlCom = "UPDATE "
+Select Case spFl
+    Case 1
+        SqlTab = "r_Global SET "
+        SqlP = "AnzPlaetze = '" & comGlob[0].Text & "',RegnerSigFl = '" & comGlob[1].Text & "',SysRolloEin = '" & comGlob[2].Text & "',SysRolloAus = '" &
+                    comGlob[3].Text & "',DauerOE = '" & comGlob[4].Text & "'"
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    Case 2
+        SqlTab = "r_Platz SET "
+        SqlP = "Einzel = '" & comPlatz[0].Text & "',Doppel = '" & comPlatz[1].Text & "',maxPause = '" & comPlatz[2].Text & "',delNotComplete = '" &
+                    comPlatz[3].Text & "',delActive = '" & comPlatz[4].Text & "',GelbSperre = '" & comPlatz[5].Text & "'"
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    Case 3
+        SqlTab = "r_Gastspieler SET "
+        SqlP = "Gast_Erlaubt = '" & comGast[0].Text & "',Gast_Anz_Eingesch = '" & comGast[1].Text & "',Gast_Anz = '" & comGast[2].Text & "',GastPrErw = '" & Val(comGast[4].Text) & "',GastPrJug = '" & Val(comGast[5].Text) & "'"
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+End Select
+    
+    
+End
+
+Public Sub MycomGlob_Change()
+Dim i As Integer    
+i = Last.Tag    
+btnRegeln[3].Enabled = True
+comSpFl = True    
+End
+Public Sub MycomGast_Change()
+Dim i As Integer    
+i = Last.Tag 
+btnRegeln[3].Enabled = True
+gastErlAnz(i)
+comSpFl = True    
+End
+Public Sub MycomPlatz_Change()
+Dim i As Integer    
+i = Last.Tag    
+btnRegeln[3].Enabled = True
+comSpFl = True    
+End
+Public Sub gastErlAnz(i As Integer)
+Dim j As Integer
+If i = 0 And comGast[i].Text = "Nein" Then
+    For j = 1 To 5
+        comGast[j].Foreground = Color.LightGray
+        comGast[j].Enabled = False
+    Next
+Else
+    For j = 1 To 5
+        If j = 1 And comGast[1].Text = "Nein" Then
+            comGast[2].Foreground = Color.LightGray
+            comGast[2].Enabled = False
+            j = 2
+        Else
+            comGast[j].Foreground = Color.Black
+            comGast[j].Enabled = True            
+        Endif
+    Next
+Endif
+End
+

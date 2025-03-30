@@ -1,0 +1,102 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,142.2222,80)
+  Background = Color.LightGray
+  Text = ("Nr1")
+  FullScreen = True
+  { frRegMan1 Frame
+    MoveScaled(3,10,44,31)
+    Font = Font["Sans Serif,14"]
+    Background = Color.DarkGray
+    Foreground = Color.Red
+    Text = ("  Regner Manuell")
+    { comRegMan1 ComboBox grMan
+      Name = "comRegMan1"
+      MoveScaled(3,5,7,4)
+      Font = Font["Sans Serif,14"]
+      Foreground = Color.Black
+      Tag = "1"
+    }
+    { comRegMan2 ComboBox grMan
+      Name = "comRegMan2"
+      MoveScaled(3,11,7,4)
+      Font = Font["Sans Serif,14"]
+      Foreground = Color.Black
+      Tag = "2"
+    }
+    { comRegMan3 ComboBox grMan
+      Name = "comRegMan3"
+      MoveScaled(3,17,7,4)
+      Font = Font["Sans Serif,14"]
+      Foreground = Color.Black
+      Tag = "3"
+    }
+    { Label1 Label
+      MoveScaled(13,5,19,3)
+      Font = Font["Sans Serif,10"]
+      Foreground = Color.White
+      Text = ("Dauer in Minuten")
+    }
+    { Label2 Label
+      MoveScaled(13,11,18,3)
+      Font = Font["Sans Serif,10"]
+      Foreground = Color.White
+      Text = ("Regner Gleichzeitig")
+    }
+    { Label3 Label
+      MoveScaled(13,17,28,3)
+      Font = Font["Sans Serif,10"]
+      Foreground = Color.White
+      Text = ("Beregnung auf allen Plätzen möglich?")
+    }
+    { comRegMan4 ComboBox grMan
+      Name = "comRegMan4"
+      MoveScaled(3,23,7,4)
+      Font = Font["Sans Serif,14"]
+      Foreground = Color.Black
+      Tag = "3"
+    }
+    { Label4 Label
+      MoveScaled(13,23,28,3)
+      Font = Font["Sans Serif,10"]
+      Foreground = Color.White
+      Text = ("Regner Einschaltverzögerung in sek.")
+    }
+  }
+  { frRegMan2 Frame
+    MoveScaled(3,41,44,9)
+    Font = Font["Sans Serif,14"]
+    Background = Color.DarkGray
+    Foreground = Color.Red
+    Text = ("  Plätze")
+  }
+  { frAuto Frame
+    MoveScaled(50,10,51,24)
+    Font = Font["Sans Serif,14"]
+    Background = Color.DarkGray
+    Foreground = Color.Red
+    Text = ("  Regner Automatisch")
+    { lbplz Label
+      MoveScaled(2,5,7,5.5556)
+      Foreground = Color.White
+      Text = ("Plätze")
+    }
+    { btnScrolldw Button Scroll
+      Name = "btnScrolldw"
+      MoveScaled(41,20,6,16)
+      Tag = "1"
+      Picture = Picture["icon:/32/bottom"]
+    }
+    { btnScrollup Button Scroll
+      Name = "btnScrollup"
+      MoveScaled(41,2,6,16)
+      Tag = "0"
+      Picture = Picture["icon:/32/top"]
+    }
+  }
+  { Timer1 #Timer
+    #MoveScaled(97,5)
+    Delay = 100
+  }
+}

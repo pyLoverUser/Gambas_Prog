@@ -1,0 +1,312 @@
+' Gambas class file
+
+Public lbPlatz[7] As Label
+Public lbDate[7] As Label
+Private aWeekDay As String[]
+Private Tag As String
+Private aryDatum[7] As Date
+Private SqlP As Variant
+Private SqlCom As Variant
+Private SqlTab As Variant
+Private rs As Result
+Const offset As Integer = 32
+Public Sub Form_Open()
+    DateChooser1.Visible = False
+    aWeekDay = Split("So, Mo, Di, Mi, Do, Fr, Sa", ",")
+    gridSpielbInit(Date)
+    panKalHome.Y = 1015
+    panKalHome.X = (Screen.W - panKalHome.W) \ 2
+    Panel1.Visible = False
+End
+
+Public Sub gridSpielbInit(date2 As Date)
+Dim i, j, s, m As Integer
+Dim tmpdate As Date
+    tmpdate = date2
+    gridSpielBetr.Delete
+    gridSpielBetr = New GridView(Me) As "mySpielBetr"
+    With gridSpielBetr
+        .Clear
+        .X = 50
+        .Y = 30
+        .H = 18 * 54
+        .Font.Size = 7
+        .ScrollBar = 0
+        .Columns.Count = 55
+        .Columns.W = 1920 \ ((7 * 7) + 6)
+        .Rows.Count = 13 * 4 + 1
+        .Rows.H = 18
+        .W = .Columns.W * 49 + (4 * 37)
+        .W += 6 * 5
+        .Header = 1
+        .Visible = True
+        j = 1
+        For i = 0 To 54
+            If (i + 1) Mod 8 = 0 Then
+                j = 1
+                .Columns[i].w = 5
+                gridSpielBetr[0, i].RowSpan = 56
+                gridSpielBetr[0, i].Background = Color.DarkGray
+            Else
+                .Columns[i].Alignment = Align.Center
+                .Columns[i].Title = Str(j)
+                j = j + 1
+                .Columns[i].w = 37
+            Endif
+        Next
+        
+        ' date2 = Date
+        Tag = Trim(aWeekDay[WeekDay(date2)])
+        For i = 0 To 6
+            lbDate[i] = New Label(Me) As "myDate"
+            With lbDate[i]
+                .W = 7 * 37
+                .H = 30
+                .Alignment = Align.Center
+                .Font.name = "Arial"
+                .Font.Size = 14
+                .Font.Bold = True
+                If date2 = Date Then
+                    .Background = Color.Green
+                    .Foreground = Color.Black
+                Else
+                    .Background = Color.DarkBlue
+                    .Foreground = Color.White
+                Endif
+                .Font.Bold = True
+                .X = gridSpielBetr.X + (i * ((7 * 37) + 5))
+                ' .Y = lbPlatz[i].y - .H
+                .Y = gridSpielBetr.Y - .H
+                .Text = aWeekDay[WeekDay(date2)] & " - " & Format(date2, "dd.mmm.yyyy")
+                date2 = DateAdd(date2, gb.Day, 1)
+            End With
+        Next
+        date2 = tmpdate
+        For i = 0 To 52
+            For j = 0 To 54
+                If (j + 1) Mod 8 > 0 Then
+                    If i Mod 4 = 0 Then
+                        s = (i + offset) \ 4
+                        gridSpielBetr[i, j].Background = Color.RGB(114, 159, 207) '&HFF8080
+                        ' gridSpielBetr[i, j].Background = Color.Blue
+                        gridSpielBetr[i, j].Foreground = Color.White
+                       .Font.Name = "Arial"
+                       .Columns[i].Alignment = Align.Center 
+                        gridSpielBetr[i, j].Font.Size = 7
+                        gridSpielBetr[i, j].Font.Bold = True
+                        gridSpielBetr[i, j].Text = Str(s) & ":" & Str("00")  
+                    Else
+                        m = ((i + offset) Mod 4) * 15
+                        gridSpielBetr[i, j].Alignment = Align.Center 
+                        gridSpielBetr[i, j].Font.Size = 7
+                        ' gridSpielBetr[i, j].Text = Str(s) & ":" & Str(m)  
+                        gridSpielBetr[i, j].Text = Str(m)  
+                        
+                    Endif
+                Endif
+            Next
+        Next
+        ' date2 = Date
+        For i = 0 To 6
+            Tag = Trim(aWeekDay[WeekDay(date2)])
+            loadTrTag(Tag, i, date2, 2)
+            loadTrTag(Tag, i, date2, 1)
+            
+            aryDatum[i] = date2
+            date2 = DateAdd(date2, gb.Day, 1)
+        Next
+    End With
+End
+'==========================================================================
+' loadTrTag()
+'	
+'
+'==========================================================================
+
+Public Sub loadTrTag(day As String, pos As Integer, datum2 As Date, evFl As Integer)
+    
+    Dim s, tag, Platz, man As String
+    Dim rs As Result
+    Dim b, e, h, m, i, k, j, n, col As Integer
+    s = Format(datum2, "yyyy-mm-dd")
+    Select Case evFl
+    Case 1
+        SqlCom = "SELECT * FROM "
+        SqlTab = "MannschTrain "
+        SqlP = "WHERE Tag = '" & day & "' AND  '" & s & "' BETWEEN DatumVon AND DatumBis AND Freigabe = " & "'J'"
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    Case 2
+        SqlCom = "SELECT * FROM "
+        SqlTab = "MannHeimGast "
+        SqlP = "WHERE Tag = '" & day & "' AND  '" & s & "' BETWEEN SpTermin AND SpTermin"
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    End Select
+
+    If rs.count > 0 Then
+        For i = 0 To rs.count - 1
+            b = Val(Format(rs!Beginn, "hh")) * 4 + Val(Format(rs!Beginn, "nn")) \ 15
+            e = Val(Format(rs!Ende, "hh")) * 4 + Val(Format(rs!Ende, "nn")) \ 15
+            h = e - b
+            Platz = Trim(rs!Platz)
+            For j = 1 To 7
+                If Mid(Platz, j, 1) = 1 Then
+                    ' plz[k] = j
+                    ' k += 1
+                    m = b - offset
+                    col = (j - 1) + pos * 8
+                    With gridSpielBetr[m, col]
+                        .RowSpan = h
+                        If evFl = 1 Then
+                            .Background = Color.Red
+                            .Foreground = Color.White
+                        Else
+                            .Background = Color.Yellow
+                            .Foreground = Color.Black
+                        Endif
+                        .Font.Size = 7
+                        .Font.name = "Sans Srif"
+                        .Font.Bold = True
+                        .WordWrap = True
+                        man = rs!Mannschaft
+                        k = Len(man)
+                        ' .text = ""
+                        For n = 1 To k
+                            .text = Format(rs!Beginn, "hh:nn") & Chr(10) & Chr(10) & man                           'rs!Mannschaft
+                        Next
+                    End With
+                Endif
+            Next
+            rs.MoveNext
+        Next
+    Endif
+    
+End
+
+Public Sub DateChooser1_Change()
+Dim date1 As Date
+    date1 = DateChooser1.Value
+    DateChooser1.Visible = False
+    gridSpielbInit(date1)
+End
+
+Public Sub btnKalender_Click()
+
+    If DateChooser1.Visible = False Then
+        DateChooser1.Visible = True
+        DateChooser1.Raise
+    Else
+        DateChooser1.Visible = False
+    Endif
+
+End
+
+Public Sub btnEnde_Click()
+    Panel1.Visible = False
+    fmSpielbetrieb.Close
+End
+Public Sub mySpielBetr_MouseDown()
+Dim i, j, k, row, col, plz As Integer
+Dim platz, datum, strplz As String 
+With gridSpiele 
+    .Clear
+    .Header = 1
+    .Columns.Count = 4
+    .Columns[0].W = 500
+    .Columns[0].Alignment = Align.Center
+    .Columns[1].W = 80
+    .Columns[1].Alignment = Align.Center
+    .Columns[2].W = 80
+    .Columns[2].Alignment = Align.Center
+    .Columns[3].W = 80
+    .Columns[3].Alignment = Align.Center
+    For i = 0 To 3
+        j += .Columns[i].W 
+    Next
+    .W = j
+    Panel1.W = j + 40
+    Panel1.X = Screen.W \ 2 - Panel1.W \ 2
+    Button1.X = (Panel1.w \ 2) - (Button1.W \ 2)
+    lbTraining.x = Button1.x - lbTraining.W - 50
+    lbVerbSp.x = Button1.x + Button1.w + 50
+    .x = 20
+    .y = 50
+    .Rows.count = 0
+    .Rows.H = 25
+    .Columns[0].Title = "Mannschaft"
+    .Columns[1].Title = "Plätze"
+    .Columns[2].Title = "Beginn"
+    .Columns[3].Title = "Ende"
+
+    row = gridSpielBetr.row
+    col = gridSpielBetr.Column
+    plz = col \ 8
+    Tag = Trim(aWeekDay[WeekDay(aryDatum[plz])])
+    datum = Format(aryDatum[plz], "yyyy-mm-dd")
+    lbDatum.W = Panel1.W
+    lbDatum.Y = 15
+    lbDatum.x = 0
+    lbDatum.H = 20
+    lbDatum.text = Tag & "  " & Format(aryDatum[plz], "dd.mm.yyyy")
+    
+    SqlCom = "SELECT * FROM "
+    SqlTab = "MannHeimGast "
+    SqlP = "WHERE Tag = '" & Tag & "' AND  '" & datum & "' BETWEEN SpTermin AND SpTermin  ORDER BY Beginn,Mannschaft"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    If rs.count > 0 Then
+        For k = 0 To rs.count - 1
+            platz = ""
+            strplz = Trim(rs!Platz)
+            For i = 1 To 7
+                If Mid(strplz, i, 1) = 1 Then platz &= Str(i) & "-"
+            Next
+            platz = Mid(platz, 1, Len(platz) - 1)
+            .Rows.Count += 1
+            gridSpiele[k, 0].text = rs!Mannschaft & " - " & rs!Gast
+            gridSpiele[k, 0].Background = Color.Yellow
+            gridSpiele[k, 1].text = platz
+            gridSpiele[k, 2].text = Format(rs!Beginn, "hh:nn")
+            gridSpiele[k, 3].text = Format(rs!Ende, "hh:nn")
+            rs.MoveNext
+        Next
+    Endif
+    SqlCom = "SELECT * FROM "
+    SqlTab = "MannschTrain "
+    SqlP = "WHERE Tag = '" & Tag & "' AND  '" & datum & "' BETWEEN DatumVon AND DatumBis AND Freigabe = " & "'J'" & " AND Platz <> " & "'0000000'" & " ORDER BY Beginn,Mannschaft"
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+    ' j = k
+    If rs.count > 0 Then
+        For j = k To k + rs.count - 1
+            platz = ""
+            strplz = Trim(rs!Platz)
+            For i = 1 To 7
+                If Mid(strplz, i, 1) = 1 Then platz &= Str(i) & "-"
+            Next
+            platz = Mid(platz, 1, Len(platz) - 1)
+            .Rows.Count += 1
+            gridSpiele[j, 0].text = rs!Mannschaft
+            gridSpiele[j, 0].Background = Color.Red
+            gridSpiele[j, 0].Foreground = Color.White
+            gridSpiele[j, 0].Font.Bold = True
+            gridSpiele[j, 1].text = platz
+            gridSpiele[j, 2].text = Format(rs!Beginn, "hh:nn")
+            gridSpiele[j, 3].text = Format(rs!Ende, "hh:nn")
+            rs.MoveNext
+        Next
+    Endif   
+        
+    .H = (.Rows.count + 1) * 25
+    ' .H = (j + 1) * 25
+    Panel1.H = .H + 150
+    Button1.Y = Panel1.H - 70
+    lbTraining.y = Button1.y + (Button1.h \ 2 - lbTraining.h \ 2)
+    lbVerbSp.y = lbTraining.y
+    Panel1.Visible = True
+    Panel1.Raise
+End With
+End
+
+Public Sub Button1_MouseDown()
+
+Panel1.Visible = False
+
+End

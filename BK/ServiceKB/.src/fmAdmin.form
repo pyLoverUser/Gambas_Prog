@@ -1,0 +1,33 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,213.3333,120)
+  Font = Font["Sans Serif"]
+  Background = Color.LightGray
+  FullScreen = True
+  { panM Panel
+    MoveScaled(0,0,213.3333,7)
+    Background = Color.DarkGray
+  }
+  { panPW Panel
+    MoveScaled(40,37,42,13)
+    Background = Color.DarkGray
+    { txtPw TextBox
+      MoveScaled(11,5,19,3)
+    }
+    { Label1 Label
+      MoveScaled(11,1,19,2)
+      Font = Font["14"]
+      Foreground = Color.White
+      Text = ("Passwort")
+      Alignment = Align.Center
+    }
+    { txtErr Label
+      MoveScaled(10.5556,9,20,3)
+      Font = Font["14"]
+      Foreground = Color.Red
+      Text = ("falsches Passwort")
+      Alignment = Align.Center
+    }
+  }
+}

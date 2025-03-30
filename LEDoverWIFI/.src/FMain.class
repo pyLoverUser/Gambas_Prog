@@ -1,0 +1,198 @@
+' Gambas class file
+
+
+' Based on an example posted by Steve Dee on 
+' http://captainbodgit.blogspot.de/2014/11/getting-using-data-from-openweathermap.html
+
+' Daten-Quellen ermitteln → URL, APIKey
+' Daten-Format erkunden → Konsole: Programm 'curl'
+' Daten anfordern (GetData)
+' Daten speichern (StoreData → Option:File)
+' Daten auswählen (SelectData)
+' Daten aufbereiten (EditData → Formatierung)
+' Daten anzeigen (ShowData)
+
+' Identify data sources → URL, APIKey
+' Explore data format → Console: Program 'curl'
+' Request data (GetData)
+' Store data (StoreData → Option: File)
+' Select data (SelectData)
+' Edit data (EditData → Formatting)
+' Show data (ShowData)
+
+Public iTimeStampGMT As Integer
+Public sJSONData As String
+Public sAPIKey As String
+Public sCity As String
+
+Public hHTTPClientData As HttpClient
+Public hHTTPClientIcon As HttpClient
+
+Public hJSONCollection As JSONCollection
+Public cWind As Collection
+Public cClouds As Collection
+Public cMain As Collection
+Public cSys As Collection
+Public avWeather As Variant[]
+
+'-- Const APIKEY As String = "YOUR_API_KEY"
+'-- Const COUNTRY As String = "YOUR_COUNTRY"
+'-- Const CITY As String = "YOUR_CITY"
+
+Const APIKEY As String = "YOUR_API_KEY"
+Const COUNTRY As String = "de"        '-- Replace es, eg=egy, cn=chn
+Const CITY As String = "Osterburg"    '-- Replace Madrid, Kairo=Cairo, Peking=Beijing
+
+Public Sub Form_Open()
+
+    Dim sMessage, sJSONFormatted As String
+  
+    FMain.Center()
+    FMain.Resizable = False
+    FMain.Title = ("Current weather data")
+    MAdditional.CheckNetwork()
+
+    sJSONData = GetAndStoreWeatherData(COUNTRY, CITY, APIKEY)
+'-- Print "JSON_DATA —»  "; sJSONData
+
+'-- MAdditional.IsInstalled("python3")
+'-- Shell "echo '" & sJSONData & "' | python3 -m json.tool" To sJSONFormatted
+'-- Print sJSONFormatted
+    
+    hJSONCollection = JSON.Decode(sJSONData, True)
+    If hJSONCollection["cod"] = 401 Then
+       sMessage = "Der API-Key ist leer oder nicht aktiviert oder fehlerhaft!<hr>"
+       sMessage &= "Sie können einen (kostenlosen) API-Key von<br>"
+       sMessage &= "<b>https://home.openweathermap.org/users/sign_up</b>"
+       sMessage &= "<br>anfordern, um die Wetter-Daten auslesen zu können!"
+       Message.Error(sMessage)
+       FMain.Close()
+    Else If hJSONCollection["cod"] = 404 Then
+       sMessage = "Die angegebene Stadt '" & CITY & "' wurde nicht gefunden!<hr>"
+       sMessage &= "▸ Der Name der Stadt ist falsch oder<br>"
+       sMessage &= "▸ die Stadt-ID ist falsch oder<br>"
+       sMessage &= "▸ das Format der API-Key-Anfrage ist fehlerhaft."
+       Message.Error(sMessage)
+       FMain.Close()
+    Else
+       EditAndShowWeatherData()
+    Endif
+    
+End
+
+Public Function GetAndStoreWeatherData(argCountry As String, argCity As String, argAPIKey As String) As String
+  
+    Dim sURL, sRawData As String
+    
+    ' sURL = "https://api.openweathermap.org/data/2.5/weather"
+    ' sURL &= "?q=" & argCity & "," & argCountry
+    ' sURL &= "&lang=" & argCountry
+    ' sURL &= "&units=metric"
+    ' sURL &= "&APPID=" & argAPIKey
+' -- Print sURL
+    sURL = "192.168.2.225"
+    hHTTPClientData = New HttpClient As "HTTPClientData"
+    hHTTPClientData.URL = sURL
+    hHTTPClientData.Async = False
+    hHTTPClientData.Timeout = 10
+    
+    Try hHTTPClientData.Get()
+  
+'-- Return hHTTPClientData.ReadLine()  
+'-- If Lof(hHTTPClientData) Then Return Read #hHTTPClientData, Lof(hHTTPClientData)    
+'-- If Lof(hHTTPClientData) Then sRawData = Read #hHTTPClientData, Lof(hHTTPClientData)
+'-- Return sRawData
+    
+    Return hHTTPClientData.Peek()
+  
+End
+
+Public Sub EditAndShowWeatherData()
+  
+    Dim iLocalTimeStamp As Integer
+    Dim sCityName, sDate, sIcon, sDay, sDateDMY, sTime As String
+    Dim dDate As Date
+    
+    sCityName = hJSONCollection["name"]
+    
+    iLocalTimeStamp = hJSONCollection["dt"]
+    dDate = TimeStampToDate(iLocalTimeStamp)
+    sDay = Format$(dDate, "dddd")
+    sDateDMY = Format$(dDate, "d. mmmm yyyy")
+    sTime = Format$(dDate, "hh:nn") & " Uhr"
+    sDate = sDay & ", " & sDateDMY & " - " & sTime
+    
+    FMain.Text = ("Current weather data") & (" for ") & sCityName & ": " & sDate
+'-- -------------------------------------------------------------------------------
+   
+    cWind = hJSONCollection["wind"]
+    txbWindSpeed.Text = "   " & Round(cWind["speed"], -1)
+    txbWindDirection.Text = "   " & Round(cWind["deg"], 0)
+'-- ------------------------------------------------------------------------------
+
+'-- cMain = hJSONCollection["main"]
+'-- txbTemperature.Text = Round(cMain["temp"], -1)
+'-- txbPressure.Text = cMain["pressure"]
+'-- txbHumidity.Text = cMain["humidity"]  
+'-- ALTERNATIVE:
+    txbTemperature.Text = "   " & Round(hJSONCollection["main"]["temp"], -1)
+    txbPressure.Text = "   " & hJSONCollection["main"]["pressure"]
+    txbHumidity.Text = "   " & hJSONCollection["main"]["humidity"]
+'-- ------------------------------------------------------------------------------
+
+    cClouds = hJSONCollection["clouds"]
+    txbCloudiness.Text = "   " & cClouds["all"]
+'-- ------------------------------------------------------------------------------
+
+    cSys = hJSONCollection["sys"]
+    txbSunRise.Text = "   " & Format(TimeStampToDate(cSys["sunrise"]), "hh:nn")
+    txbSunSet.Text = "   " & Format(TimeStampToDate(cSys["sunset"]), "hh:nn")
+'-- ------------------------------------------------------------------------------
+    avWeather = hJSONCollection["weather"]
+    lblDescription.Text = "   " & avWeather[0]["description"]
+    
+    sIcon = avWeather[0]["icon"]
+'-- lblDescription.Text = hJSONCollection["weather"][0]["description"]
+'-- sIcon = hJSONCollection["weather"][0]["icon"]
+    GetAndStoreWeatherIcon(sIcon)
+    pboxWeatherIcon.Picture = Picture[Application.Path &/ "WeatherIcon/weathericon.png"]
+'-- pboxWeatherIcon.Picture = Picture[Desktop.RuntimeDir &/ "weathericon.png"]
+  
+End
+
+Public Sub GetAndStoreWeatherIcon(argIconName As String)
+    
+    Dim sURL As String
+
+    sURL = "https://openweathermap.org/img/w/" & argIconName & ".png"
+    
+    hHTTPClientIcon = New HttpClient As "HTTPClientIcon"
+    hHTTPClientIcon.URL = sURL
+    hHTTPClientIcon.Async = False
+    hHTTPClientIcon.Timeout = 10
+    
+    hHTTPClientIcon.Get([], Application.Path &/ "WeatherIcon/weathericon.png")
+'-- hHTTPClientIcon.Get([], Desktop.RuntimeDir &/ "weathericon.png")
+  
+End
+
+Public Sub HTTPClientData_Error()
+    Message.Error("<b><font color='DarkRed'>HTTP-CLIENT-DATA: ERROR</b></font><hr>" & hHTTPClientData.ErrorText)
+End
+
+Public Sub HTTPClientIcon_Error()
+    Message.Error("<b><font color='DarkRed'>HTTP-CLIENT-ICON: ERROR</b></font><hr>" & hHTTPClientIcon.ErrorText)
+End
+
+Public Sub Form_Close()
+    If hHTTPClientData Then hHTTPClientData.Close()
+    If hHTTPClientIcon Then hHTTPClientIcon.Close()
+    If Exist(Application.Path &/ "WeatherIcon/weathericon.png") Then
+       Try Kill Application.Path &/ "WeatherIcon/weathericon.png"
+    Endif
+
+End
+
+Private Function TimeStampToDate(argTimeStamp As Integer) As Date
+  Return DateAdd(CDate("1/1/1970"), gb.Second, argTimeStamp)
+End

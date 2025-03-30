@@ -1,0 +1,130 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,144.4444,88.8889)
+  Background = Color.LightGray
+  Text = ("Kühlung und Boiler On/Off")
+  Resizable = False
+  FullScreen = True
+  { panB Panel
+    MoveScaled(20,10,109,33.3333)
+    Background = Color.DarkGray
+    Border = Border.Raised
+    { comStdB ComboBox
+      MoveScaled(3,23,5,3)
+    }
+    { lbEinB Label
+      MoveScaled(2,12.2222,6,3.3333)
+      Background = Color.ButtonBackground
+      Text = ("Ein")
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
+    { lbAusB Label
+      MoveScaled(2,16.6667,6,3.3333)
+      Background = Color.ButtonBackground
+      Text = ("Aus")
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
+    { panAbSpB Panel
+      MoveScaled(85.5556,22.2222,12.2222,11)
+      { btnSaveB Button
+        MoveScaled(0,1,12.2222,4)
+        Enabled = False
+        Text = ("Speichern")
+      }
+      { btnAbrB Button
+        MoveScaled(0,6,12.2222,4)
+        Text = ("Abbrechen")
+      }
+    }
+    { Label1 Label
+      MoveScaled(37,1,37,4)
+      Font = Font["Sans Serif,Bold,18"]
+      Foreground = Color.White
+      Text = ("Warmwasser-Boiler")
+      Alignment = Align.Center
+    }
+    { btnBcon Button
+      MoveScaled(1,1,5,4)
+      Font = Font["10"]
+      Background = Color.VisitedForeground
+      Foreground = Color.Black
+      Text = ("ESP1")
+    }
+  }
+  { panK Panel
+    MoveScaled(20,50,109,33.3333)
+    Background = Color.DarkGray
+    Border = Border.Raised
+    { comStdK ComboBox
+      MoveScaled(3,23,5,3)
+    }
+    { lbEinK Label
+      MoveScaled(2,12.2222,6,3.3333)
+      Background = Color.ButtonBackground
+      Text = ("Ein")
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
+    { lbAusK Label
+      MoveScaled(2,16.6667,6,3.3333)
+      Background = Color.ButtonBackground
+      Text = ("Aus")
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
+    { panAbSpK Panel
+      MoveScaled(85.5556,22.2222,12.2222,11)
+      { btnSaveK Button
+        MoveScaled(0,1,12.2222,4)
+        Enabled = False
+        Text = ("Speichern")
+      }
+      { btnAbrK Button
+        MoveScaled(0,6,12.2222,4)
+        Text = ("Abbrechen")
+      }
+    }
+    { Label4 Label
+      MoveScaled(41,2,27,4)
+      Font = Font["Sans Serif,Bold,18"]
+      Foreground = Color.White
+      Text = ("Kühlbox-Theke")
+      Alignment = Align.Center
+    }
+    { btnKcon Button
+      MoveScaled(1,1,5,4)
+      Font = Font["10"]
+      Background = Color.VisitedForeground
+      Foreground = Color.Black
+      Text = ("ESP2")
+    }
+  }
+  { !Timer1 #Timer
+    #MoveScaled(41,85)
+    #Public = True
+    Enabled = True
+  }
+  { panMenue Panel
+    MoveScaled(0,0,213.3333,6.6667)
+    Background = Color.DarkGray
+    { btnEnde Button
+      MoveScaled(17,-1,17,6.6667)
+      Font = Font["16"]
+      Background = Color.DarkGray
+      Foreground = Color.White
+      Text = (" End")
+      Picture = Picture["icon:/32/home"]
+    }
+    { btnEdit Button
+      MoveScaled(0,0,17,6.6667)
+      Font = Font["16"]
+      Background = Color.DarkGray
+      Foreground = Color.White
+      Text = (" Edit")
+      Picture = Picture["icon:/32/edit"]
+    }
+  }
+}

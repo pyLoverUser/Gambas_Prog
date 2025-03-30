@@ -1,0 +1,28 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,33.3333)
+  Background = Color.DarkGray
+  Text = ("Transponder")
+  { lblTextAlt Label
+    MoveScaled(10,11,17,5)
+    Font = Font["16"]
+    Foreground = Color.White
+    Text = ("Transp. Alt")
+  }
+  { lblTextAlt2 Label
+    MoveScaled(10,20,18,5)
+    Font = Font["16"]
+    Foreground = Color.White
+    Text = ("Transp. Neu")
+  }
+  { lblTrNrAlt TextBox
+    MoveScaled(28,11,21,5)
+    Font = Font["20"]
+  }
+  { lblTrNrAlt2 TextBox
+    MoveScaled(28,20,21,5)
+    Font = Font["20"]
+    Background = Color.Yellow
+  }
+}

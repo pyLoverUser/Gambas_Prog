@@ -1,0 +1,697 @@
+' Gambas class file
+
+Public tagBezB[7] As Label
+Public tagBezK[7] As Label
+Public onTimeB[7] As Label
+Public offTimeB[7] As Label
+Public onTimeK[7] As Label
+Public offTimeK[7] As Label
+Public iTag As Integer
+Public rs As Result
+Public cDBVerbindung As New Connection
+Public sSQL_Anweisung As String
+Public SqlCom As String
+Public SqlTab As String
+Public SqlP As String
+Public idxTag As Integer
+Public idxBK As String
+Public mass As String
+Public massRetB As String
+Public massRetK As String
+Public hHTTPClientData As HttpClient
+Public mTag As Integer
+Public i1 As Integer
+Public i2 As Integer
+Public idxRdy As Integer
+Public pass As String
+'==========================================================================
+' Sub:  Form_Open()
+'	
+'
+'==========================================================================
+
+Public Sub Form_Open()
+Dim i, j As Integer
+Timer1.Stop
+fmBK.w = Screen.w
+fmBK.h = Screen.h
+panMenue.w = Screen.w
+panMenue.h = 60
+panMenue.x = 0
+panMenue.y = 0
+panB.Enabled = False
+panK.Enabled = False
+Me.w = Screen.W
+Me.h = Screen.H
+panB.x = (Me.w - panB.w) / 2
+panK.x = (Me.w - panK.w) / 2
+btnEdit.Enabled = True
+comStdB.Visible = False
+comStdK.Visible = False
+comStdB.W = 110
+comStdB.h = 30
+comStdK.W = 110
+comStdK.h = 30
+For i = 0 To 23
+  For j = 0 To 3
+    If j > 0 Then
+      comStdB.Add(Str(i) & ":" & Str(j * 15))
+      comStdK.Add(Str(i) & ":" & Str(j * 15))
+    Else
+      comStdB.Add(Str(i) & ":00")
+      comStdK.Add(Str(i) & ":00")
+    Endif
+  Next
+Next
+panAbSpB.Visible = False
+panAbSpK.Visible = False
+' DBint()
+        panB.Visible = True
+        panK.Visible = True
+        tagInitB()
+        tagInitK()
+        tageLabInit()
+        Timer1.Restart
+        OnOffstatus()
+End
+
+'==========================================================================
+' Sub:  DBint()
+'	
+'
+'==========================================================================
+
+' Public Sub DBint()
+'   cDBVerbindung.Close()
+'   cDBVerbindung.Type = "mysql" ' Der Typ muss klein geschrieben werden!
+'   ' cDBVerbindung.Host = "192.168.178.2"
+'   cDBVerbindung.Host = "192.168.2.205"
+'   cDBVerbindung.Name = "Belegung" ' Das ist der Datenbank-Name
+'   cDBVerbindung.User = "root" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+'   cDBVerbindung.Password = "asperg" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+'   cDBVerbindung.Port = "3306" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+'   ' Versuch, eine DB-Verbindung herzustellen
+'   Try cDBVerbindung.Open()
+'   If Error Then
+'     Message.Error("Eine DB-Verbindung zum DB-Server konnte NICHT hergestellt werden!")
+'   Endif
+' End ' DBint
+Public Sub OnOffstatus()
+lbEinB.Background = Color.ButtonBackground
+lbAusB.Background = Color.ButtonBackground
+lbEinK.Background = Color.ButtonBackground
+lbAusK.Background = color.ButtonBackground
+selTag()
+tagBezB[mTag].Background = Color.Red
+If massRetB = "OFF" Or massRetB = "" Then
+  tagBezB[mTag].Background = Color.Red
+Else
+  tagBezB[mTag].Background = Color.Green
+Endif
+' massRetK = SendRecMassK()
+If massRetK = "OFF" Or massRetK = "" Then
+  tagBezK[mTag].Background = Color.Red
+Else
+  tagBezK[mTag].Background = Color.Green
+Endif
+End
+
+'==========================================================================
+' Sub:  ExecuteSql(SqlCom As String, SqlTab As String, SqlP As String) As Result
+'	
+'
+'==========================================================================
+
+' Public Function ExecuteSql(SqlCom As String, SqlTab As String, SqlP As String) As Result
+' Dim i As Integer
+' 
+' For i = 1 To 10
+'   If fmAdmin.cDBVerbindung.Opened Then Break
+'   fmAdmin.cDBVerbindung.Open()
+' Next
+' sSQL_Anweisung = SqlCom & SqlTab & SqlP
+' Debug sSQL_Anweisung
+' rs = cDBVerbindung.Exec(sSQL_Anweisung)
+' Return rs
+' End
+
+Public Function SendRecMassK() As String
+Dim sURL, t As String
+mass = "PortSts"
+' sURL = "192.168.2.226/" & mass
+sURL = "192.168.178.6/" & mass
+With hHTTPClientData = New HttpClient  
+  .URL = sURL
+  .Async = False
+  .Timeout = 1
+  .Get()
+  t = .Peek()
+  Return .Peek()
+End With
+End
+
+Public Function SendRecMassB() As String
+Dim sURL, t As String
+mass = "PortSts"
+' sURL = "192.168.2.225/" & mass
+sURL = "192.168.178.5/" & mass
+With hHTTPClientData = New HttpClient  
+  .URL = sURL
+  .Async = False
+  .Timeout = 1
+  .Get()
+  t = .Peek()
+  Return .Peek()
+End With
+End
+
+'==========================================================================
+' Sub:  tagInitB()
+'	
+'
+'==========================================================================
+
+Public Sub tagInitB()
+Dim i As Integer 
+For i = 0 To 6
+  tagBezB[i] = New Label(panB) As "btagB"
+  onTimeB[i] = New Label(panB) As "bOnB"
+  offTimeB[i] = New Label(panB) As "bOffB"
+  With tagBezB[i]
+    .Tag = i
+    .W = 110
+    .H = 30
+    .X = 80 + i * 120
+    .Y = 70
+    .Background = Color.Blue
+    .Foreground = Color.White
+    .Font.Name = "Sans Serif"
+    .Font.Size = 12
+    .Font.Bold = True
+    .Alignment = Align.Center
+    Select Case i
+      Case 0
+        .Text = "Montag"
+      Case 1
+        .Text = "Dienstag"
+      Case 2
+        .Text = "Mittwoch"
+      Case 3
+        .Text = "Donnerstag"
+      Case 4
+        .Text = "Freitag"
+      Case 5
+        .Text = "Samstag"
+      Case 6
+        .Text = "Sonntag"
+    End Select
+  End With
+  With onTimeB[i]
+    .Tag = i
+    .W = 110
+    .H = 30
+    .X = 80 + i * 120
+    .Y = 110
+    .Background = Color.ButtonBackground
+    .Foreground = Color.Black
+    .Font.Name = "Sans Serif"
+    .Font.Size = 12
+    ' .Font.Bold = True
+    .Alignment = Align.Center
+    .Border = 2
+    .Text = "0:00"
+  End With
+  With offTimeB[i]
+    .Tag = i
+    .W = 110
+    .H = 30
+    .X = 80 + i * 120
+    .Y = 150
+    .Background = Color.ButtonBackground
+    .Foreground = Color.Black
+    .Font.Name = "Sans Serif"
+    .Font.Size = 12
+    ' .Font.Bold = True
+    .Alignment = Align.Center
+    .Border = 2
+    .Text = "0:00"
+  End With
+Next
+End
+'==========================================================================
+' Sub:  tagInitK()
+'	
+'
+'==========================================================================
+
+Public Sub tagInitK()
+Dim i As Integer 
+For i = 0 To 6
+  tagBezK[i] = New Label(panK) As "btagK"
+  onTimeK[i] = New Label(panK) As "bOnK"
+  offTimeK[i] = New Label(panK) As "bOffK"
+  With tagBezK[i]
+    .Tag = i
+    .W = 110
+    .H = 30
+    .X = 80 + i * 120
+    .Y = 70
+    .Background = Color.Blue
+    .Foreground = Color.White
+    .Font.Name = "Sans Serif"
+    .Font.Size = 12
+    .Font.Bold = True
+    .Alignment = Align.Center
+    Select Case i
+      Case 0
+        .Text = "Montag"
+      Case 1
+        .Text = "Dienstag"
+      Case 2
+        .Text = "Mittwoch"
+      Case 3
+        .Text = "Donnerstag"
+      Case 4
+        .Text = "Freitag"
+      Case 5
+        .Text = "Samstag"
+      Case 6
+        .text = "Sonntag"
+    End Select
+  End With
+  With onTimeK[i]
+    .Tag = i
+    .W = 110
+    .H = 30
+    .X = 80 + i * 120
+    .Y = 110
+    .Background = Color.ButtonBackground
+    .Foreground = Color.Black
+    .Font.Name = "Sans Serif"
+    .Font.Size = 12
+    ' .Font.Bold = True
+    .Alignment = Align.Center
+    .Border = 2
+    .Text = "0:00"
+  End With
+  With offTimeK[i]
+    .Tag = i
+    .W = 110
+    .H = 30
+    .X = 80 + i * 120
+    .Y = 150
+    .Background = Color.ButtonBackground
+    .Foreground = Color.Black
+    .Font.Name = "Sans Serif"
+    .Font.Size = 12
+    ' .Font.Bold = True
+    .Alignment = Align.Center
+    .Border = 2
+    .Text = "0:00"
+  End With
+Next
+End
+Public Sub selTag()
+mTag = WeekDay(Now)
+If mTag = 0 Then
+  mTag = 6
+Else
+  mTag -= 1
+Endif
+End
+
+'==========================================================================
+' Sub:  btagB_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub btagB_MouseDown()
+Dim i, j As Integer 
+i = Last.tag  
+panAbSpB.Visible = True
+ 
+For j = 0 To 6
+  onTimeB[j].Background = Color.ButtonBackground
+  onTimeB[j].Enabled = False
+  offTimeB[j].Background = Color.ButtonBackground
+  offTimeB[j].Enabled = False
+Next
+i = Last.tag  
+idxTag = i
+idxBK = "B"
+onTimeB[i].Background = Color.Green 
+offTimeB[i].Background = Color.Red
+  onTimeB[i].Enabled = True
+  offTimeB[i].Enabled = True
+iTag = i
+panAbSpB.x = tagBezB[i].x
+End
+'==========================================================================
+' Sub:  tageLabInit()
+'	
+'
+'==========================================================================
+
+Public Sub bOnB_MouseDown()
+Dim i, x, y As Integer  
+i = Last.Tag  
+If onTimeB[i].Background <> Color.Green Then Return
+x = onTimeB[i].x
+y = onTimeB[i].y '+ onTimeB[i].h
+comStdB.x = x
+comStdB.y = y
+comStdB.Raise
+comStdB.Visible = True
+End
+'==========================================================================
+' Sub:  bOffB_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub bOffB_MouseDown()
+Dim i, x, y As Integer  
+i = Last.Tag  
+If onTimeB[i].Background <> Color.Green Then Return
+x = offTimeB[i].x
+y = offTimeB[i].y '+ offTime[i].h
+comStdB.x = x
+comStdB.y = y
+comStdB.Raise
+comStdB.Visible = True
+End
+'==========================================================================
+' Sub:  btagK_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub btagK_MouseDown()
+Dim i, j As Integer  
+panAbSpK.Visible = True
+For j = 0 To 6
+  onTimeK[j].Background = Color.ButtonBackground
+  onTimeK[j].Enabled = False
+  offTimeK[j].Background = Color.ButtonBackground
+  offTimeK[j].Enabled = False
+Next
+i = Last.tag  
+idxTag = i
+idxBK = "K"
+onTimeK[i].Background = Color.Green 
+offTimeK[i].Background = Color.Red
+  onTimeK[i].Enabled = True
+  offTimeK[i].Enabled = True
+iTag = i
+panAbSpK.x = tagBezK[i].x
+End
+'==========================================================================
+' Sub:  bOnK_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub bOnK_MouseDown()
+Dim i, x, y As Integer  
+i = Last.Tag  
+If onTimeK[i].Background <> Color.Green Then Return
+x = onTimeK[i].x
+y = onTimeK[i].y '+ onTimeB[i].h
+comStdK.x = x
+comStdK.y = y
+comStdK.Raise
+comStdK.Visible = True
+End
+'==========================================================================
+' Sub:  bOffK_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub bOffK_MouseDown()
+Dim i, x, y As Integer  
+i = Last.Tag  
+If onTimeK[i].Background <> Color.Green Then Return
+x = offTimeK[i].x
+y = offTimeK[i].y '+ offTime[i].h
+comStdK.x = x
+comStdk.y = y
+comStdK.Raise
+comStdK.Visible = True
+End
+
+'==========================================================================
+' Sub:  comStdB_Click()
+'	
+'
+'==========================================================================
+
+Public Sub comStdB_Click()
+Dim i As Integer  
+i = i 
+If comStdB.y = onTimeB[iTag].y Then
+  onTimeB[iTag].text = comStdB.text
+Else  
+  offTimeB[iTag].text = comStdB.text
+Endif
+btnSaveB.Enabled = True
+btnSaveB.Background = Color.Cyan
+comStdB.Visible = False
+End
+'==========================================================================
+' Sub:  comStdK_Click()
+'	
+'
+'==========================================================================
+
+Public Sub comStdK_Click()
+Dim i As Integer  
+i = i 
+If comStdK.y = onTimeK[iTag].y Then
+  onTimeK[iTag].text = comStdK.text
+Else  
+  offTimeK[iTag].text = comStdK.text
+Endif
+btnSaveK.Enabled = True
+btnSaveK.Background = Color.Cyan
+comStdK.Visible = False
+End
+
+'==========================================================================
+' Sub:  tageLabInit()
+'	
+'
+'==========================================================================
+
+Public Sub tageLabInit()
+  
+Sqlcom = "SELECT * FROM "  
+SqlTab = "BK_OnOff "
+SqlP = ""
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP) 
+initTimeLb()
+End
+
+'==========================================================================
+' Sub:  DBSave()
+'	
+'
+'==========================================================================
+
+Public Sub DBSave(ein As String, aus As String)
+Sqlcom = "UPDATE "  
+SqlTab = "BK_OnOff "
+SqlP = "SET Ein = '" & ein & "' , Aus = '" & aus & "' WHERE tIdx = " & Str(idxTag) & " And Geraet = '" & idxBK & "'"
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP) 
+End
+
+'==========================================================================
+' Sub:  initTimeLb()
+'	
+'
+'==========================================================================
+
+Public Sub initTimeLb()
+Dim r As Integer
+Dim tIdx As Integer
+Dim g, st As String
+' DataBaseRequest(1)
+If rs.Count > 0
+  For r = 0 To rs.Count - 1
+    g = rs!Geraet
+    st = rs!WTag
+    tIdx = rs!tIdx
+    If g = "B"
+      onTimeB[tIdx].text = Format(rs!Ein, "hh:nn")
+      offTimeB[tIdx].text = Format(rs!Aus, "hh:nn")
+    Else
+      onTimeK[tIdx].text = Format(rs!Ein, "hh:nn")
+      offTimeK[tIdx].text = Format(rs!Aus, "hh:nn")
+    Endif
+    rs.MoveNext
+  Next
+Endif
+End
+'==========================================================================
+' Sub:  Form_KeyPress()
+'	
+'
+'==========================================================================
+
+' Public Sub Form_KeyPress()
+' Dim i As Integer
+' ' If fmAdmin.Visible = False Then Return    
+' txtErr.Visible = False
+' txtPW.Password = "*"
+' If Key.Code = Key.Return Then 
+'     SqlCom = "SELECT * From "
+'     SqlTab = "PW "
+'     SqlP = "WHERE Progr = '" & "BK" & "'"
+'     rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+'     If Trim(txtPW.Text) = Trim(rs!PW)
+'         panB.Visible = True
+'         panK.Visible = True
+'         panPW.Visible = False
+'         btnEdit.Enabled = True
+'         tagInitB()
+'         tagInitK()
+'         tageLabInit()
+'         Timer1.Restart
+'         OnOffstatus()
+'         
+'     Else
+'         txtErr.Visible = True
+'         txtPW.Text = ""
+'     Endif
+' Endif 
+' End
+
+'==========================================================================
+' Sub:  txtPW_Change()
+'	
+'
+'==========================================================================
+
+' Public Sub txtPW_Change()
+'     pass = txtPW.Text   
+' End
+
+'==========================================================================
+' Sub:  btnAbrB_Click()
+'	
+'
+'==========================================================================
+
+Public Sub btnAbrB_Click()
+tagInitB()
+tageLabInit()
+btnSaveB.Enabled = False
+btnSaveB.Background = Color.ButtonBackground
+panAbSpB.Visible = False
+' tagInitK()
+End
+
+'==========================================================================
+' Sub:  btnAbrK_Click()
+'	
+'
+'==========================================================================
+
+Public Sub btnAbrK_Click()
+tagInitK()
+tageLabInit()
+btnSaveK.Enabled = False
+btnSaveK.Background = Color.ButtonBackground
+panAbSpK.Visible = False
+End
+
+'==========================================================================
+' Sub:  btnSaveB_Click()
+'	
+'
+'==========================================================================
+
+Public Sub btnSaveB_Click()
+Dim onT, offT As String
+onT = onTimeB[idxTag].Text
+offT = offTimeB[idxTag].Text
+onT &= ":00"
+offT &= ":00"
+DBSave(onT, offT)  
+tagInitB()
+tageLabInit()
+btnSaveB.Enabled = False
+btnSaveB.Background = Color.ButtonBackground
+panAbSpB.Visible = False
+End
+
+'==========================================================================
+' Sub:  btnSaveK_Click()
+'	
+'
+'==========================================================================
+
+Public Sub btnSaveK_Click()
+Dim onT, offT As String
+onT = onTimeK[idxTag].Text
+offT = offTimeK[idxTag].Text
+onT &= ":00"
+offT &= ":00"
+DBSave(onT, offT)  
+tagInitK()
+tageLabInit()
+btnSaveK.Enabled = False
+btnSaveK.Background = Color.ButtonBackground
+panAbSpK.Visible = False
+End
+
+
+Public Sub Timer1_Timer()
+
+massRetB = SendRecMassB()
+If massRetB = "" Then 
+  btnBcon.Background = Color.red
+  i1 = 1
+Else
+    btnBcon.Background = Color.Green
+  i1 = 0
+Endif
+massRetK = SendRecMassK()
+If massRetK = "" Then 
+  btnKcon.Background = Color.red
+  i2 = 1
+Else
+  btnKcon.Background = Color.Green
+  i2 = 0
+Endif
+OnOffstatus()
+  
+
+End
+
+Public Sub btnEnde_Click()
+    Timer1.Stop
+    fmAdmin.Show
+    fmBK.Close  
+End
+
+Public Sub btnEdit_Click()
+If btnEdit.Background = Color.Cyan Then
+  btnEdit.Foreground = Color.White
+  btnEdit.text = " Edit"
+  btnEdit.Background = Color.DarkGray
+  panB.Enabled = False
+  panK.Enabled = False
+  Timer1.start
+Else
+  btnEdit.text = " Save"
+  btnEdit.Foreground = Color.Black
+  btnEdit.Background = Color.Cyan
+  panB.Enabled = True
+  panK.Enabled = True
+  Timer1.Stop
+Endif
+
+
+End

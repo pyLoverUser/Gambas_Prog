@@ -1,0 +1,29 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,142.2222,80)
+  Background = Color.DarkGray
+  FullScreen = True
+  { lblService Label
+    MoveScaled(0,0,142.2222,3.3333)
+    Font = Font["Sans Serif,20"]
+    Background = Color.Yellow
+    Foreground = Color.Black
+    Text = ("Service")
+    Alignment = Align.Center
+  }
+  { FrService Frame
+    MoveScaled(54,6,87.7778,57.2222)
+    Background = Color.DarkRed
+    { GridService GridView
+      MoveScaled(0.5556,0.5556,85,11)
+      Font = Font["Sans Serif,12"]
+      ScrollBar = Scroll.None
+      AutoResize = False
+    }
+  }
+  { GridProdukte GridView
+    MoveScaled(6,6,41,6)
+    ScrollBar = Scroll.None
+  }
+}

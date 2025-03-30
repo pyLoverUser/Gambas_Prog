@@ -1,0 +1,15 @@
+FMain
+LEDoverWIFI
+0
+0
+0.0.1
+
+gb.image
+gb.qt5
+gb.form
+gb.desktop
+gb.net
+gb.net.curl
+gb.qt5.ext
+gb.web
+

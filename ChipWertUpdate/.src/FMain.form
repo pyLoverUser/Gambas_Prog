@@ -1,0 +1,35 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  Move(0,0,792,600)
+  #Scaled = False
+  Background = Color.Blue
+  Persistent = True
+  { btnEnde Button
+    Move(351,531,99,45)
+    Text = ("Ende")
+  }
+  { grdGeladen GridView
+    Move(36,153,333,108)
+    ScrollBar = Scroll.Vertical
+  }
+  { panBtn Panel
+    Move(36,9,414,108)
+    { lbDatum Label
+      Move(198,36,54,36)
+      Font = Font["Sans Serif,Bold,13"]
+      Foreground = Color.White
+      Text = ("Jahr")
+      Alignment = Align.Center
+    }
+    { btnDB Button
+      Move(0,27,180,54)
+      Text = ("Chip-laden\nUpdate")
+    }
+    { txtDatum TextBox
+      Move(261,36,63,36)
+      Font = Font["16"]
+      Alignment = Align.Center
+    }
+  }
+}

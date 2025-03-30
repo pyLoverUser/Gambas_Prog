@@ -1,0 +1,1258 @@
+' Gambas class file
+
+Public Struct stcVerb
+    idHeim As Integer
+    Mannschaft As String
+    Gast As String
+    InfoText As String
+    ED As Integer
+    Tag As String
+    SpTermin As String
+    Beginn As Date
+    Ende As Date
+    Platz As String
+    Event_fl As Integer
+End Struct
+
+Public stcHeimGast[2] As Struct StcVerb
+
+Private BelZeitBeschr[60] As String
+Private altTime As Integer
+Private SqlP As Variant
+Private SqlCom As Variant
+Private SqlTab As Variant
+Private rs As Result
+Public dDatum As Date
+Private aWeekDay As String[]
+Private dateTxt As Integer
+Private sBegZeit As String[]
+Private sEndZeit As String[]
+Private col As Integer
+Private hight_nr As Integer
+Private plz[7] As Integer
+Private AnzPlz As Integer
+Private Plaetze[7] As Label
+' Private PlaetzeD[7] As Label
+Private strPlz As String
+Private btnVerbMenue[8] As Button
+Private Tag As String
+Private selMansch As String
+Private dateVon As String
+Private dateBis As String
+Private timeVon As Date
+Private timeBis As Date
+Private aWD As String
+Private EinbPFL As String
+Private Event_Fl As Integer
+Public plCom As Integer
+Public strSaveAry[2, 7] As String
+Private tHrow As Integer
+Private gridHeim As TableView
+Private gridGast As TableView
+Public cBoxDate As String
+Private JN As String[]
+Private edPlz As Integer
+Private grHG As Integer
+Private TastSaveFl As Boolean
+Private enSafeFl As Integer
+'==========================================================================
+' Form_Open()
+'	
+'
+'==========================================================================
+
+Public Sub Form_Open()
+    
+    fmVerbandsspiele.Visible = True
+    fmVerbandsspiele.W = Screen.W
+    fmVerbandsspiele.H = Screen.H
+    fmVerbandsspiele.Top = 5
+    fmVerbandsspiele.Center
+    panGrid.w = Screen.w
+    panGrid.H = Screen.h - 80
+    panGrid.Visible = False
+    panMain.Y = 150
+    panMain.H = 800
+    JN = Split("Ja,Nein", ",")
+    aWeekDay = Split("So, Mo, Di, Mi, Do, Fr, Sa", ",")
+    InitMenu()
+    gridHeimInit()
+    gridGastInit()
+    panMain.W = 30 + gridHeim.w + 30 + gridGast.w + 30
+    panMain.x = fmVerbandsspiele.w \ 2 - panMain.w \ 2
+    panMain.Visible = False
+    btnDoppel.Visible = False
+    btnEinzel.Visible = False
+    
+End
+
+Public Sub InitMenu()
+    
+    Dim i As Integer
+    
+    For i = 0 To 7
+        btnVerbMenue[i] = New Button(Me) As "MyMannsch"
+        With btnVerbMenue[i]
+            .H = 60
+            .W = 200
+            .X = 0 + i * 200 
+            .Y = 0
+            If i = 7 Then .W = 1920 - .X + 200
+            .Tag = i
+            .Font.Name = "Sans Serif"
+            .Font.Size = 12
+            .Font.Bold = False
+            .Background = Color.DarkGray
+            .Foreground = Color.White
+            Select Case i
+                Case 0
+                    .Text = "Heim-Gast" & Chr(10) & " Mannsch"
+                    ' .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Users.ico")
+                    .Picture = Picture["icon:/32/user"]
+                Case 1
+                    .Text = "Planung"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Document spreadsheet.ico")
+                    .Picture = Picture["icon:/32/table"]
+                Case 2
+                    .Text = "Neu"
+                    ' .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Plus.ico")
+                    .Picture = Picture["icon:/32/add"]
+                Case 3
+                    .Text = "Änderungen"
+                    ' .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Pen.ico")
+                    .Picture = Picture["icon:/32/edit"]
+                Case 4
+                    .Text = "Speichern"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Save.ico")
+                    .Picture = Picture["icon:/32/save"]
+                Case 5
+                    .Text = "Löschen"
+                    ' .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Trash.ico")
+                    .Picture = Picture["icon:/32/delete"]
+                    ' Case 4
+                    '     .Text = "B-Tastatur"
+                    '     .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Calc.ico")
+                Case 6
+                    .Text = "Ende"
+                    ' .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Home.ico")
+                    .Picture = Picture["icon:/32/home"]
+            End Select
+        End With
+    Next
+    
+End
+
+'==========================================================================
+'DateChooser1_Click()
+'	
+'
+'==========================================================================
+
+Public Sub gridHeimInit()
+    
+    Dim i As Integer
+    
+    gridHeim = New TableView(panMain) As "EvHeim"
+    With gridHeim
+        .Clear
+        .Visible = False
+        .Border = False
+        .Header = 1
+        .ScrollBar = 0
+        .Font.Size = 13
+        .Font.Bold = False
+        .Foreground = Color.Black
+        .Font.Name = "Sans Serif"
+        ' .X = 20 
+        ' .Y = 20
+        .Mode = 1
+        .Enabled = True
+        .Rows.H = 25
+        .Columns.Count = 3
+        .Columns[0].w = 0
+        .Columns[1].w = 300
+        .Columns[2].w = 300
+        .W = gridHeim.Columns[1].w + gridHeim.Columns[2].w
+        .Columns[1].Title = "Heim-Mannschaft"
+        .Columns[2].Title = "Spielklasse"
+        
+        .Rows.Count = 1
+        .Height = (.Rows.Count + 1) * .Rows.H
+        SqlCom = "SELECT * FROM "
+        SqlTab = "MannschVerb "
+        SqlP = "ORDER BY id"
+        rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+        If rs.count > 0 Then
+            For i = 0 To rs.count - 1
+                gridHeim[i, 0].text = rs!id
+                gridHeim[i, 1].text = rs!Heim
+                gridHeim[i, 2].text = rs!SpKlasse
+                .Rows.Count += 1
+                .Height = (.Rows.Count + 1) * .Rows.H
+                ' .UnSelectAll
+                rs.MoveNext
+            Next
+        Endif
+        ' .Visible = True
+    End With    
+    
+End
+'==========================================================================
+' Initialisierung: gridHeimInit()
+'	
+'
+'==========================================================================
+
+Public Sub gridGastInit()
+    
+    gridGast = New TableView(panMain) As "EvGast"
+    With gridGast
+        .Clear
+        .Visible = False
+        .Border = False
+        .Header = 1
+        .ScrollBar = 0
+        .Foreground = Color.Black
+        .Font.Size = 13
+        .Font.Bold = False
+        .Font.Name = "Sans Serif"
+        .Enabled = True
+        .Mode = 1
+        .Rows.H = 25
+        .Columns.Count = 4
+        .Columns[0].w = 0
+        .Columns[1].w = 400        
+        .Columns[2].w = 150
+        .Columns[3].w = 150
+        .Columns[2].Alignment = Align.Center
+        .Columns[3].Alignment = Align.Center
+        .W = .Columns[1].w + .Columns[2].w + .Columns[3].w
+        .Columns[1].Title = "Gast-Mannschaft"
+        .Columns[2].Title = "SpTermin"
+        .Columns[3].Title = "Beginn"
+        .Rows.Count = 1
+        .Height = (.Rows.Count + 1) * .Rows.H
+        gridHeim.x = 30
+        gridGast.X = gridHeim.x + gridHeim.w + 30 
+        gridHeim.y = 20
+        gridGast.y = 20
+    End With    
+    
+End
+'==========================================================================
+' Initialisierung:  gridVerbSpInit()
+'	
+'
+'==========================================================================
+
+Public Sub gridVerbSpInit()
+    
+    Dim i As Integer
+    Dim k As Integer
+    Dim h As Integer
+    Dim m As Integer
+    Dim strTime As String
+    Dim btnBreite As Integer
+    'Dim btnWidth As Integer
+    Dim leftMin As Integer
+    ' Dim cellSpace As Integer
+    ' gridTraining = New GridView(Me) As "gridTraining"
+    AnzPlz = 7   ' StrucType.GlobRegeln.AnzPlatzVal    
+    leftMin = 0
+    btnBreite = 50
+    h = 7 
+    m = 0 
+    With gridVbSp
+        .Visible = False
+        .Border = False
+        .Header = 3
+        .ScrollBar = 0
+        .Font.Name = "Sans Serif"
+        .Font.Size = 10
+        .Font.Bold = False
+        .X = 135 + panPlan.w + 135
+        .Y = 20
+        .Clear
+        .Top = 50
+        .Columns.Count = AnzPlz
+        .Columns.W = 100
+        .Width = .Columns.W * AnzPlz + 50
+        
+        .Rows.Count = (22 - 7) * 4 + 1 '115
+        .Height = 35 * 25 + 25
+        .Left = 980
+        LbwdDate.Y = .Top - LbwdDate.H
+        LbwdDate.Left = .Left
+        LbwdDate.W = .W
+        panPlan.x = 135
+        panPlan.Y = LbwdDate.Y
+        panPlan.H = .Height + LbwdDate.H
+        ' DateChooser1.Y = 500
+        If m = 0 Then
+            strTime = Trim(Str(h)) & ":00"
+        Else
+            strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+        End If
+        For i = 0 To 60
+            .Row = i
+            .Rows[i].Height = 25
+            .Font.Name = "Sans Serif"
+            If i Mod 4 = 0 Then
+                For k = 0 To AnzPlz - 1
+                    gridVbSp[i, k].RowSpan = 1
+                    .Column = k
+                    With gridVbSp[i, k]
+                        .Alignment = Align.Center
+                        .Font.Size = 8
+                        .Background = Color.RGB(114, 159, 207) '&HFF8080
+                        .Foreground = Color.White '&H80000005
+                        .Font.Bold = True
+                        .Text = strTime
+                    End With
+                Next 
+            Else
+                For k = 0 To AnzPlz - 1
+                    gridVbSp[i, k].RowSpan = 1
+                    .Column = k
+                    With gridVbSp[i, k]
+                        .Alignment = Align.Center
+                        .Background = Color.White '&H8000000E
+                        .Foreground = Color.Black '&H80000012
+                    End With
+                Next 
+            End If
+            For k = 0 To AnzPlz
+                .Column = k
+                .Background = &H808080
+            Next 
+            m = m + 15
+            If m = 60 Then
+                m = 0
+                h = h + 1
+                If h = 24 Then h = 0
+            End If
+            If m = 0 Then
+                strTime = Trim(Str(h)) & ":00"
+            Else
+                strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+            End If
+        Next 
+        ' i = FMain.topRow()
+        altTime = i
+    End With
+    With gridVbSp
+        For i = 0 To AnzPlz - 1
+            .Columns[i].Alignment = Align.Center    
+            .Columns[i].Title = Str(i + 1)
+        Next
+        m = 0
+        h = 6
+        For i = 0 To 60
+            If i Mod 4 = 0 Then
+                h += 1
+                .Rows[i].Title = Str(h) & ":00"
+                m = 0
+            Else
+                m += 15
+                .Rows[i].Title = Str(m)
+            Endif
+        Next
+        .Visible = True
+        .Enabled = True
+    End With
+    
+End
+
+'==========================================================================
+' manSave()
+'	
+'
+'==========================================================================
+
+Public Sub manSave()
+    
+    Dim i, j As Integer
+    Dim rs1 As Result
+    
+    With stcHeimGast[0]
+        SqlCom = "SELECT * FROM "
+        SqlTab = "MannHeimGast "
+        SqlP = "WHERE Mannschaft = '" & .Mannschaft & "' AND SpTermin = '" & cBoxDate & "'"
+        rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+    End With
+    If rs.count > 0 Then
+        j = rs.count
+        For i = 0 To rs.count - 1
+            With stcHeimGast[i]
+                SqlCom = "UPDATE "
+                SqlTab = "MannHeimGast SET "
+                SqlP = "Beginn = '" & .Beginn & "', Ende = '" & .Ende & "', Platz = '" & .Platz & "'  WHERE Mannschaft = '" & .Mannschaft & "' AND SpTermin = '" & cBoxDate & "' AND ED ='" & .ED & "'"
+                rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            End With
+        Next
+        With stcHeimGast[1]
+            If j = 1 And Val(.Platz) > 0 Then
+                SqlCom = "INSERT INTO  "
+                SqlTab = "MannHeimGast "
+                SqlP = "(idHeim, Mannschaft, Gast, InfoText, ED, Tag, SpTermin, Beginn, Ende, Platz, Event_fl) VALUES ('" & .idHeim & "','" & .Mannschaft & "', '" & .Gast & "','" & 
+                    .InfoText & "','" & "1" & "','" & .Tag & "','" & cBoxDate & "','" & .Beginn & "','" & .Ende & "','" & .Platz & "','" & .Event_fl & "')"                    
+                rs1 = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            Endif
+        End With         
+    Endif
+    
+End
+'==========================================================================
+' panInit()
+'	
+'
+'==========================================================================
+
+Public Sub panInit()
+    
+    panZeit.y = gridPlanM.y + gridPlanM.Rows.h * 5 + 20
+    panPlz.y = panZeit.y + panZeit.h
+    btnEinzel.x = panZeit.x
+    btnEinzel.y = panZeit.y - btnEinzel.h - 20
+    btnDoppel.Y = btnEinzel.Y
+    btnDoppel.x = btnEinzel.x + btnEinzel.w + 20
+    lbInfo.x = btnDoppel.x + btnDoppel.w + 10
+    lbInfo.y = btnDoppel.y + btnDoppel.h - lbInfo.h
+
+End
+
+'==========================================================================
+' loadTrTag()
+'	
+'
+'==========================================================================
+
+Public Sub MyMannsch_MouseDown()
+    
+    Dim i As Integer
+    Dim Tag As String
+    ' For i = 0 To 3
+    '     btnVerbMenue[i].Background = Color.DarkGray
+    '     btnVerbMenue[i].Foreground = Color.White
+    ' Next
+    Select Case Last.tag
+        Case 0                          'Mannschaften
+            plCom = 0
+            btnVerbMenue[0].Background = Color.Cyan
+            btnVerbMenue[0].Foreground = Color.Black           
+            btnVerbMenue[1].Background = Color.DarkGray
+            btnVerbMenue[1].Foreground = Color.White
+            btnVerbMenue[3].Enabled = True
+            btnVerbMenue[4].Enabled = True
+            ' btnVerbMenue[2].Enabled = False
+            ' btnVerbMenue[4].Enabled = True
+            panGrid.Visible = False
+            ' gridHeimInit()
+            panMain.Visible = True
+            gridHeim.Visible = True
+            gridGast.Visible = True
+        Case 1                          'Planung
+            plCom = 1
+            ' TrainingInit()
+            btnVerbMenue[1].Background = Color.Cyan
+            btnVerbMenue[1].Foreground = Color.Black  
+            btnVerbMenue[0].Background = Color.DarkGray
+            btnVerbMenue[0].Foreground = Color.White  
+            btnVerbMenue[3].Enabled = False
+            btnVerbMenue[4].Enabled = True
+            ' panMain.Background = Color.Black
+            panMain.Visible = False
+            panZeit.Visible = False
+            btnEinzel.Visible = False
+            btnDoppel.Visible = False
+            lbInfo.Visible = False
+            panPlz.Visible = False
+            gridVerbSpInit()
+            gridPlanMInit()
+            panGrid.Visible = True
+            panInit()
+            
+            SqlCom = "SELECT SpTermin FROM "
+            SqlTab = "MannHeimGast "
+            SqlP = "GROUP BY SpTermin ORDER BY SpTermin"
+            rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            If rs.count > 0 Then
+                combDate.Clear()
+                For i = 0 To rs.count - 1
+                    Tag = Trim(aWeekDay[WeekDay(rs!SpTermin)])
+                    combDate.Add(Tag & "-" & Format(rs!SpTermin, "dd.mm.yyyy"))
+                    rs.MoveNext
+                Next
+                combDate.Text = ""
+            Endif
+        Case 2
+        Case 3                          'Ändern
+            plCom = 3
+            btnVerbMenue[0].Background = Color.Cyan
+            btnVerbMenue[0].Foreground = Color.Black  
+            If btnVerbMenue[3].Background = Color.DarkGray Then
+                btnVerbMenue[3].Background = Color.Cyan
+                btnVerbMenue[3].Foreground = Color.Black  
+            Else
+                plCom = 99
+                btnVerbMenue[3].Background = Color.DarkGray
+                btnVerbMenue[3].Foreground = Color.White   
+                gridHeim.Cancel
+                gridGast.Cancel               
+            Endif
+        Case 4                          'Speichern
+            If plCom = 1 Then
+                btnVerbMenue[1].Background = Color.Cyan
+                btnVerbMenue[1].Foreground = Color.Black  
+                manSave()
+            Endif
+        Case 5                         'Löschen
+            plCom = 5
+        Case 6                         'Ende
+            fmVerbandsspiele.close    
+    End Select    
+    
+End
+
+Public Sub gridPlanMInit()
+    
+    With combDate
+        .w = 200
+        .x = 50
+        .y = 50
+        .h = 45
+        .ReadOnly = True
+        lbDate.x = .x
+        lbDate.y = .y - lbDate.h
+        lbDate.w = .w
+    End With
+    With gridPlanM
+        .w = 400
+        .x = combDate.x + combDate.w + 65
+        .y = 50
+        .Mode = 1
+        .Rows.Resizable = True
+        .Columns.count = 3
+        .Columns[0].w = 0
+        .Columns[1].w = .w - 300
+        .Columns[1].Alignment = Align.Center
+        ' .Columns[1].Title = "Beginn"
+        .Columns[2].w = .w - 100
+        .Columns[2].Alignment = Align.Center
+        .Columns[2].Title = "Verbansspiele"
+        .Rows.count = 0
+        .Rows.H = 80
+        .H = 0
+        .Enabled = True
+        .Cancel
+        lbVerSp.x = .x
+        lbVerSp.y = .y - lbVerSp.h
+        lbVerSp.w = .w
+        ' panZeit.y = .y + .Rows.h * 5 + 20
+        ' panPlz.y = panZeit.y + panZeit.h + 30
+    End With
+    
+End
+
+Public Sub tagTraining(tag As String)
+    
+    Dim s, Platz, Beg, Ende, frei As String 
+    Dim rs1 As Result
+    Dim b, e, h, m, n, i, k, j, col As Integer
+    
+    gridVerbSpInit()
+    For i = 1 To 2
+        Select Case i
+            Case 1
+                SqlCom = "SELECT * FROM "
+                SqlTab = "MannschTrain "
+                SqlP = "WHERE Tag = '" & Tag & "' AND Freigabe = " & "'J'"
+                rs1 = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            Case 2
+                SqlCom = "SELECT * FROM "
+                SqlTab = "MannHeimGast "
+                SqlP = "WHERE SpTermin = '" & cBoxDate & "'"
+                rs1 = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+        End Select
+        If rs1.count > 0 Then 
+            For n = 0 To rs1.count - 1
+                If i = 1 Then frei = rs1!Freigabe
+                If frei = "J" Or i = 2 Then
+                    Beg = Format(rs1!Beginn, "hh:nn")
+                    Ende = Format(rs1!Ende, "hh:nn")
+                    b = Val(Format(rs1!Beginn, "hh")) * 4 + Val(Format(rs1!Beginn, "nn")) \ 15
+                    e = Val(Format(rs1!Ende, "hh")) * 4 + Val(Format(rs1!Ende, "nn")) \ 15
+                    h = e - b
+                    Platz = Trim(rs1!Platz)
+                    For j = 1 To AnzPlz
+                        If Mid(Platz, j, 1) = 1 Then
+                            k += 1
+                            m = b - 28
+                            col = j - 1
+                            gridVbSp[m, col].RowSpan = h
+                            If s = rs1!Mannschaft Then
+                                gridVbSp[m, col].Background = Color.Red
+                            Else
+                                gridVbSp[m, col].Background = Color.DarkRed
+                            Endif
+                            gridVbSp[m, col].Foreground = Color.White
+                            gridVbSp[m, col].Font.Size = 10
+                            gridVbSp[m, col].Font.name = "Sans Serif"
+                            gridVbSp[m, col].Font.Bold = True
+                            gridVbSp[m, col].WordWrap = True
+                            Select Case i
+                                Case 1
+                                    gridVbSp[m, col].text = Beg & "-" & Ende & Chr(10) & Chr(10) & rs1!Mannschaft
+                                Case 2
+                                    gridVbSp[m, col].text = rs1!InfoText & Chr(10) & Chr(10) & rs1!Mannschaft & Chr(10) & "vs" & Chr(10) & rs1!Gast
+                            End Select
+                        Endif
+                    Next
+                Endif
+                rs1.MoveNext
+            Next
+        Endif    
+    Next
+    
+End
+
+' Public Sub fmVerbandsspiele_KeyPress()
+Public Sub Form_KeyPress()
+    
+    Dim id, row, col As Integer
+    
+    If Key.code = Key.Esc Then 
+        gridGast.Cancel
+        gridHeim.Cancel
+        Return
+    Endif
+    If Key.Code = Key.Return Then 
+        TastSaveFl = True
+    Endif
+    
+End
+
+Public Sub evHeim_Save(row As Integer, column As Integer, value As String)
+    
+    gridHeim[row, column].Text = Value
+    gridHeim[row, column].Refresh
+    If enSafeFl = 0 Then
+        If column = 2 Then
+            SqlCom = "INSERT INTO "
+            SqlTab = "MannschVerb "
+            SqlP = "(Heim, SpKlasse) VALUES ('" & gridHeim[row, 1].Text & "', '" & gridHeim[row, 2].Text & "')"
+            rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            
+            gridHeim.Rows.count += 1
+            gridHeim.H = (gridHeim.Rows.count + 1) * gridHeim.Rows.h
+        Endif
+    Else
+        SqlCom = "UPDATE "
+        SqlTab = "MannschVerb "
+        SqlP = "SET Heim = '" & gridHeim[row, 1].Text & "', SpKlasse = '" & gridGast[row, 2].Text & "' WHERE id = '" & gridHeim[row, 0].Text & "'"
+        rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+    Endif
+    enSafeFl = 0
+    plCom = 0
+    
+End
+
+Public Sub evGast_Save(row As Integer, column As Integer, value As String)
+    
+    Dim dat As Date
+    
+    gridGast[row, column].Text = Value
+    If column = 3 And IsDate(gridGast[row, column].Text) = False Then 
+        Message.Info("Datum ist falsch")
+        Return
+    Endif
+    gridGast[row, column].Refresh
+    If enSafeFl = 0 Then
+        If column = 3 Then
+            dat = Val(gridGast[row, 2].Text)
+            aWD = aWeekDay[WeekDay(dat)] 
+            aWD = Trim(aWD)
+            gridGast[row, 2].Text = Format(dat, "yyyy-mm-dd")
+            SqlCom = "INSERT INTO "
+            SqlTab = "MannHeimGast "
+            SqlP = "(idHeim, Mannschaft, Gast,InfoText, SpTermin, Beginn, Tag) VALUES ('" & gridHeim[throw, 0].Text & "', '" & gridHeim[tHrow, 1].Text & "', '" & gridGast[row, 1].Text & "', '" & gridHeim[tHrow, 2].Text & "', '" & gridGast[row, 2].Text & "', '" & 
+                gridGast[row, 3].Text & "', '" & aWD & "')"
+            rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            
+            gridGast.Rows.count += 1
+            gridGast.H = (gridGast.Rows.count + 1) * gridGast.Rows.h
+        Endif
+    Else
+        dat = Val(gridGast[row, 2].Text)
+        aWD = aWeekDay[WeekDay(dat)] 
+        aWD = Trim(aWD)
+        gridGast[row, 2].Text = Format(dat, "yyyy-mm-dd")
+        SqlCom = "UPDATE "
+        SqlTab = "MannHeimGast "
+        SqlP = "SET Gast = '" & gridGast[row, 1].Text & "', SpTermin = '" & gridGast[row, 2].Text & "', Beginn = '" & gridGast[row, 3].Text & "' WHERE id = '" & gridGast[row, 0].Text & "'"
+        rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+        
+    Endif
+    enSafeFl = 0
+    plCom = 0
+    
+End
+
+' Gambas class file
+
+Public Sub EvHeim_Click()
+    
+    Dim row, col, i As Integer
+    
+    tHrow = gridHeim.Row
+    col = gridHeim.Column
+    grHG = 1
+    Select plCom
+        Case 3
+            gridHeim.Edit()
+            If gridHeim[row, 0].Text Then
+                enSafeFl = 1
+            Else
+                enSafeFl = 0
+            Endif
+        Case 0
+            gridGast.Delete
+            gridGastInit()
+            gridGast.Visible = True
+            SqlCom = "SELECT * FROM "
+            SqlTab = "MannHeimGast "
+            SqlP = "WHERE idHeim = '" & gridHeim[tHrow, 0].Text & "' GROUP BY Gast ORDER BY SpTermin "
+            rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            gridGast.Visible = True
+            ' gridGast.Rows.Count = 1
+            If rs.count > 0 Then
+                For i = 0 To rs.count - 1
+                    gridGast[i, 0].text = rs!id
+                    gridGast[i, 1].text = rs!Gast
+                    gridGast[i, 2].text = Format(rs!SpTermin, "dd.mm.yyyy")
+                    gridGast[i, 3].text = Format(rs!Beginn, "hh:nn")
+                    gridGast.Rows.Count += 1
+                    gridGast.UnSelectAll
+                    rs.MoveNext
+                Next
+                gridGast.H = (gridGast.Rows.Count + 1) * gridGast.Rows.H
+            Endif
+        Case 5
+            Select Message.Question("soll die Mannschaft gelöscht werden?", "Ja", "Nein")
+                Case 1
+                Case 2
+            End Select
+            
+            ' Endif
+    End Select
+    ' gridHeim.Edit()
+    
+End
+
+Public Sub EvGast_Click()
+    
+    Dim row, col As Integer
+    
+    row = gridGast.Row
+    col = gridGast.Column
+    grHG = 2
+    Select Case plCom
+        Case 3
+            gridGast.Edit()
+            If gridGast[row, 0].Text Then
+                enSafeFl = 1
+            Else
+                enSafeFl = 0
+            Endif
+        Case 5
+            Select Message.Question("soll die Mannschaft gelöscht werden?", "Ja", "Nein")
+                Case 1
+                    SqlCom = "DELETE  FROM "
+                    SqlTab = "MannHeimGast "
+                    SqlP = "WHERE id = '" & gridGast[row, 0].Text & "'"
+                    rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+                    plCom = 0
+                    EvHeim_Click()
+                    
+                Case 2
+            End Select
+    End Select
+    
+End
+
+Public Sub combDate_Click()
+    
+    Dim l, i As Integer
+    Dim rs As Result
+    Dim dat As Date
+    
+    LbwdDate.Text = combDate.text
+    btnEinzel.Visible = False
+    btnDoppel.Visible = False
+    Tag = Mid(combDate.Text, 1, 2)
+    l = Len(combDate.text)
+    cBoxDate = Mid(combDate.Text, 4, l - 3)
+    dat = Val(cBoxDate)
+    cBoxDate = Format(dat, "yyyy-mm-dd")
+    tagTraining(Tag)   
+    SqlCom = "SELECT * FROM "
+    SqlTab = "MannHeimGast "
+    SqlP = "WHERE SpTermin = '" & cBoxDate & "' GROUP BY Mannschaft ORDER BY Beginn "
+    rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+    If rs.count > 0 Then
+        panZeit.Visible = False
+        panPlz.Visible = False
+        gridPlanM.H = (rs.Count) * 80
+        gridPlanM.Rows.Count = rs.Count
+        For i = 0 To rs.count - 1
+            gridPlanM[i, 1].Text = Format(rs!Beginn, "hh:nn")
+            gridPlanM[i, 2].Text = rs!InfoText & Chr(10) & rs!Mannschaft & Chr(10) & " vs " & Chr(10) & rs!Gast 
+            gridPlanM[i, 0].Text = rs!idHeim
+            rs.MoveNext
+        Next
+        ' Wait 0.01
+        gridPlanM.row = -1
+    Endif
+    
+End
+
+Public Sub gridPlanM_Click()
+    
+    Dim i, j, row, col, h, m, k, y As Integer
+    
+    row = gridPlanM.row
+    ' col = gridPlanM.column
+    stcHGclear()
+    stcHG(row)
+    lbBegZeit.text = ""
+    lbEndZeit.text = ""
+    With stcHeimGast[0]
+        If Not .Mannschaft Then Return
+        btnDoppel.Visible = True
+        btnEinzel.Visible = True
+        btnEinzel.Background = Color.Green
+        btnDoppel.Background = Color.ButtonBackground
+        tagTraining(Tag)
+        panZeit.Visible = True
+        PlzInit()
+        refrPlz(0)
+    End With
+    ' Endif
+    
+End
+
+Public Sub refrPlz(i As Integer)
+    
+    Dim j, row, col, h, m, k, y As Integer
+    
+    With stcHeimGast[i]
+        selMansch = .Mannschaft
+        lbBegZeit.Text = Format(.Beginn, "hh:nn")
+        lbEndZeit.Text = Format(.Ende, "hh:nn")
+        sBegZeit = Split(lbBegZeit.text, ":")
+        sEndZeit = Split(lbEndZeit.text, ":")
+        h = Val(Format(.Beginn, "hh"))
+        m = Val(Format(.Beginn, "nn"))
+        k = h * 4 - 28
+        If m > 0 Then k += m \ 15
+        gridVbSp.Row = k
+        gridVbSp.MoveTo(k, 0)
+        y = gridVbSp.Rows[k].y
+        gridVbSp.ScrollY = y   
+        gridVbSp.Select(k, 1)
+        For j = 1 To AnzPlz
+            If Mid(.Platz, j, 1) = 1 Then
+                Plaetze[j - 1].Background = Color.Red
+                Plaetze[j - 1].Foreground = Color.White
+                gridVbSp[k, j - 1].Background = color.Red
+            Else
+                Plaetze[j - 1].Background = Color.ButtonBackground
+                Plaetze[j - 1].Foreground = Color.Black
+            Endif
+        Next
+        panPlz.Visible = True
+    End With     
+    
+End
+
+'==========================================================================
+' btnDatNeu_MouseDown()
+'	
+'
+'==========================================================================
+Public Sub belGridVerb()
+    
+    Dim i, bz, ez As Integer
+    
+    panPlz.Visible = True
+    sBegZeit = Split(lbBegZeit.text, ":")
+    sEndZeit = Split(lbEndZeit.text, ":")
+    bz = Val(sBegZeit[0]) * 4 + Val(sBegZeit[1]) / 15
+    ez = Val(sEndZeit[0]) * 4 + Val(sEndZeit[1]) / 15
+    hight_nr = ez - bz
+    i = bz - 28
+    gridVbSp[i, col].RowSpan = hight_nr
+    gridVbSp[i, col].Background = Color.Red
+    gridVbSp[i, col].Foreground = Color.White
+    gridVbSp[i, col].WordWrap = True
+    
+    gridVbSp[i, col].text = gridPlanM[gridPlanM.Row, 2].Text
+    gridVbSp[i, col].Font.Size = 10
+    Plaetze[col].Background = Color.red
+    Plaetze[col].Foreground = Color.White
+    
+End
+' Initialisierung:  PlzInitE()
+'	
+'
+'==========================================================================
+
+Public Sub PlzInit()
+    
+    Dim i, x, y As Integer
+    
+    x = 200
+    For i = 0 To 6
+        Plaetze[i] = New Label(panPlz) As "mdPlaetze"
+        With Plaetze[i]
+            .X = x + i * 70
+            .H = 50
+            .Y = panPlz.H \ 2 - .H \ 2
+            .W = 50
+            .Tag = i
+            .Background = Color.ButtonBackground
+            .Foreground = Color.Black
+            .Font.name = "Sans Serif"
+            .Font.size = 15
+            .Text = Str(i + 1)
+            .Alignment = Align.Center
+        End With
+    Next
+    
+End
+
+'==========================================================================
+' Event:  mdPlaetzeD_MouseDown()
+'	
+'
+'==========================================================================
+Public Sub mdPlaetze_MouseDown()
+    
+    Dim i As Integer
+    
+    If Plaetze[Last.tag].Background = Color.Red Then
+        Plaetze[Last.tag].Background = Color.ButtonBackground
+        Plaetze[Last.tag].Foreground = Color.Black 
+        col = Last.Tag
+        delBelPlz()
+    Else
+        Plaetze[Last.tag].Background = Color.Red
+        Plaetze[Last.tag].Foreground = Color.White
+        col = Last.Tag
+        ' sBegZeit = Split(lbBegZeit2.text, ":")
+        ' sEndZeit = Split(lbEndZeit2.text, ":")
+        belGridVerb()
+    Endif
+    strPlz = ""
+    For i = 0 To 6
+        If Plaetze[i].Background = Color.Red Then
+            strPlz &= 1
+        Else
+            strPlz &= 0
+        Endif
+    Next
+    strPlz = Trim(strPlz)
+    If btnEinzel.Background = Color.Green Then
+        stcHeimGast[0].Platz = strPlz
+    Else
+        stcHeimGast[1].Platz = strPlz
+    Endif
+    
+End
+
+'==========================================================================
+' btnDatNeu_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub delBelPlz()
+    
+    Dim i, j, bz, ez, h, m As Integer
+    Dim strTime As String
+    
+    panPlz.Visible = True
+    ' gridTraiInit()
+    ' sBegZeit = Split(lbBegZeit.text, ":")
+    ' sEndZeit = Split(lbEndZeit.text, ":")
+    bz = Val(sBegZeit[0]) * 4 + Val(sBegZeit[1]) / 15
+    ez = Val(sEndZeit[0]) * 4 + Val(sEndZeit[1]) / 15
+    hight_nr = ez - bz
+    i = bz - 28
+    h = bz \ 4
+    m = bz Mod 4
+    If m = 0 Then
+        strTime = Trim(Str(h)) & ":00"
+    Else
+        strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+    End If
+    
+    For j = i To i + hight_nr - 1
+        With gridVbSp[j, col]
+            .RowSpan = 1
+            .text = ""
+            If (j + 28) Mod 4 = 0 Then
+                .Alignment = Align.Center
+                .Background = Color.RGB(114, 159, 207) '&HFF8080
+                .Foreground = Color.White '&H80000005
+                .Font.Size = 8
+                .Font.Bold = True
+                .Text = strTime
+            Else
+                .Alignment = Align.Center
+                .Background = Color.White '&H8000000E
+                .Foreground = Color.Black '&H80000012          
+                .Font.Bold = False
+            Endif
+            m = m + 15
+            If m = 60 Then
+                m = 0
+                h = h + 1
+            End If
+            If m = 0 Then
+                strTime = Trim(Str(h)) & ":00"
+            Else
+                strTime = Trim(Str(h)) & ":" & Trim(Str(m))
+            End If
+        End With
+    Next
+    
+End
+
+Public Sub btnZeitNeu_MouseDown()
+    
+    Dim i As Integer
+    
+    btnZeitNeu.Background = Color.Green
+    lbBegZeit.Enabled = True
+    lbEndZeit.Enabled = True
+    lbEndZeit.SetFocus
+    lbEndZeit.Background = Color.yellow
+    For i = 0 To 6
+        If Plaetze[i].Background = Color.Red Then
+            Plaetze[i].Background = Color.ButtonBackground
+            Plaetze[i].Foreground = Color.Black 
+            col = i
+            delBelPlz()
+        Endif
+    Next 
+    btnZeitOK.Enabled = True  
+    
+End
+
+'==========================================================================
+'btnZeitOK_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub btnZeitOK_MouseDown()
+    
+    Dim i As Integer
+    
+    btnZeitNeu.Background = Color.ButtonBackground
+    lbBegZeit.Enabled = False
+    lbEndZeit.Enabled = False
+    btnZeitOK.Enabled = False
+    lbBegZeit.Background = Color.White
+    lbEndZeit.Background = Color.White
+    lbBegZeit.Foreground = Color.Black
+    lbEndZeit.Foreground = Color.Black
+    timeVon = lbBegZeit.Text
+    timeBis = lbEndZeit.text
+    For i = 0 To 6
+        Plaetze[i].Background = Color.ButtonBackground
+        Plaetze[i].Foreground = Color.Black
+    Next
+    panPlz.Visible = True
+    
+End
+
+'==========================================================================
+'  lbBegZeit_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub lbBegZeit_MouseDown()
+    
+    lbBegZeit.Background = Color.Yellow
+    lbEndZeit.Background = Color.White
+    
+End
+
+'==========================================================================
+' lbEndZeit_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub lbEndZeit_MouseDown()
+    
+    lbEndZeit.Background = Color.Yellow
+    lbBegZeit.Background = Color.White
+    
+End
+
+'==========================================================================
+' gridTraining_MouseDown()
+'	
+'
+'==========================================================================
+
+Public Sub gridVbSp_MouseDown()
+    
+    Dim i, h, m As Integer
+    Dim beZeit As String
+    
+    If lbBegZeit.Background = Color.yellow Or lbEndZeit.Background = Color.yellow Then
+        If btnZeitNeu.Background = Color.ButtonBackground Then Return
+        With gridVbSp
+            i = .Row
+            col = .Column   
+            h = (i + 28) \ 4
+            m = ((i + 28) Mod 4) * 15
+            
+            If m = 0 Then
+                beZeit = Str(h) & ":" & "00"
+            Else
+                beZeit = Str(h) & ":" & Str(m)
+            Endif
+        End With
+        If lbBegZeit.Background = Color.yellow Then
+            lbBegZeit.text = beZeit
+            If btnEinzel.Background = Color.Green Then
+                stcHeimGast[0].Beginn = beZeit
+            Else
+                stcHeimGast[1].Beginn = beZeit
+            Endif            
+            lbEndZeit.Background = Color.yellow
+            lbBegZeit.Background = Color.White
+        Else
+            lbEndZeit.text = beZeit
+            If btnEinzel.Background = Color.Green Then
+                stcHeimGast[0].Ende = beZeit
+            Else
+                stcHeimGast[1].Ende = beZeit
+            Endif
+        Endif
+    Endif
+    
+End
+
+Public Sub stcHGclear()
+    
+    Dim i As Integer
+    Dim rs As Result
+    
+    For i = 0 To 1
+        With stcHeimGast[i]
+            .idHeim = 0
+            .Mannschaft = ""
+            .Gast = ""
+            .InfoText = ""
+            .ED = 0
+            .Tag = ""
+            .SpTermin = 0
+            .Beginn = 0
+            .Ende = 0
+            .Platz = "0000000"
+            .Event_fl = 0
+        End With
+    Next
+    
+End
+
+Public Sub stcHG(row As Integer)
+    
+    Dim i As Integer
+    Dim rs As Result
+    
+    SqlCom = "SELECT * FROM "
+    SqlTab = "MannHeimGast "
+    SqlP = "WHERE SpTermin = '" & cBoxDate & "' And idHeim = '" & gridPlanM[row, 0].Text & "' ORDER BY ED"
+    rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+    If rs.count > 0 Then
+        For i = 0 To rs.count - 1
+            With stcHeimGast[i]
+                .idHeim = rs!idHeim
+                .Mannschaft = rs!Mannschaft
+                .Gast = rs!Gast
+                .InfoText = rs!InfoText
+                .ED = rs!ED
+                .Tag = rs!Tag
+                .SpTermin = rs!SpTermin
+                .Beginn = rs!Beginn
+                .Ende = rs!Ende
+                .Platz = Trim(rs!Platz)
+                .Event_fl = rs!Event_fl
+            End With
+            rs.MoveNext
+        Next
+    Endif
+    
+End
+
+Public Sub btnEinzel_MouseDown()
+    
+    Dim j, h, m, k, y As Integer
+
+    lbInfo.Visible = False
+    With stcHeimGast[1]
+        h = Val(Format(.Beginn, "hh"))
+        m = Val(Format(.Beginn, "nn"))
+        k = h * 4 - 28
+        If m > 0 Then k += m \ 15
+        For j = 1 To AnzPlz
+            If Mid(.Platz, j, 1) = 1 Then
+                gridVbSp[k, j - 1].Background = color.DarkRed
+            Endif
+        Next
+    End With
+    
+    refrPlz(0)
+    btnDoppel.Background = Color.ButtonBackground
+    btnEinzel.Background = Color.Green
+    
+End
+
+Public Sub btnDoppel_MouseDown()
+    
+    Dim j, h, m, k, y As Integer
+
+    lbInfo.Visible = True
+    If Val(stcHeimGast[1].Platz) = 0 Then
+        stcHeimGast[1] = stcHeimGast[0]
+        With stcHeimGast[1]
+            .Beginn = ""
+            .Ende = ""
+            .Platz = "0000000"
+        End With
+    Endif
+    With stcHeimGast[0]
+        If .Ende Then stcHeimGast[1].Beginn = .Ende
+        h = Val(Format(.Beginn, "hh"))
+        m = Val(Format(.Beginn, "nn"))
+        k = h * 4 - 28
+        If m > 0 Then k += m \ 15
+        For j = 1 To AnzPlz
+            If Mid(.Platz, j, 1) = 1 Then
+                gridVbSp[k, j - 1].Background = color.DarkRed
+            Endif
+        Next
+    End With
+    refrPlz(1)
+    btnEinzel.Background = Color.ButtonBackground
+    btnDoppel.Background = Color.Green
+    
+End

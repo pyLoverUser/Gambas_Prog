@@ -1,0 +1,776 @@
+' Gambas class file
+
+Public btnHoehe As Integer = 60
+Public btnBreite As Integer = 150
+Public cellSpace As Integer
+Public SqlP As Variant
+Public SqlCom As Variant
+Public SqlTab As Variant
+Public rs As Result
+Public RegPlzStatus As String
+Public btnAdmin[8] As Button
+Public btnRegNr[7] As Button
+Public btnAutoRegNr[7] As Button
+Public adminSts As Integer
+Public GridViewAuto1 As GridView
+Public HeaderAutoReg[10] As Label
+' Public c[10] As Integer
+Public c As New Integer[]
+Public h1 As New String[]
+' Public h1[9] As String
+Public gridBox As ComboBox
+Public anFl As Integer
+Public spFl As Integer
+Public btnAktiv[10] As Label
+Public aryAktiv[10] As Integer
+Public gvw As Integer
+Public akFl As Boolean
+Public udFl As Integer
+
+'=============================================================
+'Form_Open
+'
+'
+'=============================================================
+Public Sub Form_Open()
+Dim i, j As Integer
+
+initAutoGrid()
+initAdmin()  
+initMan()
+initAuto()
+GridViewAuto1.Visible = True
+btnAdmin[2].Enabled = False
+btnAdmin[3].Enabled = False
+btnAdmin[4].Enabled = False
+btnAdmin[5].Enabled = False
+frRegMan1.X = Screen.w \ 2 - frRegMan1.w \ 2
+frRegMan1.Y = 120
+frRegMan1.H = 280
+frRegMan2.X = frRegMan1.X
+frRegMan2.Y = frRegMan1.Y + frRegMan1.H
+frRegMan2.H = 80
+frAuto.X = Screen.W \ 2 - frAuto.w \ 2
+frAuto.Y = 120
+frAuto.Visible = False
+frRegMan1.Visible = False
+frRegMan2.Visible = False
+GridViewAuto1.Enabled = False
+End
+'=============================================================
+'initAdmin
+'
+'
+'=============================================================
+Public Sub initAdmin()
+Dim i As Integer
+For i = 0 To 7
+  btnAdmin[i] = New Button(Me) As "MyAdmin"
+  With btnAdmin[i]
+    .H = 60
+    .W = 150
+    .X = 0 + i * 150 
+    .Y = 0
+    If i = 7 Then .W = Screen.W - .X + 150
+    .Tag = i
+    .Background = Color.DarkGray
+    .Foreground = Color.White
+      Select Case i
+        Case 0
+            .Text = "Manuell"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Hand.ico")
+        Case 1
+            .Text = "Auto"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Player play.ico")
+        Case 2
+            .Text = "Ändern"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Pen.ico")
+       Case 3
+            .Text = "Neu."
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Health.ico")
+       Case 4
+            .Text = "Speichern"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Save.ico")
+        Case 5
+            .Text = "Löschen"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Trash.ico")
+        Case 6
+            .Text = "Ende"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Home.ico")
+      End Select
+  End With
+  Next
+End
+'=============================================================
+'initAutoGrid
+'
+'
+'=============================================================
+Public Sub initAutoGrid()
+Dim i As Integer
+c = [0, 100, 100, 80, 60, 60, 60, 60, 60, 60, 60]
+h1 = ["aktiv/gesperrt", "Beginn", " Dauer " & Chr(10) & "min", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+For i = 0 To 10
+    gvw += c[i]
+Next
+GridViewAuto1 = New GridView(frAuto) As "MyAutoGrid"
+GridViewAuto1.Columns.Count = 11
+For i = 0 To 10
+With GridViewAuto1
+    .Rows.H = 60
+    .Columns[i].W = c[i]
+    .Columns[i].Alignment = Align.Center
+    .Foreground = Color.Black
+    .Background = Color.White
+    .Font.name = "Sans Serif"
+    .Font.Size = 16
+    .W = gvw + 1
+    .H = 60
+    .X = 5
+    .Y = 150
+    .mode = Select.Single
+    .Padding = 1
+    .ScrollBar = Scroll.None
+    .grid = True
+End With
+Next
+gridBox = New ComboBox(GridViewAuto1.Children[0]) As "myGridTxt"
+gridBox.x = 0
+gridBox.y = 0
+gridBox.w = 10
+gridBox.h = 10
+gridBox.Background = Color.Yellow
+gridBox.Foreground = Color.Black
+
+gridBox.Visible = False
+For i = 0 To 9
+ HeaderAutoReg[i] = New Label(frAuto) As "MyGastGridHeader"
+ HeaderAutoReg[i].Foreground = Color.White
+ HeaderAutoReg[i].Alignment = Align.Center
+ HeaderAutoReg[i].Font.Size = 10
+ HeaderAutoReg[i].Font.Bold = False
+ HeaderAutoReg[i].Font.Name = "Sans Serif"
+ HeaderAutoReg[i].H = 40
+ HeaderAutoReg[i].w = c[i + 1] - 1 'GridView2.Columns[i].w '- 1
+ HeaderAutoReg[i].x = GridViewAuto1[0, i + 1].Left + GridViewAuto1.Left
+ ' HeaderAutoReg[i].top = GridViewAuto1[0, i].top + GridViewAuto1.Top
+ HeaderAutoReg[i].top = GridViewAuto1.Top - 40
+ HeaderAutoReg[i].Background = Color.DarkBlue
+ HeaderAutoReg[i].Visible = True
+ HeaderAutoReg[i].Text = h1[i]
+Next
+GridViewAuto1.Visible = False
+    
+    
+    
+End
+
+'=============================================================
+'initAuto
+'
+'
+'=============================================================
+Public Sub initAuto()
+Dim i, j As Integer
+lbplz.X = 20
+lbplz.Y = 33
+For i = 0 To 6
+    btnAutoRegNr[i] = New Button(frAuto) As "MyAutoRegBtn"
+    btnAutoRegNr[i].X = 105 + i * 54
+    btnAutoRegNr[i].Y = 33
+    btnAutoRegNr[i].W = 50
+    btnAutoRegNr[i].H = 50
+    btnAutoRegNr[i].Enabled = True
+    btnAutoRegNr[i].Text = Str(i + 1)
+    btnAutoRegNr[i].Tag = i + 1    
+    If Mid(RegPlzStatus, i + 1, 1) = 1
+        btnAutoRegNr[i].Background = Color.Green
+        btnAutoRegNr[i].Foreground = Color.Black
+    Else
+        btnAutoRegNr[i].Background = Color.Red
+        btnAutoRegNr[i].Foreground = Color.White
+    Endif        
+Next
+SqlCom = "SELECT * FROM "
+SqlTab = "r_RegnerAuto "
+SqlP = "ORDER BY BEGINN ASC"
+rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.Count > 0 Then
+    GridViewAuto1.Rows.Count = rs.Count
+    If rs.Count < 7 Then
+        GridViewAuto1.H = GridViewAuto1.Rows.H * rs.Count       '+ 40
+        frAuto.H = GridViewAuto1.H + GridViewAuto1.Y + 20
+    Else
+        GridViewAuto1.H = GridViewAuto1.Rows.H * 6      '+ 40
+        frAuto.H = GridViewAuto1.H + GridViewAuto1.Y + 20
+        ' GridViewAuto1.scrollbar = Scroll.Vertical
+    Endif
+    frAuto.W = gvw + 110
+    btnScrollup.x = gvw + 20
+    btnScrollup.y = GridViewAuto1.y
+    btnScrolldw.x = gvw + 20
+    If rs.count > 6 Then
+        btnScrolldw.Visible = True
+        btnScrollup.Visible = True
+        btnScrollup.Enabled = True
+    Else
+        btnScrolldw.Visible = False
+        btnScrollup.Visible = False
+        btnScrollup.Enabled = False
+    Endif
+    btnScrolldw.y = GridViewAuto1.y + GridViewAuto1.h - btnScrolldw.h
+    For i = 0 To rs.max
+        For j = 4 To 10
+            GridViewAuto1[i, j].Background = Color.red
+            GridViewAuto1[i, j].Foreground = Color.red 
+            GridViewAuto1[i, j].Text = 0    
+        Next
+    Next
+    ' autoAktiv() 
+    For i = 0 To rs.Count - 1  
+            
+        GridViewAuto1[i, 0].Text = rs!id
+        If rs!Aktiv = "aktiv" Then
+            GridViewAuto1[i, 1].Text = "aktiv"
+            GridViewAuto1[i, 1].Background = Color.Green
+            GridViewAuto1[i, 1].Foreground = Color.Black
+        Else
+            GridViewAuto1[i, 1].Text = "gesperrt"
+            GridViewAuto1[i, 1].Background = Color.Red
+            GridViewAuto1[i, 1].Foreground = Color.White
+        Endif
+        GridViewAuto1[i, 2].Text = Format(rs!Beginn, "hh:nn")
+        If Left(GridViewAuto1[i, 2].Text, 1) = 0 Then GridViewAuto1[i, 2].Text = Mid(GridViewAuto1[i, 2].Text, 2, 4)
+        GridViewAuto1[i, 3].Text = rs!Dauer
+        For j = 4 To 10
+            If rs[j] = 1 Then 
+                GridViewAuto1[i, j].Background = Color.DarkGreen 
+                GridViewAuto1[i, j].Foreground = Color.DarkGreen 
+                GridViewAuto1[i, j].Text = 1
+            Endif           
+        Next
+        rs.MoveNext   
+    Next
+    ' GridViewAuto1.MoveTo(0, 1)              
+Endif
+End
+
+'=============================================================
+'initMan
+'
+'
+'=============================================================
+Public Sub initMan()
+Dim i As Integer
+Dim rs As Result
+comRegMan1.List = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+comRegMan2.List = ["1", "2", "3", "4", "5", "Alle"]
+comRegMan3.List = ["J", "N"]
+comRegMan4.List = ["2", "3", "4", "5", "10"]
+SqlCom = "SELECT * FROM "
+SqlTab = "r_RegnerGlob "
+SqlP = ""
+rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+
+akFl = False
+comRegMan1.Text = rs!RegZeitMan
+comRegMan2.Text = rs!RegGleichz
+comRegMan3.Text = rs!RegAllePlz
+comRegMan4.Text = rs!RegDelay
+akFl = True
+
+If rs.Count > 0 Then RegPlzStatus = rs!RegnerPlzSts
+For i = 0 To 6
+    btnRegNr[i] = New Button(frRegMan2) As "MyRegBtn"
+    btnRegNr[i].X = 18 + i * 54
+    btnRegNr[i].Y = 33
+    btnRegNr[i].W = 36
+    btnRegNr[i].H = 36
+    If Mid(RegPlzStatus, i + 1, 1) = 1
+        btnRegNr[i].Background = Color.Green
+        btnRegNr[i].Foreground = Color.Black
+    Else
+        btnRegNr[i].Background = Color.DarkRed
+        btnRegNr[i].Foreground = Color.White
+    Endif        
+    btnRegNr[i].Text = i + 1
+    btnRegNr[i].Tag = i + 1    
+Next
+End
+
+'=============================================================
+'gridRowNeu
+'
+'
+'=============================================================
+Public Sub gridRowNeu()
+Dim i, j, k As Integer
+GridViewAuto1.Rows.Count += 1    
+k = GridViewAuto1.Rows.Count
+i = k - 1 
+If k < 7 Then
+    GridViewAuto1.H = GridViewAuto1.Rows.H * k       '+ 40
+    frAuto.H = k * GridViewAuto1.Rows.H + GridViewAuto1.Y + 20
+Else
+    ' GridViewAuto1.scrollbar = Scroll.Vertical
+    GridViewAuto1.MoveTo(i, 1)      
+Endif
+frAuto.W = gvw + 110
+GridViewAuto1[i, 1].Background = Color.red            
+GridViewAuto1[i, 1].Foreground = Color.White            
+GridViewAuto1[i, 1].Text = "gesperrt"    
+For j = 4 To 10
+    GridViewAuto1[i, j].Background = Color.red            
+    GridViewAuto1[i, j].Foreground = Color.red            
+    GridViewAuto1[i, j].Text = 0    
+Next
+
+End
+'=============================================================
+'autoNeuSp
+'
+'
+'=============================================================
+Public Sub autoNeuSp()
+Dim i As Integer
+i = GridViewAuto1.Rows.Count - 1
+SqlCom = "INSERT INTO "
+SqlTab = "r_RegnerAuto "
+SqlP = "(Aktiv,Beginn,Dauer,Mo,Di,Mi,Do,Fr,Sa,So) VALUES ('" & GridViewAuto1[i, 1].Text & "', '" & 
+GridViewAuto1[i, 2].Text & "', '" & GridViewAuto1[i, 3].Text & "', '" & GridViewAuto1[i, 4].Text & "', '" & GridViewAuto1[i, 5].Text & "', '" & GridViewAuto1[i, 6].Text & "', '" & 
+GridViewAuto1[i, 7].Text & "', '" & GridViewAuto1[i, 8].Text & "', '" & GridViewAuto1[i, 9].Text & "', '" & GridViewAuto1[i, 10].Text & "')"
+rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+spFl = 0
+btnAdmin[3].Background = Color.DarkGray
+btnAdmin[3].Foreground = Color.White
+gridBox.Visible = False
+GridViewAuto1.Enabled = False
+btnAdmin[3].Enabled = True
+btnAdmin[4].Enabled = False
+btnAdmin[5].Enabled = True
+
+End
+
+'=============================================================
+'delRegZeit
+'
+'<font color='red'>< b >" & GridViewAuto1[row, 2].Text & "</b></font>
+'=============================================================
+Public Sub delRegZeit(row As Integer)
+Dim i As Integer 
+i = Val(GridViewAuto1[row, 0].text)
+Message.Title = "Auto-Beregnung"
+Select Case Message.Question("Soll die Auto - Beregnung,<br/>BEGINN um <font color='red'>< b >" & GridViewAuto1[row, 2].Text & "</b></font> gelöscht werden?", "Ja", "Nein")
+Case 1
+SqlCom = "DELETE From "
+SqlTab = "r_RegnerAuto "
+SqlP = " WHERE id = " & i
+rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+Case 2
+End Select
+btnAdmin[5].Background = Color.DarkGray
+btnAdmin[5].Foreground = Color.White
+GridViewAuto1.Enabled = False
+btnAdmin[2].Enabled = True
+btnAdmin[4].Enabled = False
+btnAdmin[3].Enabled = True
+
+initAuto()
+End
+
+'=============================================================
+'MyAdmin_MouseDown
+'
+'
+'=============================================================
+Public Sub MyAdmin_MouseDown()
+Dim i, j, k As Integer  
+i = Last.Tag  
+Select Case i
+Case 0      'Reg manuell
+    adminSts = 1
+    frRegMan1.Visible = True
+    frAuto.Visible = False
+    btnAdmin[4].Enabled = False
+'    frRegMan2.Visible = True
+    ' GridViewAuto1.Visible = False
+    btnAdmin[0].Background = Color.Cyan
+    btnAdmin[0].Foreground = Color.Black
+    btnAdmin[1].Background = Color.DarkGray
+    btnAdmin[1].Foreground = Color.White
+    btnAdmin[2].Enabled = True
+    btnAdmin[3].Enabled = False
+    btnAdmin[5].Enabled = False
+    If comRegMan3.Text = "N" Then
+        frRegMan2.Visible = True
+    Else
+        frRegMan2.Visible = False
+    Endif
+    frRegMan1.Enabled = False
+    frRegMan2.Enabled = False
+Case 1      'Regner Auto
+    adminSts = 2
+    frRegMan1.Visible = False
+    frRegMan2.Visible = False
+    btnAdmin[5].Enabled = False
+    frAuto.Visible = True
+    btnAdmin[1].Background = Color.Cyan
+    btnAdmin[1].Foreground = Color.Black
+    btnAdmin[0].Background = Color.DarkGray
+    btnAdmin[0].Foreground = Color.White
+    btnAdmin[2].Enabled = True
+    btnAdmin[3].Enabled = True
+    btnAdmin[5].Enabled = True
+    GridViewAuto1.Enabled = False
+Case 2      'Ändern
+    anFl = 2
+    If btnAdmin[2].Background = Color.Cyan Then
+        btnAdmin[2].Background = Color.DarkGray
+        btnAdmin[2].Foreground = Color.White
+        gridBox.Visible = False
+    Else
+        btnAdmin[2].Background = Color.Cyan
+        btnAdmin[2].Foreground = Color.Black
+    Endif
+    Select Case adminSts
+        Case 1
+            If btnAdmin[2].Background = Color.Cyan Then 
+                frRegMan1.Enabled = True
+                frRegMan2.Enabled = True
+                btnAdmin[4].Enabled = True
+            Else
+                frRegMan1.Enabled = False
+                frRegMan2.Enabled = False
+                btnAdmin[4].Enabled = False 
+            Endif
+        Case 2
+            If btnAdmin[2].Background = Color.Cyan Then
+                GridViewAuto1.Enabled = True
+                btnAdmin[4].Enabled = True
+                btnAdmin[5].Enabled = False
+            Else
+                GridViewAuto1.Enabled = False
+                btnAdmin[4].Enabled = False
+                btnAdmin[5].Enabled = True
+            Endif
+                
+    End Select    
+Case 3          'Neu
+    anFl = 3
+    adminSts = 2
+    If spFl > 0 Then
+        Message.Title = "Regner"
+        Select Message.Question("Der angelegte Datensatz wurde nicht gespeichert. Soll dieser gespeichert werden werden?", "Ja", "Nein")
+            Case 1
+                autoNeuSp()
+            Case 2
+        End Select
+    Else
+    Endif
+    If btnAdmin[3].Background = Color.Cyan Then
+        btnAdmin[3].Background = Color.DarkGray
+        btnAdmin[3].Foreground = Color.White
+        gridBox.Visible = False
+        GridViewAuto1.Enabled = False
+        btnAdmin[4].Enabled = False
+        btnAdmin[5].Enabled = False
+         initAuto()
+        For i = 0 To 9
+            If btnAktiv[i] Then btnAktiv[i].Delete
+        Next
+        ' autoAktiv()
+        spFl = 0
+    Else
+        btnAdmin[3].Background = Color.Cyan
+        btnAdmin[3].Foreground = Color.Black
+        GridViewAuto1.Enabled = True
+        btnAdmin[4].Enabled = True
+        btnAdmin[5].Enabled = True
+        gridRowNeu()
+    Endif
+Case 4      'Speichern
+    Select Case adminSts
+        Case 1      'Ändern Manuell
+            SqlCom = "UPDATE "
+            SqlTab = "r_RegnerGlob SET "
+            SqlP = "RegAllePlz = '" & comRegMan3.Text & "', RegZeitMan = '" & comRegMan1.Text & "', RegGleichz = '" & comRegMan2.Text & 
+            "', RegnerPlzSts = '" & RegPlzStatus & "', RegDelay = '" & comRegMan4.Text & "'"
+            rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+            btnAdmin[2].Background = Color.DarkGray
+            btnAdmin[2].Foreground = Color.White
+            btnAdmin[4].Enabled = False
+            btnAdmin[5].Enabled = False
+            frRegMan1.Enabled = False
+            frRegMan2.Enabled = False
+            ModsAndRules.RegnerManu()
+        
+        Case 2
+            gridBox.Visible = False
+            Select Case anFl
+                Case 2      'Ändern Auto
+                    For i = 0 To GridViewAuto1.rows.Count - 1
+                        SqlCom = "UPDATE "
+                        SqlTab = "r_RegnerAuto SET "
+                        SqlP = "Aktiv = '" & GridViewAuto1[i, 1].Text & "', Beginn = '" & GridViewAuto1[i, 2].Text & "', Dauer = '" & GridViewAuto1[i, 3].Text & "', Mo = '" & GridViewAuto1[i, 4].Text & 
+                        "', Di = '" & GridViewAuto1[i, 5].text & "', Mi = '" & GridViewAuto1[i, 6].Text & "', Do = '" & GridViewAuto1[i, 7].text & 
+                        "', Fr = '" & GridViewAuto1[i, 8].text & "', Sa = '" & GridViewAuto1[i, 9].text & "', So = '" & GridViewAuto1[i, 10].text & "' WHERE id = '" & GridViewAuto1[i, 0].text & "'"
+                        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
+                    Next
+                    GridViewAuto1.Enabled = False
+                    btnAdmin[2].Background = Color.DarkGray
+                    btnAdmin[2].Foreground = Color.White
+                    btnAdmin[3].Enabled = True
+                    btnAdmin[4].Enabled = False
+                    btnAdmin[5].Enabled = True
+                    spFl = 0
+                    ModsAndRules.RegnerAuto()
+                    
+                Case 3      'Neu Auto
+                    autoNeuSp()
+            End Select
+    End Select
+Case 5      'Löschen
+    anFl = 5
+    If btnAdmin[5].Background = Color.DarkGray
+        btnAdmin[5].Background = Color.Cyan
+        btnAdmin[5].Foreground = Color.Black
+        GridViewAuto1.Enabled = True
+        btnAdmin[2].Enabled = False
+        btnAdmin[4].Enabled = False
+        btnAdmin[3].Enabled = False
+    Else
+        btnAdmin[5].Background = Color.DarkGray
+        btnAdmin[5].Foreground = Color.White
+        GridViewAuto1.Enabled = False
+        btnAdmin[2].Enabled = True
+        btnAdmin[4].Enabled = False
+        btnAdmin[3].Enabled = True
+    End If
+Case 6
+  ' fmAdmin.show
+  fmRegner.Close  
+End Select  
+End
+'=============================================================
+'grMan_Change
+'
+'
+'=============================================================
+Public Sub grMan_Change()
+Dim i As Integer
+Dim k As String 
+If akFl = False Then Return   
+i = Last.Tag
+btnAdmin[4].Enabled = True
+Select Case i
+    Case 1
+        k = comRegMan1.Text
+    Case 2
+        k = comRegMan2.Text
+   Case 3
+        If comRegMan3.Text = "N" Then
+            frRegMan2.Visible = True
+        Else
+            frRegMan2.Visible = False
+            For i = 0 To 6
+                btnRegNr[i].Background = Color.Green
+                btnRegNr[i].Foreground = Color.Black
+                btnAutoRegNr[i].Background = Color.Green
+                btnAutoRegNr[i].Foreground = Color.Black
+                Mid(RegPlzStatus, i + 1, 1) = "1" 
+            Next
+        Endif
+    Case 4
+        k = comRegMan4.Text
+End Select
+End
+'=============================================================
+'MyRegBtn_MouseDown
+'
+'
+'=============================================================
+Public Sub MyRegBtn_MouseDown()
+Dim i As Integer    
+i = Last.Tag    
+If btnRegNr[i - 1].Background = Color.Green Then
+    btnRegNr[i - 1].Background = Color.Red
+    btnRegNr[i - 1].Foreground = Color.White
+        btnAutoRegNr[i - 1].Background = Color.Red
+        btnAutoRegNr[i - 1].Foreground = Color.White
+        Mid(RegPlzStatus, i, 1) = "0" 
+Else
+    btnAutoRegNr[i - 1].Background = Color.Green
+    btnAutoRegNr[i - 1].Foreground = Color.Black
+    btnRegNr[i - 1].Background = Color.Green
+    btnRegNr[i - 1].Foreground = Color.Black
+    Mid(RegPlzStatus, i, 1) = "1" 
+Endif       
+End
+'=============================================================
+'MyAutoGrid_MouseDown
+'
+'
+'=============================================================
+Public Sub MyAutoGrid_MouseDown()
+Dim i, j, x, y, w, h, k, m As Integer 
+i = GridViewAuto1.row    
+j = GridViewAuto1.Column 
+If anFl = 5 Then   
+    delRegZeit(i)
+    Return
+Endif
+If i <> GridViewAuto1.rows.Max And anFl = 3 Then
+    Message.Title = "Bearbeitung"
+    Message.Info("Es kann nur die neue Zeile(letzte Zeile)bearbeitet werden!")
+    Return
+Endif
+spFl = 1
+If j > 1 And j < 4 Then 
+    GridViewAuto1.MoveTo(i, j)
+    If i < 6 Then
+        y = GridViewAuto1[i, j].Y
+    Else
+        y = 300
+    Endif
+    ' y = GridViewAuto1[i, j].Y
+    x = GridViewAuto1[i, j].X
+    h = GridViewAuto1[i, j].H
+    w = GridViewAuto1[i, j].W
+    Select Case j
+        Case 2
+            gridBox.Clear
+            For k = 0 To 47
+                m = k \ 2
+                If k Mod 2 = 0
+                    gridBox.add(Str(m) & ":" & "00")
+                Else
+                    gridBox.add(Str(m) & ":" & "30")
+                Endif
+            Next
+        Case 3
+            gridBox.Clear
+            For k = 1 To 10
+                gridBox.add(Str(k))
+            Next
+    End Select
+    With gridBox
+        ' .X = GridViewAuto1.X + x
+        ' .Y = GridViewAuto1.Y + y
+        .X = x
+        .Y = y
+        .H = h
+        .W = w
+        .Text = GridViewAuto1[i, j].Text
+        .Visible = True
+    End With
+Else
+    gridBox.Visible = False
+    If j > 3 Then
+        If GridViewAuto1[i, j].Text = 0 Then
+            GridViewAuto1[i, j].Text = 1
+            GridViewAuto1[i, j].Background = Color.DarkGreen
+            GridViewAuto1[i, j].Foreground = Color.DarkGreen
+        Else
+            GridViewAuto1[i, j].Text = 0
+            GridViewAuto1[i, j].Background = Color.Red
+            GridViewAuto1[i, j].Foreground = Color.Red       
+        Endif
+    Else
+        If GridViewAuto1[i, j].Text = "gesperrt" Then
+            GridViewAuto1[i, j].Text = "aktiv"
+            GridViewAuto1[i, j].Background = Color.Green
+            GridViewAuto1[i, j].Foreground = Color.Black
+        Else
+            GridViewAuto1[i, j].Text = "gesperrt"
+            GridViewAuto1[i, j].Background = Color.Red
+            GridViewAuto1[i, j].Foreground = Color.White       
+        Endif
+    Endif
+Endif    
+End
+'=============================================================
+'myGridTxt_Change
+'
+'
+'=============================================================
+Public Sub myGridTxt_Change()
+Dim i, j As Integer   
+i = GridViewAuto1.row    
+j = GridViewAuto1.Column  
+If gridBox.text Then 
+    GridViewAuto1[i, j].Text = gridBox.Text 
+    spFl = 1
+Endif
+End
+'=============================================================
+'MyAktivBtn_MouseDown
+'
+'
+'=============================================================
+Public Sub MyAktivBtn_MouseDown()
+Dim i As Integer
+i = Last.Tag
+spFl = 1
+If btnAktiv[i].Background = Color.Red Then 
+    btnAktiv[i].Background = Color.Green
+    btnAktiv[i].Foreground = Color.Black
+    btnAktiv[i].Text = "aktiv"
+    aryAktiv[i] = 1
+Else
+    btnAktiv[i].Background = Color.Red
+    btnAktiv[i].Foreground = Color.White
+    btnAktiv[i].Text = "gesperrt"
+    aryAktiv[i] = 0
+Endif    
+End
+'=============================================================
+'Scroll_MouseDown
+'
+'
+'=============================================================
+Public Sub Scroll_MouseDown()
+udFl = Last.Tag 
+Timer1.start
+End
+
+'=============================================================
+'Timer1_Timer
+'
+'
+'=============================================================
+Public Sub Timer1_Timer()
+
+  With GridViewAuto1 
+  Select Case udFl
+  Case 0
+    If udfl = 0 And .row > 0 Then
+      .row -= 1
+    Endif
+  Case 1
+    If .row < rs.Count - 1 Then
+      .row += 1
+    Endif
+  End Select
+  If .row > 0 Then 
+    btnScrollup.Enabled = True
+  Else
+    btnScrollup.Enabled = False
+  Endif
+  If .row < rs.count - 1 Then
+    btnScrolldw.Enabled = True
+  Else
+    btnScrolldw.Enabled = False
+  Endif
+End With
+End
+
+'=============================================================
+'Timer1_Timer
+'
+'
+'=============================================================
+Public Sub Scroll_MouseUp()
+  Timer1.stop 
+End
+
+

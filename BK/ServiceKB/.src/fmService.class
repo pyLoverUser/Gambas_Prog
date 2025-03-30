@@ -1,0 +1,859 @@
+' Gambas class file
+
+Public ArtikelName As String
+Public ArtikelNr As Integer
+Public ArtikelPreis As Float
+Public TastenFarbe As Integer
+Public SchriftFarbe As Integer
+Public tRow As Integer
+Public tCol As Integer
+Public ProdSeite As Integer
+Public rs As Result
+Public Preis As Float
+Public TastenNr As Integer
+Public SqlP As Variant
+Public SqlCom As Variant
+Public SqlTab As Variant
+Public c[3] As Integer
+Public h1[3] As String
+Public HeaderProd[3] As Label
+Public ProdukteName As Label
+Public ProduktPreis As Label
+Public btnProd[4] As Button
+Public btnTxtWahl[4] As String
+Public btnTxtWahl1[4] As String
+Public btntxtWahl2[4] As String
+Public btnCom[4] As Button 
+Public btnCom0[4] As Button
+Public ComFl As Integer = 99
+Public ComLast As Integer = 99
+Public ComLast0 As Integer = 99
+Public lblFarbeBtn[5] As Label
+Public txtFarbeBtn As Label
+Public Separ0 As Separator
+Public Separ1 As Separator
+Public Separ2 As Separator
+Public Separ3 As Separator
+Public lblArtikelName As Label
+Public lblPreis As Label
+Public lblFarbeTxt[2] As Label
+Public txtFarbeSchrift As Label
+Public idxArtikelNr As Integer
+Public maxArtikelNr As Integer
+Public idxGPRow As Integer
+Public tArtNr As Integer
+Public tArtName As String
+Public tArtPreis As Float
+Public FrFarbe As Panel
+Public ComFl0 As Integer = 99
+Public gridTastenFarbe As Integer
+Public gridSchriftFarbe As Integer
+Public separcom As Separator
+Public txtseparcom As Label
+Public separcom0 As Separator
+Public txtseparcom0 As Label
+
+Public Sub Form_Open()
+Dim btnBreite, btnHoehe, cellSpace, i, j As Integer
+With GridService
+  btnBreite = 150     'Höhe der GridCelle
+  btnHoehe = 70       'Breite der Gridcelle
+  cellSpace = 5       'Breite der Zwischenraum Celle
+  .Border = False
+  .Clear
+  .Visible = False
+  .Height = 6 * btnHoehe + 7 * cellSpace    '700
+  .Width = 5 * btnBreite + 6 * cellSpace
+  FrService.Y = 50
+  FrService.w = 5 * btnBreite + 6 * cellSpace + 10
+  FrService.h = .Height + 10
+  .Top = 5    '220
+  .Left = 5
+  .Columns.Count = 11
+  .Rows.Count = 13 
+  .Rows.Height = btnHoehe
+  .grid = False
+  ' .Columns.Width = 100   '115
+  .ScrollBar = 0
+  For i = 0 To (.Columns.Count - 1) Step 2
+      .Columns[i].Width = cellSpace
+  Next
+  For i = 1 To (.Columns.Count - 2) Step 2
+      .Columns[i].Width = btnBreite
+  Next
+  For i = 0 To (.rows.count - 1) Step 2
+       .Rows[i].Height = cellSpace
+  Next
+End With
+For j = 1 To 11 Step 2
+  For i = 1 To 9 Step 2
+  With GridService[j, i]
+    If j < 11 Then
+      .Background = Color.Blue
+    Else
+      .Background = Color.Red
+    Endif
+      .Foreground = Color.White
+      .Alignment = Align.Center
+      .Font.Name = 
+      .Font.Bold = True
+      .Font.Size = 12
+      .Font.Bold = False
+      .Text = "Bier" & Chr(10) & Chr(13) & "2,40€"
+  End With
+  Next
+Next
+' GridService[0, 3].Background = Color.Black
+For j = 0 To 10
+  For i = 0 To 12 Step 2
+     GridService[i, j].Background = Color.Black
+  Next
+Next
+For j = 0 To 10 Step 2
+  For i = 1 To 11 Step 2
+     GridService[i, j].Background = Color.Black
+  Next
+Next
+GridService.Visible = True
+initProdGrid()
+initProdTasten()
+SqlCom = "SELECT * FROM "
+SqlTab = "Produkte "
+SqlP = " WHERE ArtikelNr >= " & 1000 & " AND ArtikelNr < " & 2000 & " ORDER BY ArtikelNr ASC "
+idxArtikelNr = 1000
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.count > 0 Then 
+  GridProdukte.Rows.Count = rs.Count 
+  For i = 0 To rs.count - 1
+    GridProdukte[i, 0].text = rs!ArtikelNr
+    GridProdukte[i, 1].text = rs!ArtikelName
+    GridProdukte[i, 2].text = Format(rs!Preis, "#,##0.00 ")
+    rs.MoveNext
+  Next  
+  SqlP = ""
+  btnProd[0].Background = Color.Red 
+  btnProd[0].Foreground = Color.White
+Endif
+End
+
+Public Sub initProdGrid() 
+Dim r As Integer
+SqlP = ""
+SqlCom = "SELECT * FROM "
+SqlTab = "ProdKasse "
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.Count > 0
+  For r = 0 To rs.Count - 1
+    If IsNull(rs!Preis) = False Then 
+      Preis = rs!Preis
+    Else
+      Preis = ""
+    Endif
+    If IsNull(rs!TastenFarbe) = False Then TastenFarbe = rs!TastenFarbe
+    If IsNull(rs!SchriftFarbe) = False Then SchriftFarbe = rs!SchriftFarbe
+    TastenNr = rs!TastenNr
+    ArtikelName = rs!ArtikelName
+    ' ArtikelName = Replace(ArtikelName, "/", Chr(10) & Chr(13))
+    tRow = ((TastenNr * 2 - 1) \ 10) * 2 + 1
+    Debug tRow
+    tCol = (TastenNr * 2 - 1) Mod 10
+    Debug tCol
+    ProdSeite = rs!ProdSeite
+    Select ProdSeite
+      Case 0
+        If Preis > 0 Then
+          If Len(ArtikelName) > 20 Then ArtikelName = Left(ArtikelName, 19) & "." 
+          GridService[tRow, tCol].text = ArtikelName & Chr(10) & Chr(13) & Format(Preis, "#,##0.00 € ") 
+        Else
+          GridService[tRow, tCol].text = ""
+        Endif
+        GridService[tRow, tCol].Background = TastenFarbe
+        GridService[tRow, tCol].Foreground = SchriftFarbe
+      Case 1
+    End Select
+    tastenNr = rs!TastenNr
+    rs.MoveNext
+  Next
+Endif
+End
+
+Public Sub initProdTasten()
+ Dim i As Integer
+FrFarbe = New Panel(Me) As "MyPanelFarbe"
+FrFarbe.W = FrService.W
+FrFarbe.X = FrService.X
+FrFarbe.Y = FrService.Y + FrService.H
+FrFarbe.Background = Color.Transparent
+FrFarbe.H = 100
+FrFarbe.Visible = False
+GridProdukte = New GridView(Me) As "MyProdGrid" 
+c[0] = 100
+c[1] = 180
+c[2] = 100
+h1[0] = "ArtikelNr."
+h1[1] = "ArtikelName"
+h1[2] = "Preis"
+With GridProdukte
+  .w = 382
+  .H = FrService.H - 40
+  .x = 52
+  .y = 50
+  .Mode = Select.Single
+  .ScrollBar = 0
+  .Expand = True
+  .Header = GridProdukte.Horizontal
+  .font.Size = 12
+  .Font.Bold = False
+  .Grid = True
+  .Rows.Count = 1
+  .Rows.H = 25
+  .Visible = True
+  .Enabled = True
+  .SetFocus
+  .Columns.count = 3
+  .Columns[0].Alignment = Align.Center
+  .Columns[1].Alignment = Align.Center
+  .Columns[2].Alignment = Align.Right
+  .Columns[0].W = 100
+  .Columns[1].w = 180
+  .Columns[2].w = 100
+End With
+For i = 0 To 2
+ HeaderProd[i] = New Label(Me) As "MyGridHeader"
+ HeaderProd[i].Foreground = Color.White
+ HeaderProd[i].Alignment = Align.Center
+ HeaderProd[i].Font.Size = 12
+ HeaderProd[i].Font.Bold = True
+ HeaderProd[i].Font.Name = "Sans Serif"
+ HeaderProd[i].H = 28
+ HeaderProd[i].w = c[i] - 1 
+ HeaderProd[i].Left = GridProdukte[0, i].Left + GridProdukte.Left
+ HeaderProd[i].top = GridProdukte[0, i].top + GridProdukte.Top
+ HeaderProd[i].Background = Color.Magenta
+ HeaderProd[i].Visible = True
+ HeaderProd[i].Text = h1[i]
+Next
+ProdukteName = New Label(Me) As "MytxtProdukte"
+With ProdukteName
+.X = GridProdukte.X + 25
+.Y = GridProdukte.Y + GridProdukte.H + 65 
+.w = 220
+.H = 30
+.Font.Name = "sans serif"
+.Font.Size = 15
+.Text = ""
+.Alignment = Align.Center
+.Visible = False
+.Background = Color.White
+End With
+lblArtikelName = New Label(Me) As "MyArtName"
+With lblArtikelName
+  .W = 220
+  .X = ProdukteName.X
+  .H = 30
+  .Y = ProdukteName.Y - 25 
+  .Background = Color.Transparent
+  .Foreground = Color.White
+  .Alignment = Align.Center
+  .Font.Size = 11
+  .Text = "Artikel-Name"
+  .Visible = False
+End With
+ProduktPreis = New Label(Me) As "MyPreisProdukte"
+With ProduktPreis
+.X = ProdukteName.X + ProdukteName.W + 30
+.Y = GridProdukte.Y + GridProdukte.H + 65
+.w = 80
+.H = 30
+.Font.Name = "sans serif"
+.Font.Size = 15
+.Text = ""
+.Visible = False
+.Alignment = Align.Right
+.Background = Color.White
+End With
+lblPreis = New Label(Me) As "MyPreis"
+With lblPreis
+  .W = 80
+  .X = ProduktPreis.X
+  .H = 30
+  .Y = ProduktPreis.Y - 25 
+  .Background = Color.Transparent
+  .Foreground = Color.White
+  .Alignment = Align.Center
+  .Font.Size = 11
+  .Text = "Preis"
+  .Visible = False
+End With
+
+btnTxtWahl[0] = "Alko." & Chr(10) & "Getränke"
+btnTxtWahl[1] = "Antialkoh." & Chr(10) & "Getränke"
+btnTxtWahl[2] = "Süßwaren"
+btnTxtWahl[3] = "Speisen"
+
+btntxtWahl1[0] = "Neu"
+btntxtWahl1[1] = "Ändern"
+btnTxtWahl1[2] = "Löschen"
+btnTxtWahl1[3] = "Speichern"
+
+btntxtWahl2[0] = "Löschen"
+btntxtWahl2[1] = "Zuordnen"
+btnTxtWahl2[2] = "Tasten" & Chr(10) & "Farbe"
+btnTxtWahl2[3] = "ENDE"
+
+For i = 0 To 3
+  btnProd[i] = New Button(Me) As "MyProdBtn" 
+  btnProd[i].w = 95
+  btnProd[i].H = 40
+  btnProd[i].X = GridProdukte.X + I * 95
+  btnProd[i].Y = GridProdukte.Y + GridProdukte.H 
+  btnProd[i].Background = Color.DarkGray
+  btnProd[i].Foreground = Color.White
+  btnProd[i].Visible = True 
+  btnProd[i].Tag = i
+  btnProd[i].Font.Size = 11
+  btnProd[i].Text = btnTxtWahl[i]
+  
+  btnCom0[i] = New Button(Me) As "MyCom0Btn"  'Command Button für Service Grid
+  btnCom0[i].W = 95
+  btnCom0[i].H = 60
+  btnCom0[i].X = ((FrService.X + (FrService.W / 2)) - (4 * 95 / 2)) + (i * btnCom0[i].W)
+  btnCom0[i].Y = FrService.Y + FrService.H + 100
+  btnCom0[i].Visible = True
+  btnCom0[i].Tag = i
+  btnCom0[i].Text = btntxtWahl2[i]
+  btnCom0[i].Background = Color.ButtonBackground
+  btnCom0[i].Foreground = Color.ButtonForeground
+Next
+For i = 0 To 2
+  btnCom[i] = New Button(Me) As "MyComBtn"  'Command Button für Produkt Grid
+  btnCom[i].W = 95
+  btnCom[i].H = 60
+  btnCom[i].X = GridProdukte.X + 47 + i * 95
+  btnCom[i].Y = FrService.Y + FrService.H + 100
+  btnCom[i].Visible = True
+  btnCom[i].Tag = i
+  btnCom[i].Text = btnTxtWahl1[i]
+  btnCom[i].Background = Color.ButtonBackground
+  btnCom[i].Foreground = Color.ButtonForeground
+Next
+separcom = New Separator(Me) As "MySepCom"
+separcom.W = 3 * 95
+separcom.X = btnCom[0].X
+separcom.Y = btnCom[0].Y - 15
+separcom.H = 2
+separcom.Background = Color.White
+separcom.Visible = True
+
+txtseparcom = New Label(Me) As "Myseptxt"
+txtseparcom.X = btnCom[1].X - 30
+txtseparcom.W = btnCom[1].W + 60
+txtseparcom.H = 30
+txtseparcom.Y = btnCom[1].Y - 30
+txtseparcom.Visible = True
+txtseparcom.Alignment = Align.Center
+txtseparcom.Font.Size = 11
+txtseparcom.Text = "Bearbeitung Liste"
+txtseparcom.Background = Color.DarkGray
+txtseparcom.Foreground = Color.White
+
+separcom0 = New Separator(Me) As "MySepCom"
+separcom0.W = 4 * 95
+separcom0.X = btnCom0[0].X
+separcom0.Y = btnCom0[0].Y - 15
+separcom0.H = 2
+separcom0.Background = Color.White
+separcom0.Visible = True
+
+txtseparcom0 = New Label(Me) As "Myseptxt"
+txtseparcom0.X = btnCom0[1].X 
+txtseparcom0.W = btnCom0[1].W + 100
+txtseparcom0.H = 30
+txtseparcom0.Y = btnCom0[1].Y - 30
+txtseparcom0.Visible = True
+txtseparcom0.Alignment = Align.Center
+txtseparcom0.Font.Size = 11
+txtseparcom0.Text = "Bearbeitung ProdGrid"
+txtseparcom0.Background = Color.DarkGray
+txtseparcom0.Foreground = Color.White
+
+For i = 0 To 4    'Tastenfarbe 
+  lblFarbeBtn[i] = New Label(FrFarbe) As "MyFarbBtn"
+  lblFarbeBtn[i].W = 100
+  lblFarbeBtn[i].H = 40
+  lblFarbeBtn[i].Visible = True
+  lblFarbeBtn[i].X = i * 102
+  lblFarbeBtn[i].Y = 25
+  lblFarbeBtn[i].Tag = i
+  Select Case i
+  Case 0
+    lblFarbeBtn[i].Background = Color.Blue
+  Case 1
+    lblFarbeBtn[i].Background = Color.Green
+  Case 2
+    lblFarbeBtn[i].Background = Color.Yellow
+  Case 3
+    lblFarbeBtn[i].Background = Color.Red
+  Case 4
+    lblFarbeBtn[i].Background = Color.Magenta
+  End Select
+Next
+
+  txtFarbeBtn = New Label(FrFarbe) As "MyFarbeTxT"
+  txtFarbeBtn.X = lblFarbeBtn[2].X
+  txtFarbeBtn.W = lblFarbeBtn[2].W
+  txtFarbeBtn.H = 30
+  txtFarbeBtn.Y = lblFarbeBtn[2].Y - 30
+  txtFarbeBtn.Visible = True
+  txtFarbeBtn.Alignment = Align.Center
+  txtFarbeBtn.Font.Size = 11
+  txtFarbeBtn.Text = "Tastenfarbe"
+  txtFarbeBtn.Foreground = Color.White
+  
+For i = 0 To 1    'Schriftfarbe Tasten
+  lblFarbeTxt[i] = New Label(FrFarbe) As "MyFarbTxt"
+  lblFarbeTxt[i].W = 100
+  lblFarbeTxt[i].H = 40
+  lblFarbeTxt[i].Tag = i  
+  lblFarbeTxt[i].Visible = True
+  lblFarbeTxt[i].X = lblFarbeBtn[4].X + 150 + i * 102
+  lblFarbeTxt[i].Y = 25
+  Select Case i
+  Case 0
+    lblFarbeTxt[i].Background = Color.White
+  Case 1
+    lblFarbeTxt[i].Background = Color.Black
+  End Select
+Next
+
+txtFarbeBtn = New Label(FrFarbe) As "MyFarbeTxT"
+txtFarbeBtn.X = lblFarbeBtn[2].X
+txtFarbeBtn.W = lblFarbeBtn[2].W
+txtFarbeBtn.H = 30
+txtFarbeBtn.Y = lblFarbeBtn[2].Y - 30
+txtFarbeBtn.Visible = True
+txtFarbeBtn.Alignment = Align.Center
+txtFarbeBtn.Font.Size = 11
+txtFarbeBtn.Text = "Tastenfarbe"
+txtFarbeBtn.Foreground = Color.White
+
+txtFarbeSchrift = New Label(FrFarbe) As "MyFarbeTxT"
+txtFarbeSchrift.X = lblFarbeTxt[0].X + 45
+txtFarbeSchrift.W = 110
+txtFarbeSchrift.H = 30
+txtFarbeSchrift.Visible = True
+txtFarbeSchrift.Alignment = Align.Center
+txtFarbeSchrift.Y = lblFarbeBtn[2].Y - 30
+txtFarbeSchrift.Font.Size = 11
+txtFarbeSchrift.Text = "Schriftfarbe"
+txtFarbeSchrift.Foreground = Color.White
+
+Separ0 = New Separator(FrFarbe) As "MySep0"
+Separ0.Y = lblFarbeBtn[0].Y - 15
+Separ0.X = lblFarbeBtn[0].X
+Separ0.Visible = True
+Separ0.Background = Color.White
+Separ0.W = 200
+Separ0.H = 2
+
+Separ1 = New Separator(FrFarbe) As "MySep1"
+Separ1.Y = lblFarbeBtn[0].Y - 15
+Separ1.X = txtFarbeBtn.X + txtFarbeBtn.W + 4
+Separ1.Visible = True
+Separ1.Background = Color.White
+Separ1.W = 200
+Separ1.H = 2
+
+Separ2 = New Separator(FrFarbe) As "MySep0"
+Separ2.Y = lblFarbeBtn[0].Y - 15
+Separ2.X = lblFarbeTxt[0].X
+Separ2.Visible = True
+Separ2.Background = Color.White
+Separ2.W = 40
+Separ2.H = 2
+
+Separ3 = New Separator(FrFarbe) As "MySep1"
+Separ3.Y = lblFarbeBtn[0].Y - 15
+Separ3.X = txtFarbeSchrift.W + txtFarbeSchrift.X + 5
+Separ3.Visible = True
+Separ3.Background = Color.White
+Separ3.W = 40
+Separ3.H = 2
+
+End
+
+Public Sub MytxtProdukte_MouseDown()
+Dim i As Integer 
+If comFl = 1 And ProdukteName.text = "" Then
+    Message.Title = "Produkt ändern"
+    Message.Info("Es ist kein Produkt zum ändern selektiert", "OK") 
+    Return 
+Endif 
+fmTastatur.objTastatur = ProdukteName 
+fmTastatur.Xpos = FrService.X
+fmTastatur.Ypos = 300
+ProdukteName.Background = Color.Yellow
+fmTastatur.ShowModal 
+ProdukteName.Background = Color.White
+If fmAdmin.TastSaveFl = True Then
+  SqlCom = "UPDATE "
+  SqlTab = "Produkte SET "
+  SqlP = "Preis = " & Val(ProduktPreis.Text) & ", ArtikelName = '" & ProdukteName.Text & "' WHERE ArtikelNr = " & tArtNr
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  SqlCom = "UPDATE "
+  SqlTab = "ProdKasse SET "
+  SqlP = "Preis = " & Val(ProduktPreis.Text) & ", ArtikelName = '" & ProdukteName.Text & "' WHERE ArtikelNr = " & tArtNr
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  initProdGrid()
+  SqlCom = "SELECT * FROM "
+  SqlTab = "Produkte "
+  SqlP = " WHERE ArtikelNr >= " & idxArtikelNr & " AND ArtikelNr < " & (idxArtikelNr + 1000) & " ORDER BY ArtikelNr ASC "
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  If rs.count > 0 Then 
+    GridProdukte.Rows.Count = rs.Count 
+    For i = 0 To rs.count - 1
+      GridProdukte[i, 0].text = rs!ArtikelNr
+      GridProdukte[i, 1].text = rs!ArtikelName
+      GridProdukte[i, 2].text = Format(rs!Preis, "#,##0.00 ")
+      rs.MoveNext
+    Next  
+  Endif
+  SqlP = ""
+Endif
+End
+Public Sub MyPreisProdukte_MouseDown()
+Dim i As Integer
+If comFl = 1 And ProduktPreis.text = "" Then
+    Message.Title = "Produkt ändern"
+    Message.Info("Es ist kein Produkt zum ändern selektiert", "OK")
+    Return  
+Endif 
+fmTastatur.objTastatur = ProduktPreis
+fmTastatur.Xpos = FrService.X
+fmTastatur.Ypos = 300
+ProduktPreis.Background = Color.Yellow
+fmTastatur.ShowModal 
+ProduktPreis.Background = Color.White
+SqlCom = "UPDATE "
+SqlTab = "Produkte SET "
+SqlP = "Preis = " & Val(ProduktPreis.Text) & ", ArtikelName = '" & ProdukteName.Text & "' WHERE ArtikelNr = " & tArtNr
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+SqlCom = "UPDATE "
+SqlTab = "ProdKasse SET "
+SqlP = "Preis = " & Val(ProduktPreis.Text) & ", ArtikelName = '" & ProdukteName.Text & "' WHERE ArtikelNr = " & tArtNr
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+initProdGrid()
+SqlCom = "SELECT * FROM "
+SqlTab = "Produkte "
+SqlP = " WHERE ArtikelNr >= " & idxArtikelNr & " AND ArtikelNr < " & (idxArtikelNr + 1000) & " ORDER BY ArtikelNr ASC "
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.count > 0 Then 
+  GridProdukte.Rows.Count = rs.Count 
+  For i = 0 To rs.count - 1
+    GridProdukte[i, 0].text = rs!ArtikelNr
+    GridProdukte[i, 1].text = rs!ArtikelName
+    GridProdukte[i, 2].text = Format(rs!Preis, "#,##0.00 ")
+    rs.MoveNext
+  Next  
+Endif
+SqlP = ""
+' ProdukteName.text = ""
+' ProduktPreis.Text = ""
+End
+Public Sub MyProdBtn_MouseDown()
+Dim i As Integer
+SqlCom = "SELECT * FROM "
+SqlTab = "Produkte "
+For i = 0 To 3
+  btnProd[i].Background = Color.DarkGray
+Next
+btnProd[Last.Tag].Background = Color.Red
+Select Case Last.Tag  
+Case 0
+  SqlP = " WHERE ArtikelNr >= " & 1000 & " AND ArtikelNr < " & 2000 & " ORDER BY ArtikelNr ASC "
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  idxArtikelNr = 1000
+Case 1
+  SqlP = " WHERE ArtikelNr >= " & 2000 & " AND ArtikelNr < " & 3000 & " ORDER BY ArtikelNr ASC "
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  idxArtikelNr = 2000
+Case 2
+  SqlP = " WHERE ArtikelNr >= " & 3000 & " AND ArtikelNr < " & 4000 & " ORDER BY ArtikelNr ASC "
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  idxArtikelNr = 3000
+Case 3
+  SqlP = " WHERE ArtikelNr >= " & 6000 & " AND ArtikelNr < " & 7000 & " ORDER BY ArtikelNr ASC "
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  idxArtikelNr = 6000
+End Select    
+If rs.count > 0 Then 
+GridProdukte.Rows.Count = rs.Count 
+For i = 0 To rs.count - 1
+  GridProdukte[i, 0].text = rs!ArtikelNr
+  GridProdukte[i, 1].text = rs!ArtikelName
+  GridProdukte[i, 2].text = Format(rs!Preis, "#,##0.00 ")
+  rs.MoveNext
+Next  
+SqlP = ""
+Endif
+End
+Public Sub MyComBtn_MouseDown()
+Dim i As Integer
+For i = 0 To 2
+  btnCom[i].Background = Color.ButtonBackground
+  btnCom[i].Foreground = Color.ButtonForeground
+Next 
+If ComFl <> Last.Tag Then 
+  btnCom[Last.Tag].Background = Color.Red 
+  btnCom[Last.Tag].Foreground = Color.White
+  ComFl = Last.Tag 
+Else
+  btnCom[Last.Tag].Background = Color.ButtonBackground
+  btnCom[Last.Tag].Foreground = Color.ButtonForeground
+  ProduktPreis.Visible = False
+  ProdukteName.Visible = False
+  lblArtikelName.Visible = False
+  lblPreis.Visible = False
+  ProdukteName.text = ""
+  ProduktPreis.text = ""
+  ComFl = 99
+  Return
+Endif
+Select Case Last.Tag
+Case 0    'Neu
+  ComLast = 0
+  ProduktPreis.Visible = True
+  ProdukteName.Visible = True
+  lblArtikelName.Visible = True
+  lblPreis.Visible = True
+  ProdukteName.text = ""
+  ProduktPreis.text = ""
+  SqlCom = "SELECT ArtikelNr FROM "
+  SqlTab = "Produkte "
+  SqlP = " WHERE ArtikelNr >= " & idxArtikelNr & " AND ArtikelNr < " & (idxArtikelNr + 1000) & " ORDER BY ArtikelNr ASC "
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  maxArtikelNr = 0
+  If rs.Count > 0 Then
+    For i = 0 To rs.count - 1
+      If (IdxArtikelNr + i) <> rs!ArtikelNr Then
+        maxArtikelNr = IdxArtikelNr + i
+        i = rs.count
+      Endif
+      rs.MoveNext
+    Next
+    If maxArtikelNr = 0 Then maxArtikelNr = IdxArtikelNr + rs.count
+  Else
+    maxArtikelNr = idxArtikelNr
+  Endif
+  fmTastatur.objTastatur = ProdukteName 
+  fmTastatur.Xpos = FrService.X
+  fmTastatur.Ypos = 300
+  ProdukteName.Background = Color.Yellow
+  fmTastatur.ShowModal 
+  ProdukteName.Background = Color.White
+  If fmAdmin.TastSaveFl = True Then
+    fmTastatur.objTastatur = ProduktPreis 
+    ProduktPreis.Background = Color.Yellow
+    fmTastatur.ShowModal
+    ProduktPreis.Background = Color.White   
+    If fmAdmin.TastSaveFl = True
+      SqlCom = "INSERT INTO "
+      SqlTab = "Produkte "
+      SqlP = "(ArtikelNr, ArtikelName, Preis) VALUES ('" & maxArtikelNr & "', '" & ProdukteName.text & "', '" & Val(ProduktPreis.Text) & "')" 
+      rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+      SqlCom = "SELECT * FROM "
+      SqlTab = "Produkte "
+      SqlP = " WHERE ArtikelNr >= " & idxArtikelNr & " AND ArtikelNr < " & (idxArtikelNr + 1000) & " ORDER BY ArtikelNr ASC "
+      rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+      If rs.count > 0 Then 
+        GridProdukte.Rows.Count = rs.Count 
+        For i = 0 To rs.count - 1
+          GridProdukte[i, 0].text = rs!ArtikelNr
+          GridProdukte[i, 1].text = rs!ArtikelName
+          GridProdukte[i, 2].text = Format(rs!Preis, "#,##0.00 ")
+          rs.MoveNext
+        Next  
+      Endif
+      SqlP = ""
+      ProdukteName.text = ""
+      ProduktPreis.Text = ""
+    Endif  
+  Endif
+Case 1    'Ändern
+  ComLast = 1
+  ProduktPreis.Visible = True
+  ProdukteName.Visible = True
+  lblArtikelName.Visible = True
+  lblPreis.Visible = True
+Case 2    'Löschen
+  ProduktPreis.Visible = False
+  ProdukteName.Visible = False
+  lblArtikelName.Visible = False
+  lblPreis.Visible = False
+  If tArtNr > 0 Then
+      Message.Title = "Produkt löschen?"
+    Select Message.Question("Soll das Produkt <font color='red'>< b >" & tArtNr & "-" & tArtName & "</b></font> gelöscht werden?", "Ja", "Nein")
+    Case 1
+        SqlCom = "DELETE FROM "
+        SqlTab = "Produkte "
+        SqlP = " WHERE ArtikelNr = " & tArtNr 
+        rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+        ' tArtNr = 0 
+        tArtName = "" 
+        tArtPreis = 0       
+        SqlCom = "UPDATE "
+        SqlTab = "ProdKasse SET "
+        SqlP = " ArtikelNr = " & 0 & ", " & " ArtikelName = '" & tArtName & "', " & " Preis = " & tArtPreis & " WHERE ArtikelNr = " & tArtNr 
+        rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+        initProdGrid()
+        SqlCom = "SELECT * FROM "
+        SqlTab = "Produkte "
+        SqlP = " WHERE ArtikelNr >= " & idxArtikelNr & " AND ArtikelNr < " & (idxArtikelNr + 1000) & " ORDER BY ArtikelNr ASC " 
+        rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+        If rs.count > 0 Then 
+          GridProdukte.Rows.Count = rs.Count 
+          For i = 0 To rs.count - 1
+            GridProdukte[i, 0].text = rs!ArtikelNr
+            GridProdukte[i, 1].text = rs!ArtikelName
+            GridProdukte[i, 2].text = Format(rs!Preis, "#,##0.00 ")
+            rs.MoveNext
+          Next  
+        Endif
+        SqlP = ""
+        btnCom[2].Background = Color.ButtonBackground 
+        btnCom[2].Foreground = Color.Black
+    Case 2 
+        SqlP = ""
+        btnCom[2].Background = Color.ButtonBackground 
+        btnCom[2].Foreground = Color.Black
+    End Select
+    ComFl = 99
+  Else
+      
+    Message.Title = "Produkt löschen?"
+    Message.Info("Es ist kein Produkt zum Löschen selektiert", "OK")
+    ComFl = 99
+  Endif
+  SqlP = ""
+  btnCom[2].Background = Color.ButtonBackground
+  btnCom[2].Foreground = Color.Black
+  tArtNr = 0
+  GridProdukte.Refresh
+End Select  
+End
+Public Sub MyCom0Btn_MouseDown()
+Dim i As Integer
+For i = 0 To 3
+  btnCom0[i].Background = Color.ButtonBackground  
+Next
+i = Last.Tag
+Select Case i
+Case 0
+  If btnCom0[i].Background = Color.ButtonBackground Then
+    btnCom0[i].Background = Color.Red
+    ComFl0 = i
+  Else
+    btnCom0[i].Background = Color.ButtonBackground
+    ComFl0 = 99
+    Return
+  Endif
+Case 1
+  If btnCom0[i].Background = Color.ButtonBackground Then
+    btnCom0[i].Background = Color.Red
+    ComFl0 = i
+  Else
+    btnCom0[i].Background = Color.ButtonBackground
+    ComFl0 = 99
+    Return
+  Endif
+Case 2
+  If FrFarbe.Visible = False Then
+    FrFarbe.Visible = True
+    btnCom0[i].Background = Color.Red
+    ComFl0 = i
+  Else
+    FrFarbe.Visible = False
+    btnCom0[i].Background = Color.ButtonBackground
+    ComFl0 = 99
+  Endif
+Case 3 
+  ' fmAdmin.initProdTasten() 
+  fmAdmin.show
+  fmService.Close
+End Select  
+End
+
+Public Sub MyProdGrid_MouseDown()
+  idxGPRow = GridProdukte.row
+  tArtNr = Val(GridProdukte[idxGPRow, 0].text)
+  tArtName = GridProdukte[idxGPRow, 1].text
+  tArtPreis = Val(GridProdukte[idxGPRow, 2].text)
+
+If ComFl = 1 Or comFl = 2 Then
+  ProdukteName.text = GridProdukte[idxGPRow, 1].text
+  ProduktPreis.text = GridProdukte[idxGPRow, 2].text
+Endif
+End
+
+Public Sub GridService_MouseDown()
+Dim tRow, tCol As Integer
+Dim tx, ty, tt As Integer
+tRow = GridService.Row
+tCol = GridService.Column  
+tx = tCol \ 2 + 1
+ty = tRow \ 2 
+tt = tx + ty * 5
+
+Select Case ComFl0
+Case 0
+  tArtNr = 0 
+  tArtName = "" 
+  tArtPreis = 0
+Case 1
+  If tArtNr = 0 Then Return
+Case 2
+  SqlCom = "UPDATE "
+  SqlTab = "ProdKasse SET "
+  SqlP = " TastenFarbe = " & gridTastenFarbe & " WHERE TastenNr = " & tt 
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  initProdGrid()
+  Return
+Case 3
+  SqlCom = "UPDATE "
+  SqlTab = "ProdKasse SET "
+  SqlP = " SchriftFarbe = " & gridSchriftFarbe & " WHERE TastenNr = " & tt 
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  initProdGrid()
+  Return
+Case 99
+  Return
+End Select
+SqlCom = "SELECT * From "
+SqlTab = "ProdKasse "
+SqlP = "WHERE TastenNr = " & tt
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.Count > 0 Then
+  SqlCom = "UPDATE "
+  SqlTab = "ProdKasse SET "
+  SqlP = " ArtikelNr = " & tArtNr & ", " & " ArtikelName = '" & tArtName & "', " & " Preis = " & tArtPreis & " WHERE TastenNr = " & tt 
+  rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+  If Len(ArtikelName) > 20 Then ArtikelName = Left(ArtikelName, 19) & "." 
+  GridService[tRow, tCol].text = tArtName & Chr(10) & Chr(13) & Format(tArtPreis, "#,##0.00 € ") 
+  initProdGrid()
+Endif
+tArtNr = 0
+tArtPreis = 0
+tArtName = ""
+End
+Public Sub MyFarbBtn_MouseDown()
+Dim i As Integer  
+i = Last.Tag
+gridTastenFarbe = lblFarbeBtn[i].Background 
+ComFl0 = 2 
+End
+Public Sub MyFarbTxt_MouseDown()
+Dim i As Integer  
+i = Last.Tag
+gridSchriftFarbe = lblFarbeTxt[i].Background 
+ComFl0 = 3 
+End

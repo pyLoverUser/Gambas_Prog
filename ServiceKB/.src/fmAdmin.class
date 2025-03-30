@@ -1,0 +1,187 @@
+' Gambas class file
+
+Public btnHoehe As Integer = 60
+Public btnBreite As Integer = 150
+Public cellSpace As Integer
+Public cDBVerbindung As New Connection
+Public btnAdmin[8] As Button
+Public SqlCom As String
+Public SqlTab As String
+Public SqlP As String
+Public rs As Result
+Public hRS232 As SerialPort
+Public TastSaveFl As Boolean
+Public pass As String
+
+Public Sub Form_Open()
+Dim i As Integer
+For i = 0 To 7
+  btnAdmin[i] = New Button(panM) As "MyAdmin"
+  With btnAdmin[i]
+    .H = 60
+    .W = 160
+    .X = 0 + i * 160 
+    .Y = 0
+    If i = 7 Then .W = Screen.Width - .X + 160
+    .Tag = i
+    .Background = Color.DarkGray
+    .Foreground = Color.White
+    If i < 6 Then .Visible = False
+      Select Case i
+        Case 0
+            .Text = "MitglVerw."
+            ' .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Man.ico")
+            .Picture = Picture["icon:/32/user"]
+        Case 1
+            .Text = "Regeln"
+            ' .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Gears.ico")
+            .Picture = Picture["icon:/32/exec"]
+        Case 2
+            .Text = "Regner"
+            ' .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Star2.ico")
+            .Picture = Picture["icon:/32/star"]
+        Case 3
+            .Text = "Training"
+            ' .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Key.ico")
+            .Picture = Picture["icon:/32/clock"]
+        Case 4
+            .Text = "Verbandssp."
+            ' .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Key.ico")
+            .Picture = Picture["icon:/32/calendar"]
+        Case 5
+            .Text = "Boiler/Kühlung"
+            ' .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Document spreadsheet.ico")
+            .Picture = Picture["icon:/32/open-recent"]
+        Case 6
+            .Text = "Ende"
+            ' .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Home.ico")
+            .Picture = Picture["icon:/32/home"]
+      End Select
+  End With
+  Next
+  txtErr.Visible = False
+  Me.w = Screen.W
+  Me.h = Screen.h
+  mySQLinit()
+  panM.x = 0
+  panM.w = Me.w
+  panPW.x = (Me.w - panPW.w) \ 2
+  txtPW.Password = "*"
+  ' rfidInit()
+End
+
+Public Sub MyAdmin_MouseDown()
+Dim i As Integer  
+i = Last.Tag  
+Select Case i
+Case 0
+  fmAdminMitglVerw.Show
+  ' fmAdmin.Hide
+Case 1
+    fmRegeln.Show
+    ' fmAdmin.Hide
+Case 2
+    fmRegner.Show
+    ' fmAdmin.Hide
+Case 3
+    fmTraining.Show
+  ' fmAdmin.hide
+Case 4
+    fmVerbandsspiele.show
+  ' FMain.formMitglFl = False
+  ' FMain.show
+  ' FMain.Activate()
+  ' fmAdmin.Close  
+Case 5
+    fmBK.Show
+Case 6
+    fmAdmin.close
+    
+End Select  
+End
+Public Sub mySQLinit()
+
+  ' Dim i As Integer
+  ' Dim b As Boolean
+  cDBVerbindung.Close()
+  cDBVerbindung.Type = "mysql" ' Der Typ muss klein geschrieben werden!
+  cDBVerbindung.Host = "192.168.178.2"
+  ' cDBVerbindung.Host = "192.168.2.205"
+  cDBVerbindung.Name = "Belegung" ' Das ist der Datenbank-Name
+  cDBVerbindung.User = "root" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+  cDBVerbindung.Password = "asperg" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+  cDBVerbindung.Port = "3306" ' ---> Nur bei MySQL und PostgreSQL erforderlich
+  ' Versuch, eine DB-Verbindung herzustellen
+  Try cDBVerbindung.Open()
+  If Error Then
+    ' Wait 2
+    ' Message.Error("Eine DB-Verbindung zum DB-Server konnte NICHT hergestellt werden!")
+    Message.Error("Bitte OK drücken!")
+  Endif
+End ' DBDatenAuslesen
+
+Public Function ExecuteSql(SqlCom As String, SqlTab As String, SqlP As String) As Result
+Dim i As Integer
+Dim sSQL_Anweisung As String
+For i = 1 To 10
+  If cDBVerbindung.Opened Then Break
+  cDBVerbindung.Open()
+Next
+sSQL_Anweisung = SqlCom & SqlTab & SqlP
+Debug sSQL_Anweisung
+rs = cDBVerbindung.Exec(sSQL_Anweisung)
+Return rs
+  
+End
+Public Sub Form_KeyPress()
+Dim i As Integer
+If fmAdmin.Visible = False Then Return    
+txtErr.Visible = False
+If Key.Code = Key.Return Then 
+    SqlCom = "SELECT * From "
+    SqlTab = "PW "
+    SqlP = "WHERE Progr = '" & "service" & "'"
+    rs = ExecuteSql(SqlCom, SqlTab, SqlP)
+    If Trim(txtPW.Text) = Trim(rs!PW)
+        For i = 0 To 5
+            btnAdmin[i].Visible = True
+        Next
+        panPW.Visible = False
+    Else
+        txtErr.Visible = True
+        txtPW.Text = ""
+    Endif
+Endif 
+End
+
+Public Sub txtPW_Change()
+    pass = txtPW.Text   
+End
+
+'==========================================================================
+' Sub:  rfidInit()
+'	
+'
+'==========================================================================
+Public Sub rfidInit()
+  
+  hRS232.PortName = "/dev/ttyAMA0"
+  hRS232.Speed = 9600
+  
+  hRS232.DataBits = SerialPort.Bits8
+  hRS232.StopBits = SerialPort.Bits1
+  hRS232.Parity = SerialPort.None
+  hRS232.FlowControl = SerialPort.None
+  
+  Try hRS232.Open()
+  If Error Then
+    Message.Error(("Error when opening the V24-RS232-USB adapter interface!"))
+  Endif
+  
+End
+
+
+
+
+
+

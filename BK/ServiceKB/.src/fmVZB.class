@@ -1,0 +1,275 @@
+' Gambas class file
+
+Public SqlP As Variant
+Public SqlCom As Variant
+Public SqlTab As Variant
+Public rs As Result
+Public rs1 As Result
+Public vzbBetrag As Float
+Public vzbAlt As Float
+Public rbNicht As Integer
+Public rbKompl As Integer
+Public rbVerbraucht As Integer
+Public num As String
+Public altVZB As Float
+Public btnVZB[5] As Button
+Public tgBtn[3] As ToggleButton
+
+Public Sub Form_Open()
+SqlCom = "SELECT * FROM "
+SqlTab = "VZB "
+SqlP = "ORDER BY id DESC LIMIT 1"
+rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+If rs.Count > 0 Then
+tbVZB.Enabled = False
+tbVZB.Foreground = Color.Black
+tbVZB.Y = 90
+tbVZB.W = 100
+tbVZB.H = 40
+Label1.Y = 90
+Label1.H = 40
+Label2.H = 40
+Label2.x = tbVZB.x + tbVZB.W + 5
+  ' vzbBetrag = Format(rs!VZBbetrag, "#,##0.00")
+  ' vzbAlt = Format(rs!VZBalt, "#,##0.00")
+  vzbBetrag = rs!VZBbetrag
+  vzbAlt = rs!VZBalt
+  rbNicht = rs!Nicht
+  rbKompl = rs!Komplett
+  rbVerbraucht = rs!VZBverbraucht  
+  fmVZB.w = 600
+  Frame1.Y = 150
+  Frame1.X = fmVZB.W \ 2 - Frame1.W \ 2
+  Panel1.Visible = False
+  Frame1.Enabled = False
+  initVZB()
+  initBtnVzb()
+Endif
+
+End
+Public Sub initBtnVzb()
+Dim i As Integer
+For i = 0 To 4
+  btnVZB[i] = New Button(Me) As "MyVTB"
+  With btnVZB[i]
+    .H = 60
+    .W = 150
+    .X = 0 + i * 150 
+    .Y = 0
+    If i = 4 Then .W = fmVZB.W - .X + 150
+    .Tag = i 
+    .Background = Color.Black
+    .Foreground = Color.White
+      Select Case i 
+        Case 0
+            .Text = "VZB-Neu"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Plus2.ico")
+        Case 1
+            .Text = "Speichern"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Save.ico")
+        Case 2
+            .Text = "VZB>Chip"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Gears.ico")
+        Case 3
+            .Text = "Ende"
+            .Picture = Picture.Load("/home/pi/Kassen_RFID/Icons1/Home.ico")
+      End Select
+  End With
+  Next
+End
+
+Public Sub initVZB()
+Dim i As Integer
+tgBtn[0] = New ToggleButton(pan0) As "MyTG"
+tgBtn[1] = New ToggleButton(pan1) As "MyTG"
+tgBtn[2] = New ToggleButton(pan2) As "MyTG"
+For i = 0 To 2
+tgBtn[i].H = pan0.H    
+tgBtn[i].W = pan1.H
+tgBtn[i].X = 0
+tgBtn[i].Y = 0
+tgBtn[i].Tag = i
+tgBtn[i].Radio = True
+tgBtn[i].Visible = True
+Next
+If rbNicht = True Then tgBtn[0].Background = Color.Green
+If rbKompl = True Then tgBtn[0].Background = Color.Green
+If rbVerbraucht = True Then tgBtn[0].Background = Color.Green
+tbVZB.Text = Format(vzbBetrag, "#,##0.00") 
+lbVZBalt.Text = Format(vzbAlt, "#,##0.00")  
+End
+
+Public Sub MyVTB_MouseDown()
+Dim rbi, i, j As Integer
+Dim id, Mitgl_Nr As Integer
+Dim Chip_Val, Chip_Lade_Val, Chip_Summe As Float
+j = Last.Tag
+Select Case j
+    Case 1
+        ' If btnVZB[j].Text = "Speichern" Then
+        '     btnVZB[j].Text = "VZB Neu"
+            btnVZB[j].Background = Color.Black
+            btnVZB[j].Foreground = Color.White
+            rbNicht = 0
+            rbKompl = 0
+            rbVerbraucht = 0
+            tbVZB.Enabled = False
+            tbVZB.Foreground = Color.Green
+            If tgBtn[0].Value = True Then rbNicht = 1
+            If tgBtn[1].Value = True Then rbKompl = 1
+            If tgBtn[2].Value = True Then rbVerbraucht = 1
+            vzbBetrag = Val(tbVZB.Text)
+            SqlCom = "INSERT INTO "
+            SqlTab = "VZB "
+            SqlP = "(VZBbetrag, VZBalt,Nicht, Komplett, VZBverbraucht)  VALUES ('" & Val(tbVZB.Text) & "', '" & Val(lbVZBalt.Text) & "', '" & rbNicht & "', '" & 
+            rbKompl & "', '" & rbVerbraucht & "')"
+            rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+            tbVZB.Background = Color.White
+            Frame1.Enabled = False
+            fmVZB.w = 500
+            fmVZB.Center
+            Panel1.Visible = False
+    Case 0
+            ' btnVZB1.Text = "Speichern"
+            btnVZB[j].Background = Color.Cyan
+            btnVZB[j].Foreground = Color.Black
+            btnVZB[1].Enabled = True
+            Frame1.Enabled = True
+            tbVZB.Enabled = True
+            ' tbVZB1.Foreground = Color.Black
+            
+            lbVZBalt.Text = Format(vzbBetrag, "#,##0.00")
+            tbVZB.Background = Color.Yellow
+            tbVZB.SetFocus
+            fmVZB.W = 750
+            fmVZB.Center
+            Panel1.Visible = True
+    Case 3
+        ' fmVerrechnung.Show
+        fmVZB.Close
+    Case 2
+        If tgBtn[0].Value = True Then 
+            rbi = 1
+            Message.Title = "VZB"
+            Select Message.Question("Soll für die neue Saison der Verzehrbon den berechtigten Mitgliedern zugewiesen werden?" & 
+                                           " <br/><font size=2 color='red'>< b >Das bestehende Guthaben wird nicht übernommen! < / b > < / font >", " Ja ", " Nein ")
+                Case 1
+                    SqlCom = "UPDATE "
+                    SqlTab = "Mitglieder"
+                    SqlP = "Chip_val = " & Val(vzbBetrag) & "Chip_lade_Val = " & 0 & " WHERE VZB = " & "Y"
+                    rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+                Case 2
+                    Return
+            End Select
+        Else If tgBtn[1].Value = True Then
+             rbi = 2
+            Message.Title = "VZB"
+            Select Message.Question("Soll für die neue Saison der Verzehrbon den berechtigten Mitgliedern zugewiesen werden?" & 
+                                     " <br/><font size=2 color='red'>< b >Das bestehende Guthaben wird komplett übernommen! < / b > < / font >", " Ja ", " Nein ")
+                Case 1
+                    SqlCom = "SELECT id, Mitgl_Nr, VZB, Chip_Val, Chip_lade_val FROM "
+                    SqlTab = "Mitglieder "
+                    SqlP = " WHERE VZB = " & "'Y'"
+                    rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+                Case 2
+                    Return
+            End Select
+            If rs.count > 0 Then
+                For i = 0 To rs.count - 1
+                    id = rs!id
+                    Mitgl_Nr = rs!Mitgl_Nr
+                    ' Chip_Lade_Val = rs!Chip_lade_val
+                    Chip_val = rs!Chip_Val
+                    If rs!VZB = "Y" Then
+                        Chip_Summe = vzbBetrag + Chip_val 
+                    Else
+                        Chip_Summe = Chip_val 
+                    Endif
+                    SqlCom = "UPDATE "
+                    SqlTab = "Mitglieder SET "
+                    SqlP = "Chip_Val = " & Chip_Summe & ", " & "Chip_lade_val = " & 0 & " WHERE id = " & id
+                    rs1 = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+                    rs.MoveNext
+                Next
+            End If
+        Else If tgBtn[2].Value = True Then
+             rbi = 3
+            Message.Title = "VZB"
+            Select Message.Question("Soll für die neue Saison der Verzehrbon den berechtigten Mitgliedern zugewiesen werden?" & 
+                                   " <br/><font size=2  color='red'>Das bestehende Guthaben wird nur übernommen, wenn der VZB-Betrag verbraucht wurde!  < / font >", " Ja ", " Nein ")
+                  Case 1
+                    SqlCom = "SELECT id, Mitgl_Nr, VZB, Chip_Val, Chip_lade_val FROM "
+                    SqlTab = "Mitglieder "
+                    SqlP = " ORDER BY Name"
+                    rs = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+                Case 2
+                    Return
+            End Select
+            If rs.count > 0 Then
+                For i = 0 To rs.count - 1
+                    id = rs!id
+                    Mitgl_Nr = rs!Mitgl_Nr
+                    Chip_Lade_Val = rs!Chip_lade_val
+                    Chip_val = rs!Chip_Val
+                    If rs!VZB = "Y" Then
+                            If Chip_lade_val > 0 Then
+                                If Chip_lade_val - Chip_Val > 0 Then
+                                    Chip_Summe = vzbBetrag + Chip_Val
+                                Else
+                                    Chip_Summe = vzbBetrag + Chip_lade_val
+                                Endif
+                            Else
+                                Chip_Summe = vzbBetrag
+                            Endif
+                    Else
+                            Chip_Summe = Chip_val
+                    Endif
+                    SqlCom = "UPDATE "
+                    SqlTab = "Mitglieder SET "
+                    SqlP = "Chip_Val = " & Chip_Summe & ", " & "Chip_lade_val = " & 0 & " WHERE id = " & id
+                    rs1 = fmAdmin.ExecuteSql(SqlCom, SqlTab, SqlP)
+                    rs.MoveNext
+                Next
+            End If
+            fmAdmin.DBMitglieder()
+            ' Case 2
+                ' Message.Info(" <br/><font size=3 color='red'>Es wurde kein Verzehrbon zugewiesen ?< / b > < / font >")
+            ' End Select
+        End If
+End Select
+End
+
+Public Sub MyTG_MouseDown()
+Dim b As Boolean  
+Dim i As Integer  
+For i = 0 To 2
+     tgBtn[i].Background = Color.ButtonBackground
+Next
+i = Last.Tag 
+Select Case i
+    Case 0
+        tgBtn[i].Background = Color.Green        
+    Case 1
+        tgBtn[i].Background = Color.Green        
+    Case 2
+        tgBtn[i].Background = Color.Green        
+End Select   
+b = tgBtn[i].Value   
+ tgBtn[i].Value = True
+End
+
+Public Sub NumBtn_Click()
+If Last.Tag = "C" Then
+ tbVZB.Text = "" 
+ num = ""
+Else
+  num &= Last.Tag 
+  tbVZB.Text = num
+ Endif
+
+End
+
+
+
+
+
