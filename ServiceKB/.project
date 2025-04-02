@@ -1,7 +1,7 @@
 # Gambas Project File 3.0
 Title=Kasse mit RFID
 Startup=fmAdmin
-Version=0.0.82
+Version=0.0.83
 Component=gb.image
 Component=gb.qt5
 Component=gb.form

@@ -224,7 +224,7 @@ Select Case i
             SqlTab = "Mitglieder  "
             SqlP = "(ID_Nr, Mitgl_Nr, Berechtigung, Aktiv, VZB, m_w, Titel, Name, Vorname, GeburtsDat ) VALUES ( '" &
             txtNeuTrID.Text & "', '" & Val(txtMitgNr.Text) & "', '" & 
-            comMitglStatus.text & "', '" & comBerecht.text & "', '" & 
+            comBerecht.text & "', '" & comMitglStatus.text & "', '" & 
             comVZB.Text & "', '" & comGeshl.Text & "', '" & 
             txtMitgDat[0].Text & "', '" & 
             txtMitgDat[1].Text & "', '" & txtMitgDat[2].Text & "', '" & Format(gebDat, "yyyy/mm/dd") & "')"
