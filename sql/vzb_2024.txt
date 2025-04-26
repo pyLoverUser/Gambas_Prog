@@ -266,3 +266,75 @@ MariaDB [Belegung]> SELECT DISTINCT m.Name, m.Vorname, m.Mitgl_Nr FROM Mitgliede
 +---------------+-------------+----------+
 
 
+localhost/Belegung/Mitglieder/		http://192.168.178.2/phpmyadmin/tbl_sql.php?db=Belegung&table=Mitglieder&token=d59bc93569f2b7a262780c0026b7750e
+ Die aktuelle Markierung enthält keine eindeutige („unique“) Spalte. Gitter-Bearbeitungsfunktion, Kontrollkästchen, Bearbeiten, Kopieren und Löschen von Links sind nicht verfügbar. 
+
+ Zeige Datensätze 0 - 24 (39 insgesamt, Die Abfrage dauerte 0.0011 Sekunden.) [Name: ]
+
+SELECT Name, Vorname, VZB, Chip_Val, Chip_lade_val FROM Mitglieder WHERE ((VZB = 'N') AND (Chip_Val > 0)) ORDER BY Name
+
+
+Name   	Vorname	VZB	Chip_Val	Chip_lade_val	
+Baumann	Mayla	N	10	0	
+Beutinger	Andreas	N	11.4	0	
+Brauer	Detlef	N	0.1	0	
+Eckert	Hannes	N	18.5	0	
+Fiehn	Kara	N	3.4	0	
+Grafe	Quentin	N	30	0	
+Habibi	Saba	N	10.4	0	
+Hachtel	Jill	N	20	0	
+Härtel	Marco	N	30	0	
+Hesser	Jule	N	0.4	0	
+Hieber	Mara	N	5.3	0	
+Hoppe	Niclas	N	19.2	0	
+Hubert	Maximilian	N	6.8	0	
+Johl	Theresa	N	21.3	0	
+Keck	Fabian	N	2.5	0	
+Kern	Marlies	N	5	0	
+Knöller	Marc	N	11.7	0	
+Kuntzer	Joachim	N	30	0	
+Mierzowski	Niklas	N	0.6	0	
+Mitglied	03	N	12.8	0	
+Mitglied	02	N	20	0	
+Mundinger	Lucy	N	5.3	0	
+Peifer	Roland	N	30	0	
+Pertschy	Danusch	N	14.6	0	
+Quon	Paula	N	10.9	0	
+
+
+localhost/Belegung/Mitglieder/		http://192.168.178.2/phpmyadmin/sql.php?server=1&db=Belegung&table=Mitglieder&pos=0&token=d59bc93569f2b7a262780c0026b7750e
+ Die aktuelle Markierung enthält keine eindeutige („unique“) Spalte. Gitter-Bearbeitungsfunktion, Kontrollkästchen, Bearbeiten, Kopieren und Löschen von Links sind nicht verfügbar. 
+
+ Zeige Datensätze 0 - 24 (26 insgesamt, Die Abfrage dauerte 0.0012 Sekunden.) [Name: ]
+
+SELECT Name, Vorname, VZB, ID_Nr, Chip_Val, Chip_lade_val FROM Mitglieder WHERE (NOT (ID_Nr LIKE 'X%') AND (Chip_Val > 0) AND (VZB = 'N')) ORDER BY Name
+
+
+Name   	Vorname	VZB	ID_Nr	Chip_Val	Chip_lade_val	
+Baumann	Mayla	N	3b00f1c9e1	10	0	
+Brauer	Detlef	N	1D00565E85	0.1	0	
+Fiehn	Kara	N	68008A3513	3.4	0	
+Habibi	Saba	N	2C0070B42F	10.4	0	
+Hesser	Jule	N	010C8B8F27	0.4	0	
+Hieber	Mara	N	5500390d3c	5.3	0	
+Hoppe	Niclas	N	A0238420BD	19.2	0	
+Keck	Fabian	N	83E8240CB5	2.5	0	
+Kern	Marlies	N	202BA60087	5	0	
+Mierzowski	Niklas	N	010A4D0B73	0.6	0	
+Mitglied	02	N	2123a4800c	20	0	
+Mitglied	03	N	A93BA600FE	12.8	0	
+Mundinger	Lucy	N	68008A21C5	5.3	0	
+Pertschy	Danusch	N	0BE304AC8E	14.6	0	
+Quon	Paula	N	3b00f265b5	10.9	0	
+Schmuck	Hanna-Sophie	N	0109539E11	1.2	0	
+Schmuck	Jonathan	N	68008A3470	0.5	0	
+Schneider	Sebastian	N	680089F2DA	6	0	
+Scholz	Selina	N	010A4D3E25	2.6	0	
+Schumann	Finia	N	010C8C0B77	6.6	0	
+Schumann	Kira	N	010A4CB6B8	1	0	
+Trainer	1	N	1D00561E6C	0.6	0	
+Trainer	Filip	N	31007c99de	14.3	0	
+Weih	Lenny	N	68008A3AD0	5.1	0	
+Wilfried	Test	N	010A4D45DC	51.9	0	
+
+

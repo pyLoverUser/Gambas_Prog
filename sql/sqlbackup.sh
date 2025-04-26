@@ -1,4 +1,2 @@
 #!/bin/bash
-mysqldump -u root -pasperg Belegung > "/media/pi/B044-09F6/$(date +\%Y-\%m-\%d-\%h-\%M) Belegung.sql"
-
-
+mysqldump -u root -pasperg Belegung > /home/pi/Backup/$(date +\%Y-\%m-\%d-\%H-\%M)_Belegung.sql

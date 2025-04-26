@@ -96,7 +96,7 @@ DBMitglieder()
    .Clear
   .top = 100
   .w = 1170
-  .H = 802
+  .H = 602
   .Left = Screen.w \ 2 - GridMitgl.w \ 2
   .Columns.Count = 14
   .Rows.count = rs.count
