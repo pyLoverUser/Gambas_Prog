@@ -9,7 +9,6 @@ Component=gb.data
 Component=gb.db
 Component=gb.db.form
 Component=gb.db.mysql
-Component=gb.desktop
 Component=gb.desktop.x11
 Component=gb.settings
 Component=gb.qt5.opengl

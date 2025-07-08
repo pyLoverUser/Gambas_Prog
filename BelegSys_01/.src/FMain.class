@@ -103,7 +103,7 @@ Public PlzFreeIdx As Integer
 Public TastSaveFl As Boolean
 Public lbplzSperre[7] As Label
 Public strSperrPlz As String
-Public strScreenStandby As String = "60"
+Public strMSTBY As String = "300"
 '==========================================================================
 ' Initialisierung:  Form_Open()
 '	
@@ -197,7 +197,6 @@ Public Sub Form_Open()
   btnGast.Visible = False
   btnAdmin.Visible = False
   btnSpielBetr.Visible = False
-  Exec ["xset", "s", strScreenStandby, strScreenStandby] 
   
   mysqlInit()
   rfidInit()
@@ -205,6 +204,7 @@ Public Sub Form_Open()
   ModsAndRules.GetRules()
   ModsAndRules.RegnerManu()
   ModsAndRules.RegnerAuto
+  Exec ["xset", "s", strMSTBY, strMSTBY]
   SqlCom = "DELETE FROM "
   SqlTab = "_delBuchung "
   SqlP = ""                        
@@ -736,8 +736,8 @@ Public Sub mysqlInit()
   
   cDBVerbindung.Close()
   cDBVerbindung.Type = "mysql" ' Der Typ muss klein geschrieben werden!
-  ' cDBVerbindung.Host = "192.168.178.2"  '"raspberrypi" '"192.168.2.112"
-  cDBVerbindung.Host = "192.168.2.205"  
+  cDBVerbindung.Host = "192.168.178.2"  '"raspberrypi" '"192.168.2.112"
+  ' cDBVerbindung.Host = "192.168.2.205"  
   cDBVerbindung.Name = "Belegung" ' Das ist der Datenbank-Name
   cDBVerbindung.User = "root" ' ---> Nur bei MySQL und PostgreSQL erforderlich
   cDBVerbindung.Password = "asperg" ' ---> Nur bei MySQL und PostgreSQL erforderlich
@@ -1002,11 +1002,9 @@ Public Sub datenMitglLesen(dRFID As String)
   SqlP = "where ID_Nr ='" & dRFID & "'"
   rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
   If rs.Count > 0 Then
-    ' Desktop.SendKeys(" ")
-    ' Timerdpms.Stop
-    Exec ["xset", "dpms", "force", "on"] 
-    ' Timerdpms.Start
-    Exec ["xset", "s", strScreenStandby, strScreenStandby] 
+    Exec ["xset", "dpms", "force", "on"]
+    Wait 0.1
+    Exec ["xset", "s", strMSTBY, strMSTBY]
     MitglNr = rs!Mitgl_Nr
     Berecht = rs!Berechtigung
     Titel = rs!Titel
@@ -2340,4 +2338,3 @@ Public Sub btnRollo_MouseDown()
   Endif
 
 End
-

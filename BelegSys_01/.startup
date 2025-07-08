@@ -11,7 +11,6 @@ gb.data
 gb.db
 gb.db.form
 gb.db.mysql
-gb.desktop
 gb.desktop.x11
 gb.settings
 gb.qt5.opengl
