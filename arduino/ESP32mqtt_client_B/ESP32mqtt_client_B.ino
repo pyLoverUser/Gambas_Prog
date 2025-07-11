@@ -10,11 +10,14 @@
 //#include <Adafruit_Sensor.h>
 
 // Replace the next variables with your SSID/Password combination
-const char* ssid = "TCSchwieberdingen";
-const char* password = "TCSchwieberdingen2019";
+//const char* ssid = "TCSchwieberdingen";
+//const char* password = "TCSchwieberdingen2019";
+
+const char* ssid = "StrangerThings";
+const char* password = "58714188517339106583";
 
 // Add your MQTT Broker IP address, example:
-const char* mqtt_server = "192.168.178.34";
+const char* mqtt_server = "192.168.178.2";
 //const char* mqtt_server = "YOUR_MQTT_BROKER_IP_ADDRESS";
 
 WiFiClient espClient;
@@ -71,7 +74,7 @@ void callback(char* topic, byte* message, unsigned int length) {
 //#    Serial.print((char)message[i]);
     messageTemp += (char)message[i];
   }
-//#  Serial.println();
+  Serial.println(messageTemp);
 
   // Feel free to add more if statements to control more GPIOs with MQTT
 
@@ -93,11 +96,11 @@ void callback(char* topic, byte* message, unsigned int length) {
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
-//#    Serial.print("Attempting MQTT connection...");
+    Serial.print("Attempting MQTT connection...");
     // Attempt to connect
     clientId += String(random(0xffff), HEX);
     if (client.connect(clientId.c_str())) {
-//#      Serial.println("connected");
+      Serial.println("connected");
       // Subscribe
       client.subscribe("esp32/boil");
     } else {

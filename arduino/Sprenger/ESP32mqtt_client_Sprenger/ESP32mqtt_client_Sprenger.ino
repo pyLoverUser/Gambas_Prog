@@ -3,21 +3,20 @@
   Complete project details at https://randomnerdtutorials.com  
 *********/
 
+#include <SPI.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <Wire.h>
 
 // Replace the next variables with your SSID/Password combination
 //const char* ssid = "TCSchwieberdingen";
 //const char* password = "TCSchwieberdingen2019";
 
-const char* ssid = "TCSchwieberdingen";
-const char* password = "TCSchwieberdingen2019";
+char* ssid = "StrangerThings";
+char* password = "58714188517339106583";
 
 // Add your MQTT Broker IP address, example:
 //const char* mqtt_server = "192.168.178.34";
 const char* mqtt_server = "192.168.178.2";
-
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -58,10 +57,11 @@ String strpbit;
 const int ledPin = 21;
 
 void setup() {
-  Serial.println("ESP32 Sprenger: MQTT + AN LED");
   Serial.begin(115200);
-
+  delay(250);
+  Serial.println("ESP32 Sprenger: MQTT client");
   Serial.println("Number of pins" + numPins);
+
   for(i=0;i<numPins;i++)
   {
     pinMode(R[i], OUTPUT);
@@ -78,7 +78,6 @@ void setup() {
 }
 
 void setup_wifi() {
-  delay(10);
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
@@ -91,14 +90,18 @@ void setup_wifi() {
 }
 
 void callback(char* topic, byte* message, unsigned int length) {
-  Serial.print("Message arrived on topic: " + String(topic) + ". Message: " + String(message));
+  String messageStr;
+  for (unsigned int i = 0; i < length; i++) {
+    messageStr += (char)message[i];
+  }
+  Serial.print("Message arrived on topic: " + String(topic) + ". Message: " + messageStr);
   String messageTemp;
   
   for (int i = 0; i < length; i++) {
-//#    Serial.print((char)message[i]);
+    Serial.print((char)message[i]);
     messageTemp += (char)message[i];
   }
-//#  Serial.println();
+  Serial.println();
 
   // Feel free to add more if statements to control more GPIOs with MQTT
     for(i=0;i<11;i++)
@@ -114,13 +117,13 @@ void callback(char* topic, byte* message, unsigned int length) {
   // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
   // Changes the output state according to the message
   if (String(topic) == "esp32/sprenger") {
-//#    Serial.print("Changing output to ");
+    Serial.print("Changing output to ");
     if(messageTemp == "on"){
-//#      Serial.println("on");
+      Serial.println("on");
       digitalWrite(ledPin, LOW);
     }
     else if(messageTemp == "off"){
-//#      Serial.println("off");
+      Serial.println("off");
       digitalWrite(ledPin, HIGH);
     }
   }
@@ -129,27 +132,35 @@ void callback(char* topic, byte* message, unsigned int length) {
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
-//#    Serial.print("Attempting MQTT connection...");
+    Serial.print("Attempting MQTT connection...");
     // Attempt to connect
     clientId += String(random(0xffff), HEX);
     if (client.connect(clientId.c_str())) {
-//#      Serial.println("connected");
+      Serial.println("connected");
       // Subscribe
       client.subscribe("esp32/sprenger");
     } else {
-//#      Serial.print("failed, rc=");
-//#      Serial.print(client.state());
-//#      Serial.println(" try again in 5 seconds");
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
       delay(5000);
     }
   }
 }
 
+void reconnectWifi() {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("Reconnecting to WiFi...");
+    WiFi.disconnect();
+    WiFi.begin(ssid, password);
+  }
+}
+
 void loop() {
   if (!client.connected()) {
+    reconnectWifi();
     reconnect();
   }
   client.loop();
-
 }
