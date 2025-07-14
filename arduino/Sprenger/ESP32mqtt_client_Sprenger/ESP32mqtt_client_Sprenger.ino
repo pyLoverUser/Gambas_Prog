@@ -6,6 +6,8 @@
 #include <SPI.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <Arduino_DebugUtils.h>
+
 
 // Replace the next variables with your SSID/Password combination
 //const char* ssid = "TCSchwieberdingen";
@@ -59,6 +61,8 @@ const int ledPin = 21;
 void setup() {
   Serial.begin(115200);
   delay(250);
+  Debug.setDebugLevel(DBG_VERBOSE);
+  Debug.timestampOn();
   Serial.println("ESP32 Sprenger: MQTT client");
   Serial.println("Number of pins" + numPins);
 
@@ -91,41 +95,37 @@ void setup_wifi() {
 
 void callback(char* topic, byte* message, unsigned int length) {
   String messageStr;
+  String topicStr(topic);
   for (unsigned int i = 0; i < length; i++) {
     messageStr += (char)message[i];
   }
-  Serial.print("Message arrived on topic: " + String(topic) + ". Message: " + messageStr);
-  String messageTemp;
-  
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)message[i]);
-    messageTemp += (char)message[i];
-  }
-  Serial.println();
+  DEBUG_VERBOSE("Message arrived on topic: %s, Message: %s", topic, messageStr);
 
   // Feel free to add more if statements to control more GPIOs with MQTT
-    for(i=0;i<11;i++)
-    {
-      if(buf[i]=='1')
-        digitalWrite(R[i], HIGH); // Turn Relays on
-      else if(buf[i]=='0')
-        digitalWrite(R[i], LOW); // Turn Relays off
-      Serial.println(R[i]);
-    }
+//    for(i=0;i<11;i++)
+//    {
+//      if(buf[i]=='1')
+//        digitalWrite(R[i], HIGH); // Turn Relays on
+//      else if(buf[i]=='0')
+//        digitalWrite(R[i], LOW); // Turn Relays off
+//      Serial.println(R[i]);
+//    }
 
 
-  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
+  // If a message is received on the topic tcs/sprenger/ausgabe, 
+  // you check if the message is either "true" or "false". 
   // Changes the output state according to the message
-  if (String(topic) == "esp32/sprenger") {
-    Serial.print("Changing output to ");
-    if(messageTemp == "on"){
-      Serial.println("on");
-      digitalWrite(ledPin, LOW);
+  if (topicStr.startsWith("tcs/sprenger/ausgabe")) {
+    // parse number from topic
+    int lastSlash = topicStr.lastIndexOf('/');
+    String sprengerNumberStr = topicStr.substring(lastSlash);
+    
+    int out = HIGH;
+    if(messageStr == "true"){
+      out = LOW;
     }
-    else if(messageTemp == "off"){
-      Serial.println("off");
-      digitalWrite(ledPin, HIGH);
-    }
+    DEBUG_INFO("Changing output %s to %d", sprengerNumberStr, out);
+    digitalWrite(ledPin, out);
   }
 }
 
@@ -138,7 +138,8 @@ void reconnect() {
     if (client.connect(clientId.c_str())) {
       Serial.println("connected");
       // Subscribe
-      client.subscribe("esp32/sprenger");
+      client.subscribe("tcs/sprenger/ausgabe/#");
+      client.subscribe("tcs/flutlicht/ausgabe/#");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());

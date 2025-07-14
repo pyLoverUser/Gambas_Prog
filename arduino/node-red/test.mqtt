@@ -1,0 +1,26 @@
+
+# %%
+url: mqtt://192.168.178.2:1883
+
+# ## Publish '{ "message": "hello" }'
+topic: tcs/sprenger/eingabe
+qos: 1
+retain: false
+
+{
+    "nummer": 2,
+    "dauer": 16,
+    "action": "START"
+}
+
+
+# ## Publish Ausgabe
+topic: tcs/sprenger/ausgabe
+qos: 1
+retain: false
+
+{
+    "nummer": 2,
+    "dauer": 15,
+    "action": "START"
+}
