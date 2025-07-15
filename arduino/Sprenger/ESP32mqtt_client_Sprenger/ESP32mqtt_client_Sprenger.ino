@@ -1,9 +1,4 @@
-/*********
-  Rui Santos
-  Complete project details at https://randomnerdtutorials.com
-*********/
-
-#include <SPI.h>
+// ESP32 Steuerung
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <Arduino_DebugUtils.h>
@@ -16,19 +11,24 @@
 const char* ssid = "StrangerThings";
 const char* password = "58714188517339106583";
 
-// Add your MQTT Broker IP address, example:
-//const char* mqtt_server = "192.168.178.34";
 const char* mqtt_server = "192.168.178.2";
 const int mqtt_port = 1883;
-const String clientId = "ESP32-S1";
-const char* topic1 = "tcs/sprenger/ausgabe/#";
-const char* topic2 = "tcs/flutlicht/ausgabe/#";
+const String clientId = "court1";
+// const String clientId = "court6";
 
+const String topicSprinkler = "tcs/sprink/out";
+const String topicFloodlight = "tcs/light/out";
+const String topicSWildcard = String(topicSprinkler + "/#");
+const String topicFWildcard = String(topicFloodlight + "/#");
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-// GPIOs für die Sprenger
+const long reconnectInterval = 4000; // interval in milliseconds
+long lastReconnectAttempt = 0;
+
+
+// GPIOs für die Sprinkler
 /*
   #define R1  D0 // ESP32 pin GPIO2 connected to R1
   #define R2  D1 // ESP32 pin GPIO3 connected to R2
@@ -44,18 +44,22 @@ PubSubClient client(espClient);
 */
 const int R[] = {2, 3, 4, 5, 6, 7, 21, 20, 8, 9, 10};
 const int numPins = sizeof(R) / sizeof(R[0]);
-char buf[13];
-char altbuf[13];
-int pbit;
-int count = 0;
-String strpbit;
+
+const int maxSprinklers = 7; // maximum number of sprinklers
+const int sprinklerTimeout = 15000; // timeout in milliseconds for sprinkler to turn off automatically
+// Sprinkler configuration, number is index in array R, 0xff = not used
+const int sprinklerConfig[maxSprinklers] = {0, 1, 3, 0xff, 0xff, 0xff, 0xff};
+
+// store the sprinkler start times into an array
+// index 0 starts with sprinkler 1
+long sprinklerStart[maxSprinklers] = {0, 0, 0, 0, 0, 0, 0};
 
 void setup() {
   Serial.begin(115200);
   delay(250);
-  Debug.setDebugLevel(DBG_VERBOSE);
+  Debug.setDebugLevel(DBG_INFO);
   Debug.timestampOn();
-  DEBUG_INFO("ESP32 Sprenger: MQTT client");
+  DEBUG_INFO("ESP32 Sprinkler and Floddlight: MQTT client");
   DEBUG_VERBOSE("Number of pins: %d", numPins);
 
   for (int i = 0; i < numPins; i++)
@@ -64,6 +68,7 @@ void setup() {
     pinMode(R[i], OUTPUT);
   }
 
+  delay(10);
   setup_wifi();
   setup_mqtt();
 }
@@ -95,19 +100,17 @@ void setup_mqtt() {
 }
 
 void reconnectMqtt() {
-  // Loop until we're reconnected
-  while (!client.connected()) {
+  if (!client.connected()) {
+    // Attempt to reconnect
     String newClientId = clientId;
-    newClientId += String(random(0xffff), HEX);
-    DEBUG_VERBOSE("Attempting MQTT connection, client: %s", newClientId.c_str());
-    if (client.connect(clientId.c_str())) {
-      DEBUG_INFO("Connected, subscribe to %s, %s", topic1, topic2);
-      client.subscribe(topic1);
-      client.subscribe(topic2);
+    newClientId += "-" + String(random(0xffff), HEX);
+    DEBUG_VERBOSE("Attempting MQTT connection, client: %s, state=%d", newClientId.c_str(), client.state());
+    if (client.connect(newClientId.c_str())) {
+      DEBUG_INFO("Connected, subscribe to %s, %s", topicSWildcard.c_str(), topicFWildcard.c_str());
+      client.subscribe(topicSWildcard.c_str());
+      client.subscribe(topicFWildcard.c_str());
     } else {
-      DEBUG_VERBOSE("failed, client state=%d, try again in 5 seconds", client.state());
-      // Wait 5 seconds before retrying
-      delay(5000);
+      DEBUG_VERBOSE("failed, client state=%d, try again in %d ms", client.state(), reconnectInterval);
     }
   }
 }
@@ -119,37 +122,92 @@ void callback(char* topic, byte* message, unsigned int length) {
   for (unsigned int i = 0; i < length; i++) {
     messageStr += (char)message[i];
   }
+  messageStr.trim();
   DEBUG_VERBOSE("Message arrived on topic: %s, Message: %s", topic, messageStr.c_str());
 
-  // If a message is received on the topic tcs/sprenger/ausgabe,
+  // If a message is received on subscribed topics,
   // you check if the message is either "true" or "false".
   // Changes the output state according to the message
-  if (topicStr.startsWith("tcs/sprenger/ausgabe")) {
+  if (topicStr.startsWith(topicSprinkler)) {
     // parse number from topic
-    int lastSlash = topicStr.lastIndexOf('/');
-    String sprengerNumberStr = topicStr.substring(lastSlash);
-    int sprengerNumber = sprengerNumberStr.toInt();
+    String sprinklerNumberStr = topicStr.substring(topicStr.lastIndexOf('/') + 1);
+    sprinklerNumberStr.trim();
 
-                         // check sprenger number
-    if (sprengerNumber < 1 || sprengerNumber > 7) {
-      DEBUG_VERBOSE("Sprenger Number %s not valid on this ESP32", sprengerNumberStr.c_str());
+    // check for debug topic like tcs/sprink/out/debug
+    if (sprinklerNumberStr.equals("debug")) {
+      Debug.setDebugLevel(messageStr.toInt());
+      return;
+    }
+
+    int sprinklerNumber = sprinklerNumberStr.toInt();  // in case of failure sprinklerNumber will be 0
+
+    // check sprinkler number range
+    if (sprinklerNumber < 1 || sprinklerNumber > maxSprinklers) {
+      DEBUG_INFO("Sprinkler number not valid, topic=%s", topicStr.c_str());
       return;  //ignore
     }
-
-    int out = LOW; // Turn Relays off
-    if (messageStr == "true") {
-      out = HIGH; // Turn Relays on
+    // check sprinkler configured, normal because all sprinkler topics are received
+    if (sprinklerConfig[sprinklerNumber - 1] == 0xff) {
+      DEBUG_VERBOSE("Sprinkler %d not configured, topic=%s", sprinklerNumber, topicStr.c_str());
+      return;  //ignore
     }
-    DEBUG_INFO("Changing output %s to %d", sprengerNumberStr.c_str(), out);
-    digitalWrite(R[sprengerNumber], out);
+    changeSprinkler(sprinklerNumber, messageStr);
   }
 }
 
+void changeSprinkler(int sprinklerNumber, String turnOn) {
+  DEBUG_DEBUG("changeSprinkler number: %d, turnOn:'%s'", sprinklerNumber, turnOn.c_str());
+  // checks have been done before
+  int outPin = R[sprinklerConfig[sprinklerNumber - 1]];
+  int outState = LOW;
+  if (turnOn.equals("true")) {
+    outState = HIGH; // Turn Relays on
+    sprinklerStart[sprinklerNumber - 1] = millis(); // store start time
+  } else {
+    outState = LOW; // Turn Relays off
+    sprinklerStart[sprinklerNumber - 1] = 0; // reset start time
+  }
+  DEBUG_INFO("Changing sprinkler %d output %d to %d", sprinklerNumber, outPin, outState);
+  digitalWrite(outPin, outState);
+}
+
+void checkSprinklerTimeouts() {
+  long now = millis();
+  for (int i = 0; i < maxSprinklers; i++) {
+    if (sprinklerStart[i] > 0 && ((unsigned long)(now - sprinklerStart[i])) > sprinklerTimeout) { // timeout after 60 seconds
+      DEBUG_WARNING("Sprinkler %d timeout reached, turning off", i + 1);
+      changeSprinkler(i + 1, "false");
+    }
+  }
+}
+
+boolean reconnect() {
+  reconnectWifi();
+  reconnectMqtt();
+  return client.connected();
+}
 
 void loop() {
+  // ensure that sprinklers are turned off after timeout
+  // even if MQTT connection is not available
+  checkSprinklerTimeouts();
+
   if (!client.connected()) {
-    reconnectWifi();
-    reconnectMqtt();
+    // Try to reconnect client in a non blocking way
+    long now = millis();
+    if ((unsigned long)(now - lastReconnectAttempt) > reconnectInterval) {
+      lastReconnectAttempt = now;
+      // Attempt to reconnect
+      if (reconnect()) {
+        // success
+        lastReconnectAttempt = 0;
+      }
+    } else {
+      // reduce load a little while reconnecting
+      delay(100);
+    }
+  } else {
+    client.loop();
   }
-  client.loop();
+  delay(1);  // no need to be so fast
 }
