@@ -1,13 +1,11 @@
-// ESP32 Steuerung
+// ESP32 mqtt client for sprinkler and floodlight
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <Arduino_DebugUtils.h>
 
 
-// Replace the next variables with your SSID/Password combination
 //const char* ssid = "TCSchwieberdingen";
 //const char* password = "TCSchwieberdingen2019";
-
 const char* ssid = "StrangerThings";
 const char* password = "58714188517339106583";
 
@@ -118,7 +116,7 @@ void reconnectMqtt() {
 
 void callback(char* topic, byte* message, unsigned int length) {
   String messageStr;
-  String topicStr(topic);
+  String receicedTopic(topic);
   for (unsigned int i = 0; i < length; i++) {
     messageStr += (char)message[i];
   }
@@ -128,9 +126,9 @@ void callback(char* topic, byte* message, unsigned int length) {
   // If a message is received on subscribed topics,
   // you check if the message is either "true" or "false".
   // Changes the output state according to the message
-  if (topicStr.startsWith(topicSprinkler)) {
+  if (receicedTopic.startsWith(topicSprinkler)) {
     // parse number from topic
-    String sprinklerNumberStr = topicStr.substring(topicStr.lastIndexOf('/') + 1);
+    String sprinklerNumberStr = receicedTopic.substring(receicedTopic.lastIndexOf('/') + 1);
     sprinklerNumberStr.trim();
 
     // check for debug topic like tcs/sprink/out/debug
@@ -143,12 +141,12 @@ void callback(char* topic, byte* message, unsigned int length) {
 
     // check sprinkler number range
     if (sprinklerNumber < 1 || sprinklerNumber > maxSprinklers) {
-      DEBUG_INFO("Sprinkler number not valid, topic=%s", topicStr.c_str());
+      DEBUG_INFO("Sprinkler number not valid, topic=%s", receicedTopic.c_str());
       return;  //ignore
     }
     // check sprinkler configured, normal because all sprinkler topics are received
     if (sprinklerConfig[sprinklerNumber - 1] == 0xff) {
-      DEBUG_VERBOSE("Sprinkler %d not configured, topic=%s", sprinklerNumber, topicStr.c_str());
+      DEBUG_VERBOSE("Sprinkler %d not configured, topic=%s", sprinklerNumber, receicedTopic.c_str());
       return;  //ignore
     }
     changeSprinkler(sprinklerNumber, messageStr);

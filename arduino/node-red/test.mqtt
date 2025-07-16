@@ -28,3 +28,12 @@ qos: 1
 retain: false
 
 2
+
+
+
+# ## Publish debug output -1 none, 0 error, 1 warning, 2 info, 3 debug, 4 verbose
+topic: tcs/boil/out
+qos: 1
+retain: false
+
+off
