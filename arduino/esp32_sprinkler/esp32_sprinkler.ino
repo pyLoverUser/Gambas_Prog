@@ -22,6 +22,7 @@ const String topicFWildcard = String(topicFloodlight + "/#");
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+boolean wifiConnected = false;
 const long reconnectInterval = 4000; // interval in milliseconds
 long lastReconnectAttempt = 0;
 
@@ -52,12 +53,30 @@ const int sprinklerConfig[maxSprinklers] = {0, 1, 3, 0xff, 0xff, 0xff, 0xff};
 // index 0 starts with sprinkler 1
 long sprinklerStart[maxSprinklers] = {0, 0, 0, 0, 0, 0, 0};
 
+
+// setup WiFi events
+void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+  DEBUG_DEBUG("Connected to WiFi AP, SSID: %s", ssid);
+}
+
+void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
+  DEBUG_INFO("WiFi connected, Client IP address: %s", WiFi.localIP().toString().c_str());
+  wifiConnected = true;
+}
+
+void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+  DEBUG_WARNING("Disconnected from WiFi, Reason: %d - Reconnect...", info.wifi_sta_disconnected.reason);
+  wifiConnected = false;
+  WiFi.begin(ssid, password);
+}
+
+
 void setup() {
   Serial.begin(115200);
   delay(250);
   Debug.setDebugLevel(DBG_INFO);
   Debug.timestampOn();
-  DEBUG_INFO("ESP32 Sprinkler and Floddlight: MQTT client");
+  DEBUG_INFO("ESP32 Sprinkler and Floddlight: MQTT client %s", clientId.c_str());
   DEBUG_VERBOSE("Number of pins: %d", numPins);
 
   for (int i = 0; i < numPins; i++)
@@ -73,22 +92,17 @@ void setup() {
 
 void setup_wifi() {
   DEBUG_INFO("Setup WiFi, ssid: %s", ssid);
+
+  // delete old config
+  WiFi.disconnect(true);
+  wifiConnected = false;
+  delay(200);
+  WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
+  WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+  WiFi.onEvent(WiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+
+  lastReconnectAttempt = millis();
   WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    DEBUG_VERBOSE(".");
-  }
-  DEBUG_VERBOSE("");
-  DEBUG_INFO("WiFi connected, Client IP address: %s", WiFi.localIP().toString().c_str());
-}
-
-void reconnectWifi() {
-  if (WiFi.status() != WL_CONNECTED) {
-    DEBUG_VERBOSE("Reconnecting to WiFi...");
-    WiFi.disconnect();
-    WiFi.begin(ssid, password);
-  }
 }
 
 void setup_mqtt() {
@@ -97,20 +111,23 @@ void setup_mqtt() {
   DEBUG_INFO("Setup MQTT, server IP address: %s, port: %d", mqtt_server, mqtt_port);
 }
 
-void reconnectMqtt() {
-  if (!client.connected()) {
-    // Attempt to reconnect
+boolean reconnectMqtt() {
+  // Attempt to reconnect only if Wifi is connected
+  if (wifiConnected && !client.connected()) {
+    // Attempt to reconnect only if WiFi is connected
     String newClientId = clientId;
     newClientId += "-" + String(random(0xffff), HEX);
     DEBUG_VERBOSE("Attempting MQTT connection, client: %s, state=%d", newClientId.c_str(), client.state());
     if (client.connect(newClientId.c_str())) {
       DEBUG_INFO("Connected, subscribe to %s, %s", topicSWildcard.c_str(), topicFWildcard.c_str());
+      delay(100);
       client.subscribe(topicSWildcard.c_str());
       client.subscribe(topicFWildcard.c_str());
     } else {
       DEBUG_VERBOSE("failed, client state=%d, try again in %d ms", client.state(), reconnectInterval);
     }
   }
+  return client.connected();
 }
 
 
@@ -179,11 +196,6 @@ void checkSprinklerTimeouts() {
   }
 }
 
-boolean reconnect() {
-  reconnectWifi();
-  reconnectMqtt();
-  return client.connected();
-}
 
 void loop() {
   // ensure that sprinklers are turned off after timeout
@@ -195,8 +207,8 @@ void loop() {
     long now = millis();
     if ((unsigned long)(now - lastReconnectAttempt) > reconnectInterval) {
       lastReconnectAttempt = now;
-      // Attempt to reconnect
-      if (reconnect()) {
+      // Attempt to reconnect only if Wifi is connected
+      if (reconnectMqtt()) {
         // success
         lastReconnectAttempt = 0;
       }

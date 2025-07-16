@@ -1,116 +1,156 @@
-/*********
-  Rui Santos
-  Complete project details at https://randomnerdtutorials.com  
-*********/
-
+// ESP32 mqtt client for boiler and cooler
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <Wire.h>
+#include <Arduino_DebugUtils.h>
 
-// Replace the next variables with your SSID/Password combination
-const char* ssid = "TCSchwieberdingen";
-const char* password = "TCSchwieberdingen2019";
 
-// Add your MQTT Broker IP address, example:
-const char* mqtt_server = "192.168.178.34"; //???
-//const char* mqtt_server = "YOUR_MQTT_BROKER_IP_ADDRESS";
+//const char* ssid = "TCSchwieberdingen";
+//const char* password = "TCSchwieberdingen2019";
+const char* ssid = "StrangerThings";
+const char* password = "58714188517339106583";
+
+const char* mqtt_server = "192.168.178.2";
+const int mqtt_port = 1883;
+const String clientId = "cool";
+const String topicStr = "tcs/" + clientId + "/out";
+
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-long lastMsg = 0;
-char msg[50];
-//int value = 0;
 
-//uncomment the following lines if you're using SPI
-//#include <SPI.h>
-String clientId = "ESP32-C";
+boolean wifiConnected = false;
+const long reconnectInterval = 4000; // interval in milliseconds
+long lastReconnectAttempt = 0;
+int reconnectTries = 0;
+const int maxReconnectTries = 5; // maximum number of reconnect tries
 
+// only if control is working the cooler or boiler is turned off
 // LED Pin
 const int ledPin = 21;
+// default output is relais on.
+const int defaultPinState = LOW; // Turn Relais on
+
+
+// setup WiFi events
+void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+  DEBUG_DEBUG("Connected to WiFi AP, SSID: %s", ssid);
+}
+
+void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
+  DEBUG_INFO("WiFi connected, Client IP address: %s", WiFi.localIP().toString().c_str());
+  wifiConnected = true;
+}
+
+void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+  DEBUG_WARNING("Disconnected from WiFi, Reason: %d - Reconnect...", info.wifi_sta_disconnected.reason);
+  wifiConnected = false;
+  WiFi.begin(ssid, password);
+}
+
 
 void setup() {
   Serial.begin(115200);
-
-  setup_wifi();
-  client.setServer(mqtt_server, 1883);
-  client.setCallback(callback);
+  delay(250);
+  Debug.setDebugLevel(DBG_INFO);
+  Debug.timestampOn();
+  DEBUG_INFO("ESP32: MQTT client %s", clientId.c_str());
 
   pinMode(ledPin, OUTPUT);
-  digitalWrite(ledPin, HIGH);
+  // do not switch before connected
+  //digitalWrite(ledPin, HIGH);
+
+  delay(10);
+  setup_wifi();
+  setup_mqtt();
 }
 
 void setup_wifi() {
-  delay(10);
-  // We start by connecting to a WiFi network
-//#  Serial.println();
-//#  Serial.print("Connecting to ");
-//#  Serial.println(ssid);
+  DEBUG_INFO("Setup WiFi, ssid: %s", ssid);
 
+  // delete old config
+  WiFi.disconnect(true);
+  wifiConnected = false;
+  delay(200);
+  WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
+  WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+  WiFi.onEvent(WiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+
+  lastReconnectAttempt = millis();
   WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-//#    Serial.print(".");
-  }
-
-//#  Serial.println("");
-//#  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
 }
+
+void setup_mqtt() {
+  client.setServer(mqtt_server, mqtt_port);
+  client.setCallback(callback);
+  DEBUG_INFO("Setup MQTT, server IP address: %s, port: %d", mqtt_server, mqtt_port);
+}
+
+boolean reconnectMqtt() {
+  // Attempt to reconnect only if Wifi is connected
+  if (wifiConnected && !client.connected()) {
+    // Attempt to reconnect only if WiFi is connected
+    String newClientId = clientId;
+    newClientId += "-" + String(random(0xffff), HEX);
+    DEBUG_VERBOSE("Attempting MQTT connection, client: %s, state=%d", newClientId.c_str(), client.state());
+    if (client.connect(newClientId.c_str())) {
+      DEBUG_INFO("Connected, subscribe to topic:%s", topicStr.c_str());
+      delay(100);
+      client.subscribe(topicStr.c_str());
+    } else {
+      DEBUG_VERBOSE("failed, client state=%d, try again in %d ms", client.state(), reconnectInterval);
+    }
+  }
+  return client.connected();
+}
+
 
 void callback(char* topic, byte* message, unsigned int length) {
-  Serial.print("Message arrived on topic: ");
-  Serial.print(topic);
-  Serial.print(". Message: ");
-  String messageTemp;
-  
-  for (int i = 0; i < length; i++) {
-//#    Serial.print((char)message[i]);
-    messageTemp += (char)message[i];
+  String messageStr;
+  String receicedTopic(topic);
+  for (unsigned int i = 0; i < length; i++) {
+    messageStr += (char)message[i];
   }
-//#  Serial.println();
+  messageStr.trim();
+  DEBUG_DEBUG("Message arrived on topic: %s, Message: %s", topic, messageStr.c_str());
 
-  // Feel free to add more if statements to control more GPIOs with MQTT
-
-  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
+  // If a message is received on topic
   // Changes the output state according to the message
-  if (String(topic) == "esp32/cool") {
-    Serial.print("Changing output to ");
-    if(messageTemp == "on"){
-      Serial.println("on");
-      digitalWrite(ledPin, LOW);
+  if (receicedTopic.equals(topicStr)) {
+    int out = LOW; // Turn Relay on
+    if (messageStr == "off") {
+      out = HIGH; // Turn Relay off
     }
-    else if(messageTemp == "off"){
-      Serial.println("off");
-      digitalWrite(ledPin, HIGH);
-    }
+
+    DEBUG_DEBUG("Changing output to %d", out);
+    digitalWrite(ledPin, out);
   }
 }
 
-void reconnect() {
-  // Loop until we're reconnected
-  while (!client.connected()) {
-//#    Serial.print("Attempting MQTT connection...");
-    // Attempt to connect
-    clientId += String(random(0xffff), HEX);
-    if (client.connect(clientId.c_str())) {
-//#      Serial.println("connected");
-      // Subscribe
-      client.subscribe("esp32/cool");
-    } else {
-//#      Serial.print("failed, rc=");
-//#      Serial.print(client.state());
-//#      Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
-      delay(5000);
-    }
-  }
-}
+
 void loop() {
   if (!client.connected()) {
-    reconnect();
+    // Try to reconnect client in a non blocking way
+    long now = millis();
+    if ((unsigned long)(now - lastReconnectAttempt) > reconnectInterval) {
+      lastReconnectAttempt = now;
+      // Attempt to reconnect only if Wifi is connected
+      if (reconnectMqtt()) {
+        // success
+        lastReconnectAttempt = 0;
+        reconnectTries = 0; // reset tries
+      } else {
+        reconnectTries++;
+        if (reconnectTries == maxReconnectTries) {
+          DEBUG_WARNING("Reconnect tries exceeded, switch to default output state: %d", defaultPinState);
+          digitalWrite(ledPin, defaultPinState); // Turn off LED
+        }
+      }
+    } else {
+      // reduce load a little while reconnecting
+      delay(100);
+    }
+  } else {
+    client.loop();
   }
-  client.loop();
-
+  delay(1);  // no need to be so fast
 }

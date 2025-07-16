@@ -18,6 +18,7 @@ const String topicStr = "tcs/" + clientId + "/out";
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+boolean wifiConnected = false;
 const long reconnectInterval = 4000; // interval in milliseconds
 long lastReconnectAttempt = 0;
 int reconnectTries = 0;
@@ -29,10 +30,28 @@ const int ledPin = 21;
 // default output is relais on.
 const int defaultPinState = LOW; // Turn Relais on
 
+
+// setup WiFi events
+void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+  DEBUG_DEBUG("Connected to WiFi AP, SSID: %s", ssid);
+}
+
+void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
+  DEBUG_INFO("WiFi connected, Client IP address: %s", WiFi.localIP().toString().c_str());
+  wifiConnected = true;
+}
+
+void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+  DEBUG_WARNING("Disconnected from WiFi, Reason: %d - Reconnect...", info.wifi_sta_disconnected.reason);
+  wifiConnected = false;
+  WiFi.begin(ssid, password);
+}
+
+
 void setup() {
   Serial.begin(115200);
   delay(250);
-  Debug.setDebugLevel(DBG_VERBOSE);
+  Debug.setDebugLevel(DBG_INFO);
   Debug.timestampOn();
   DEBUG_INFO("ESP32: MQTT client %s", clientId.c_str());
 
@@ -47,20 +66,17 @@ void setup() {
 
 void setup_wifi() {
   DEBUG_INFO("Setup WiFi, ssid: %s", ssid);
-  // try 5 seconds to connect to WiFi
+
+  // delete old config
+  WiFi.disconnect(true);
+  wifiConnected = false;
+  delay(200);
+  WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
+  WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+  WiFi.onEvent(WiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+
   lastReconnectAttempt = millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    reconnectWifi();
-    long now = millis();
-    if ((unsigned long)(now - lastReconnectAttempt) > reconnectInterval) {
-      // exit to be able to enter default state without WiFi connection
-      DEBUG_WARNING("Wifi connect failed, exiting setup, status= %d", WiFi.status());
-      return;
-    } else {
-      // reduce load a little while reconnecting
-      delay(100);
-    }
-  }
+  WiFi.begin(ssid, password);
 }
 
 void setup_mqtt() {
@@ -69,22 +85,9 @@ void setup_mqtt() {
   DEBUG_INFO("Setup MQTT, server IP address: %s, port: %d", mqtt_server, mqtt_port);
 }
 
-void reconnectWifi() {
-  int wifiState = WiFi.status();
-  DEBUG_VERBOSE("WiFi state= %d", wifiState);
-  if ((wifiState != WL_CONNECTED) && (wifiState != WL_IDLE_STATUS)) {
-    DEBUG_VERBOSE("Reconnecting to WiFi, current state= %d", wifiState);
-    WiFi.begin(ssid, password);
-    delay(100);
-    DEBUG_VERBOSE("WiFi begin state= %d", WiFi.status());
-  }
-  if (WiFi.status() == WL_CONNECTED) {
-    DEBUG_INFO("WiFi connected, Client IP address: %s", WiFi.localIP().toString().c_str());
-  }
-}
-
-void reconnectMqtt() {
-  if (WiFi.status() == WL_CONNECTED && !client.connected()) {
+boolean reconnectMqtt() {
+  // Attempt to reconnect only if Wifi is connected
+  if (wifiConnected && !client.connected()) {
     // Attempt to reconnect only if WiFi is connected
     String newClientId = clientId;
     newClientId += "-" + String(random(0xffff), HEX);
@@ -97,6 +100,7 @@ void reconnectMqtt() {
       DEBUG_VERBOSE("failed, client state=%d, try again in %d ms", client.state(), reconnectInterval);
     }
   }
+  return client.connected();
 }
 
 
@@ -107,7 +111,7 @@ void callback(char* topic, byte* message, unsigned int length) {
     messageStr += (char)message[i];
   }
   messageStr.trim();
-  DEBUG_VERBOSE("Message arrived on topic: %s, Message: %s", topic, messageStr.c_str());
+  DEBUG_DEBUG("Message arrived on topic: %s, Message: %s", topic, messageStr.c_str());
 
   // If a message is received on topic
   // Changes the output state according to the message
@@ -117,16 +121,9 @@ void callback(char* topic, byte* message, unsigned int length) {
       out = HIGH; // Turn Relay off
     }
 
-    DEBUG_INFO("Changing output to %d", out);
+    DEBUG_DEBUG("Changing output to %d", out);
     digitalWrite(ledPin, out);
   }
-}
-
-
-boolean reconnect() {
-  reconnectWifi();
-  reconnectMqtt();
-  return client.connected();
 }
 
 
@@ -136,15 +133,15 @@ void loop() {
     long now = millis();
     if ((unsigned long)(now - lastReconnectAttempt) > reconnectInterval) {
       lastReconnectAttempt = now;
-      // Attempt to reconnect
-      if (reconnect()) {
+      // Attempt to reconnect only if Wifi is connected
+      if (reconnectMqtt()) {
         // success
         lastReconnectAttempt = 0;
         reconnectTries = 0; // reset tries
       } else {
         reconnectTries++;
-        if (reconnectTries > maxReconnectTries) {
-          DEBUG_WARNING("Reconnect tries exceeded, stopping MQTT client");
+        if (reconnectTries == maxReconnectTries) {
+          DEBUG_WARNING("Reconnect tries exceeded, switch to default output state: %d", defaultPinState);
           digitalWrite(ledPin, defaultPinState); // Turn off LED
         }
       }
