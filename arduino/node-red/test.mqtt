@@ -15,7 +15,15 @@ retain: false
 
 
 # ## Publish Ausgabe
-topic: tcs/sprink/out/1
+topic: tcs/sprink/out/2
+qos: 1
+retain: false
+
+false
+
+
+# ## Publish Ausgabe
+topic: tcs/light/out
 qos: 1
 retain: false
 
@@ -36,4 +44,9 @@ topic: tcs/boil/out
 qos: 1
 retain: true
 
-off
+on
+
+
+# $$ Subscribe to topic
+tcs/#
+

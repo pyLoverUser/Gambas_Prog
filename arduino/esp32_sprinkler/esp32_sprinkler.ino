@@ -19,12 +19,18 @@ const String topicFloodlight = "tcs/light/out";
 const String topicSWildcard = String(topicSprinkler + "/#");
 const String topicFWildcard = String(topicFloodlight + "/#");
 
+const String topicSprinklerState = "tcs/sprink/state";
+const String topicFloodlightState = "tcs/light/state";
+
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 boolean wifiConnected = false;
 const long reconnectInterval = 4000; // interval in milliseconds
 long lastReconnectAttempt = 0;
+const int sprinklerTimeout = 15 * 1000; // timeout in milliseconds for sprinkler to turn off automatically
+const int lightTimeout = 300 * 1000; // timeout in milliseconds for sprinkler to turn off automatically
 
 
 // GPIOs für die Sprinkler
@@ -45,13 +51,18 @@ const int R[] = {2, 3, 4, 5, 6, 7, 21, 20, 8, 9, 10};
 const int numPins = sizeof(R) / sizeof(R[0]);
 
 const int maxSprinklers = 7; // maximum number of sprinklers
-const int sprinklerTimeout = 15000; // timeout in milliseconds for sprinkler to turn off automatically
 // Sprinkler configuration, number is index in array R, 0xff = not used
 const int sprinklerConfig[maxSprinklers] = {0, 1, 3, 0xff, 0xff, 0xff, 0xff};
 
 // store the sprinkler start times into an array
 // index 0 starts with sprinkler 1
 long sprinklerStart[maxSprinklers] = {0, 0, 0, 0, 0, 0, 0};
+
+// floodlight config
+const int maxLigths = 2; // maximum number of flood lights
+// floodlight configuration, number is index in array R
+const int lightConfig[maxLigths] = {8, 9};
+long lightStart = 0;
 
 
 // setup WiFi events
@@ -119,10 +130,10 @@ boolean reconnectMqtt() {
     newClientId += "-" + String(random(0xffff), HEX);
     DEBUG_VERBOSE("Attempting MQTT connection, client: %s, state=%d", newClientId.c_str(), client.state());
     if (client.connect(newClientId.c_str())) {
-      DEBUG_INFO("Connected, subscribe to %s, %s", topicSWildcard.c_str(), topicFWildcard.c_str());
+      DEBUG_INFO("Connected, subscribe to %s, %s", topicSWildcard.c_str(), topicFloodlight.c_str());
       delay(100);
       client.subscribe(topicSWildcard.c_str());
-      client.subscribe(topicFWildcard.c_str());
+      client.subscribe(topicFloodlight.c_str());
     } else {
       DEBUG_VERBOSE("failed, client state=%d, try again in %d ms", client.state(), reconnectInterval);
     }
@@ -167,6 +178,12 @@ void callback(char* topic, byte* message, unsigned int length) {
       return;  //ignore
     }
     changeSprinkler(sprinklerNumber, messageStr);
+
+    // If a message is received on the floodlight topic,
+  } else if (receicedTopic.equals(topicFloodlight)) {
+    changeLight(messageStr);
+  } else {
+    DEBUG_DEBUG("Received message on unknown topic: %s", receicedTopic.c_str());
   }
 }
 
@@ -178,29 +195,68 @@ void changeSprinkler(int sprinklerNumber, String turnOn) {
   if (turnOn.equals("true")) {
     outState = HIGH; // Turn Relays on
     sprinklerStart[sprinklerNumber - 1] = millis(); // store start time
-  } else {
+  } else if (turnOn.equals("false")) {
     outState = LOW; // Turn Relays off
     sprinklerStart[sprinklerNumber - 1] = 0; // reset start time
+  } else {
+    DEBUG_DEBUG("Invalid message for sprinkler %d: '%s'", sprinklerNumber, turnOn.c_str());
+    return; // ignore invalid messages
   }
   DEBUG_INFO("Changing sprinkler %d output %d to %d", sprinklerNumber, outPin, outState);
   digitalWrite(outPin, outState);
+  client.publish(String(topicSprinklerState + "/" + sprinklerNumber).c_str(), turnOn.c_str(), true); // publish state
+}
+
+void changeLight(String turnOn) {
+  DEBUG_DEBUG("changeLight, turnOn:'%s'", turnOn.c_str());
+  // checks have been done before
+  int outPin1 = R[lightConfig[0]];
+  int outPin2 = R[lightConfig[1]];
+  int outState = LOW;
+  if (turnOn.equals("true")) {
+    outState = HIGH; // Turn Relays on
+    lightStart = millis(); // store start time
+  } else if (turnOn.equals("false")) {
+    outState = LOW; // Turn Relays off
+    lightStart = 0; // reset start time
+  } else {
+    DEBUG_DEBUG("Invalid message for floodlight: '%s'", turnOn.c_str());
+    return; // ignore invalid messages
+  }
+  // set both outputs to the same state
+  DEBUG_INFO("Changing light output 1:%d and 2:%d to %d", outPin1, outPin2, outState);
+  digitalWrite(outPin1, outState);
+  digitalWrite(outPin2, outState);
+  client.publish(topicFloodlightState.c_str(), turnOn.c_str(), true); // publish state
 }
 
 void checkSprinklerTimeouts() {
   long now = millis();
   for (int i = 0; i < maxSprinklers; i++) {
-    if (sprinklerStart[i] > 0 && ((unsigned long)(now - sprinklerStart[i])) > sprinklerTimeout) { // timeout after 60 seconds
-      DEBUG_WARNING("Sprinkler %d timeout reached, turning off", i + 1);
+    unsigned long timeSinceStart = (unsigned long)(now - sprinklerStart[i]);
+    if (sprinklerStart[i] > 0 && timeSinceStart > sprinklerTimeout) {
+      DEBUG_WARNING("Sprinkler %d timeout (%d s) reached, turning off", i + 1, timeSinceStart / 1000);
       changeSprinkler(i + 1, "false");
     }
   }
 }
 
 
+void checkLightTimeout() {
+  long now = millis();
+  unsigned long timeSinceStart = (unsigned long)(now - lightStart);
+  if (lightStart > 0 && timeSinceStart > lightTimeout) {
+    DEBUG_WARNING("Floodlight timeout (%d s) reached, turning off", timeSinceStart / 1000);
+    changeLight("false");
+  }
+}
+
+
 void loop() {
-  // ensure that sprinklers are turned off after timeout
+  // ensure that sprinklers or lights are turned off after timeout
   // even if MQTT connection is not available
   checkSprinklerTimeouts();
+  checkLightTimeout();
 
   if (!client.connected()) {
     // Try to reconnect client in a non blocking way

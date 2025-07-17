@@ -13,6 +13,7 @@ const char* mqtt_server = "192.168.178.2";
 const int mqtt_port = 1883;
 const String clientId = "cool";
 const String topicStr = "tcs/" + clientId + "/out";
+const String topicState = "tcs/" + clientId + "/state";
 
 
 WiFiClient espClient;
@@ -119,10 +120,16 @@ void callback(char* topic, byte* message, unsigned int length) {
     int out = LOW; // Turn Relay on
     if (messageStr == "off") {
       out = HIGH; // Turn Relay off
+    } else if (messageStr == "on") {
+      out = LOW; // Turn Relay on
+    } else {
+      DEBUG_DEBUG("Invalid message for output: '%s'", messageStr.c_str());
+      return; // ignore invalid messages
     }
 
     DEBUG_DEBUG("Changing output to %d", out);
     digitalWrite(ledPin, out);
+    client.publish(topicState.c_str(), messageStr.c_str(), true); // publish state
   }
 }
 
