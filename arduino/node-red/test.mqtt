@@ -19,7 +19,7 @@ topic: tcs/sprink/out/2
 qos: 1
 retain: false
 
-false
+true
 
 
 # ## Publish Ausgabe
@@ -44,7 +44,7 @@ topic: tcs/boil/out
 qos: 1
 retain: true
 
-on
+true
 
 
 # $$ Subscribe to topic

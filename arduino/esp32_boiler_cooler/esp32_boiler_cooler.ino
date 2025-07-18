@@ -11,7 +11,8 @@ const char* password = "58714188517339106583";
 
 const char* mqtt_server = "192.168.178.2";
 const int mqtt_port = 1883;
-const String clientId = "cool";
+const String clientId = "boil";
+// const String clientId = "cool";
 const String topicStr = "tcs/" + clientId + "/out";
 const String topicState = "tcs/" + clientId + "/state";
 
@@ -25,12 +26,15 @@ long lastReconnectAttempt = 0;
 int reconnectTries = 0;
 const int maxReconnectTries = 5; // maximum number of reconnect tries
 
+const long heartBeatInterval = 10000; // interval in milliseconds
+long lastHeartBeat = 0;
+
 // only if control is working the cooler or boiler is turned off
 // LED Pin
 const int ledPin = 21;
 // default output is relais on.
-const int defaultPinState = LOW; // Turn Relais on
-
+const String defaultPinState = "true"; // Turn Relais on
+String currentPinState = "unknown";
 
 // setup WiFi events
 void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
@@ -52,7 +56,7 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
 void setup() {
   Serial.begin(115200);
   delay(250);
-  Debug.setDebugLevel(DBG_INFO);
+  Debug.setDebugLevel(DBG_VERBOSE);
   Debug.timestampOn();
   DEBUG_INFO("ESP32: MQTT client %s", clientId.c_str());
 
@@ -105,6 +109,33 @@ boolean reconnectMqtt() {
 }
 
 
+void sendState() {
+  boolean success = client.publish(topicState.c_str(), currentPinState.c_str(), false); // publish state
+  if (success) {
+    DEBUG_VERBOSE("Published state '%s' to topic '%s'", currentPinState.c_str(), topicState.c_str());
+    lastHeartBeat = millis(); // update last heartbeat time
+  }
+}
+
+
+void changeOutput(const String turnOn) {
+  int out = LOW; // Turn Relay on
+  if (turnOn == "false") {
+    out = HIGH; // Turn Relay off
+  } else if (turnOn == "true") {
+    out = LOW; // Turn Relay on
+  } else {
+    DEBUG_DEBUG("Invalid message for output: '%s'", turnOn.c_str());
+    return; // ignore invalid messages
+  }
+
+  DEBUG_DEBUG("Changing %s output to %d %s", clientId.c_str(), out, turnOn.c_str());
+  digitalWrite(ledPin, out);
+  currentPinState = turnOn; // store current state
+  sendState(); // publish state
+}
+
+
 void callback(char* topic, byte* message, unsigned int length) {
   String messageStr;
   String receicedTopic(topic);
@@ -117,19 +148,7 @@ void callback(char* topic, byte* message, unsigned int length) {
   // If a message is received on topic
   // Changes the output state according to the message
   if (receicedTopic.equals(topicStr)) {
-    int out = LOW; // Turn Relay on
-    if (messageStr == "off") {
-      out = HIGH; // Turn Relay off
-    } else if (messageStr == "on") {
-      out = LOW; // Turn Relay on
-    } else {
-      DEBUG_DEBUG("Invalid message for output: '%s'", messageStr.c_str());
-      return; // ignore invalid messages
-    }
-
-    DEBUG_DEBUG("Changing output to %d", out);
-    digitalWrite(ledPin, out);
-    client.publish(topicState.c_str(), messageStr.c_str(), true); // publish state
+    changeOutput(messageStr);
   }
 }
 
@@ -149,7 +168,7 @@ void loop() {
         reconnectTries++;
         if (reconnectTries == maxReconnectTries) {
           DEBUG_WARNING("Reconnect tries exceeded, switch to default output state: %d", defaultPinState);
-          digitalWrite(ledPin, defaultPinState); // Turn off LED
+          changeOutput(defaultPinState);
         }
       }
     } else {
@@ -158,6 +177,11 @@ void loop() {
     }
   } else {
     client.loop();
+    // send heartbeat to MQTT broker
+    unsigned long lastTime = (unsigned long)(millis() - lastHeartBeat);
+    if (lastTime > heartBeatInterval) {
+      sendState(); // send current state
+    }
   }
   delay(1);  // no need to be so fast
 }

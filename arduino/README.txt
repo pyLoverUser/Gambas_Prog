@@ -12,6 +12,6 @@ ArduinoJson - doch nicht
 
 remove retained messages, save state
 
-pi@raspberrypi:~ $ sudo systemctl stop mosquitto
-pi@raspberrypi:~ $ sudo rm /var/lib/mosquitto/mosquitto.db
-pi@raspberrypi:~ $ sudo systemctl start mosquitto
+sudo systemctl stop mosquitto
+sudo rm /var/lib/mosquitto/mosquitto.db
+sudo systemctl start mosquitto
