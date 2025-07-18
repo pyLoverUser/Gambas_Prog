@@ -8,14 +8,26 @@ qos: 1
 retain: false
 
 {
-    "nummer": 2,
-    "dauer": 16,
+    "number": 1,
+    "dauer": 60,
     "action": "START"
 }
 
 
+# ## Publish '{ "message": "hello" }'
+topic: tcs/sprink/in
+qos: 1
+retain: false
+
+{
+    "number": 1,
+    "dauer": 16,
+    "action": "STOP"
+}
+
+
 # ## Publish Ausgabe
-topic: tcs/sprink/out/2
+topic: tcs/sprink/out/1
 qos: 1
 retain: false
 

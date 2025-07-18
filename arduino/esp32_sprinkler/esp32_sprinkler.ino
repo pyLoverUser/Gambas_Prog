@@ -55,7 +55,7 @@ const int numPins = sizeof(R) / sizeof(R[0]);
 
 const int maxSprinklers = 7; // maximum number of sprinklers
 // Sprinkler configuration, number is index in array R, 0xff = not used
-const int sprinklerConfig[maxSprinklers] = {0, 1, 3, 0xff, 0xff, 0xff, 0xff};
+const int sprinklerConfig[maxSprinklers] = {0, 1, 2, 3, 0xff, 0xff, 0xff};
 
 // store the sprinkler start times into an array
 // index 0 starts with sprinkler 1

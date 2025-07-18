@@ -8,23 +8,124 @@
         "env": []
     },
     {
-        "id": "42ea56318411e126",
+        "id": "a9fb92d1b4a932fb",
         "type": "tab",
-        "label": "Analoguhr",
+        "label": "Sprenger",
         "disabled": false,
         "info": "",
         "env": []
     },
     {
-        "id": "442dce01f08d13f3",
+        "id": "ba3455c58b89c1a0",
         "type": "tab",
-        "label": "Temperatur",
+        "label": "Flutlicht",
         "disabled": false,
         "info": "",
         "env": []
     },
     {
-        "id": "a51308d57e08755b",
+        "id": "9241c20bc42d3e37",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "045d2f5ebced484b",
+            "4bfad026dfbb5fda",
+            "161491f69bd9f0bc",
+            "4b3a4a32032406b1",
+            "73f4cb948724d108",
+            "9b5c1d4ab75f6d21"
+        ],
+        "x": 674,
+        "y": 299,
+        "w": 417,
+        "h": 222
+    },
+    {
+        "id": "66c755c689efd3a6",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "ea11efe4f9290a1b",
+            "f95e93ca62cd09bf",
+            "cc14cf3ae842109f"
+        ],
+        "x": 1274,
+        "y": 419,
+        "w": 382,
+        "h": 142
+    },
+    {
+        "id": "67a97b1e13f032fa",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "4f52df246add9608",
+            "492e26aa3b507aaf",
+            "aee84e2d7d034340",
+            "7d90fb413534d750",
+            "d0a1c65ba00adb9c",
+            "5a3b11ea51c06a7b"
+        ],
+        "x": 674,
+        "y": 819,
+        "w": 412,
+        "h": 222
+    },
+    {
+        "id": "b30fdee85ef4213c",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "aa0e04c1254ce26c",
+            "aaf478ea35832cbc",
+            "96f7909ddffacb81",
+            "a57b738b50be0375",
+            "ea8e50df20fe2494",
+            "67abf137d4ba6898"
+        ],
+        "x": 674,
+        "y": 559,
+        "w": 412,
+        "h": 222
+    },
+    {
+        "id": "081e94a5f61d65d8",
         "type": "ui_base",
         "theme": {
             "name": "theme-dark",
@@ -38,30 +139,29 @@
             "darkTheme": {
                 "default": "#097479",
                 "baseColor": "#097479",
-                "baseFont": "Arial Black,Arial Black,Gadget,sans-serif",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
                 "edited": true,
                 "reset": false
             },
             "customTheme": {
                 "name": "Untitled Theme 1",
                 "default": "#4B7930",
-                "baseColor": "#ff0000",
-                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
-                "reset": false
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
             },
             "themeState": {
                 "base-color": {
                     "default": "#097479",
                     "value": "#097479",
-                    "edited": true
+                    "edited": false
                 },
                 "page-titlebar-backgroundColor": {
                     "value": "#097479",
-                    "edited": true
+                    "edited": false
                 },
                 "page-backgroundColor": {
                     "value": "#111111",
-                    "edited": true
+                    "edited": false
                 },
                 "page-sidebar-backgroundColor": {
                     "value": "#333333",
@@ -69,7 +169,7 @@
                 },
                 "group-textColor": {
                     "value": "#0eb8c0",
-                    "edited": true
+                    "edited": false
                 },
                 "group-borderColor": {
                     "value": "#555555",
@@ -77,22 +177,22 @@
                 },
                 "group-backgroundColor": {
                     "value": "#333333",
-                    "edited": true
+                    "edited": false
                 },
                 "widget-textColor": {
                     "value": "#eeeeee",
-                    "edited": true
+                    "edited": false
                 },
                 "widget-backgroundColor": {
                     "value": "#097479",
-                    "edited": true
+                    "edited": false
                 },
                 "widget-borderColor": {
                     "value": "#333333",
                     "edited": false
                 },
                 "base-font": {
-                    "value": "Arial Black,Arial Black,Gadget,sans-serif"
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
                 }
             },
             "angularTheme": {
@@ -104,7 +204,7 @@
             }
         },
         "site": {
-            "name": "Analoguhr",
+            "name": "Node-RED Dashboard",
             "hideToolbar": "false",
             "allowSwipe": "false",
             "lockMenu": "false",
@@ -117,60 +217,41 @@
                 "gy": 6,
                 "cx": 6,
                 "cy": 6,
-                "px": 10,
-                "py": 10
+                "px": 0,
+                "py": 0
             }
         }
     },
     {
-        "id": "61285987.c20328",
-        "type": "ui_group",
-        "name": "Analoguhr",
-        "tab": "bd3f9a7ea5ff4df0",
-        "order": 1,
-        "disp": true,
-        "width": "10",
-        "collapse": false,
-        "className": ""
-    },
-    {
-        "id": "f8369d8a6231b708",
+        "id": "5bdf636997f59325",
         "type": "mqtt-broker",
         "name": "",
-        "broker": "192.168.178.34",
-        "port": "1883",
+        "broker": "192.168.178.2",
+        "port": 1883,
         "clientid": "",
         "autoConnect": true,
         "usetls": false,
-        "protocolVersion": "4",
-        "keepalive": "60",
+        "protocolVersion": 4,
+        "keepalive": 60,
         "cleansession": true,
         "autoUnsubscribe": true,
         "birthTopic": "",
         "birthQos": "0",
+        "birthRetain": "false",
         "birthPayload": "",
         "birthMsg": {},
         "closeTopic": "",
         "closeQos": "0",
+        "closeRetain": "false",
         "closePayload": "",
         "closeMsg": {},
         "willTopic": "",
         "willQos": "0",
+        "willRetain": "false",
         "willPayload": "",
         "willMsg": {},
         "userProps": "",
         "sessionExpiry": ""
-    },
-    {
-        "id": "aefc2b4692e2a1e1",
-        "type": "ui_group",
-        "name": "Geräte",
-        "tab": "2936b813.6cde68",
-        "order": 1,
-        "disp": true,
-        "width": "10",
-        "collapse": false,
-        "className": ""
     },
     {
         "id": "bbfc86507d76eec7",
@@ -187,106 +268,71 @@
     {
         "id": "2936b813.6cde68",
         "type": "ui_tab",
-        "name": "Geräte",
+        "name": "Tennis",
         "icon": "fa-thermometer-empty ",
         "order": 2,
         "disabled": false,
         "hidden": false
     },
     {
-        "id": "bd3f9a7ea5ff4df0",
-        "type": "ui_tab",
-        "name": "Analoguhr",
-        "icon": "fa-clock-o",
-        "disabled": false,
-        "hidden": false
-    },
-    {
-        "id": "4783906ba7e7c4c6",
-        "type": "ui_tab",
-        "name": "Temp/Luftfeuch/Druck",
-        "icon": "cloud_queue",
-        "order": 3,
-        "disabled": false,
-        "hidden": false
-    },
-    {
-        "id": "c0e108217f960c13",
+        "id": "aefc2b4692e2a1e1",
         "type": "ui_group",
-        "name": "Temp/Luftfeuch/Druck",
-        "tab": "4783906ba7e7c4c6",
-        "order": 2,
+        "name": "Geräte",
+        "tab": "2936b813.6cde68",
+        "order": 3,
         "disp": true,
-        "width": 12,
-        "collapse": false,
+        "width": "4",
+        "collapse": true,
         "className": ""
     },
     {
-        "id": "e4f202950f862ea7",
-        "type": "ui_spacer",
-        "z": "442dce01f08d13f3",
-        "name": "spacer",
-        "group": "c0e108217f960c13",
-        "order": 3,
-        "width": 6,
-        "height": 1
+        "id": "ecfe237452d32ec6",
+        "type": "ui_group",
+        "name": "Sprenger",
+        "tab": "2936b813.6cde68",
+        "order": 1,
+        "disp": true,
+        "width": "4",
+        "collapse": true,
+        "className": ""
     },
     {
-        "id": "4b4e5ce42f928874",
-        "type": "ui_spacer",
-        "z": "442dce01f08d13f3",
-        "name": "spacer",
-        "group": "c0e108217f960c13",
+        "id": "582a1b332c7e62f2",
+        "type": "ui_group",
+        "name": "Flutlicht",
+        "tab": "2936b813.6cde68",
+        "order": 2,
+        "disp": true,
+        "width": "4",
+        "collapse": true,
+        "className": ""
+    },
+    {
+        "id": "7b590fa26824b92e",
+        "type": "ui_tab",
+        "name": "Konfiguration",
+        "icon": "dashboard",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "eee21aa75102caa5",
+        "type": "ui_group",
+        "name": "Zeitplan Geräte",
+        "tab": "7b590fa26824b92e",
         "order": 4,
-        "width": 6,
-        "height": 1
-    },
-    {
-        "id": "4539c619d8b42eb1",
-        "type": "ui_spacer",
-        "z": "442dce01f08d13f3",
-        "name": "spacer",
-        "group": "c0e108217f960c13",
-        "order": 6,
-        "width": 6,
-        "height": 1
-    },
-    {
-        "id": "e861564ffe70096a",
-        "type": "ui_spacer",
-        "z": "442dce01f08d13f3",
-        "name": "spacer",
-        "group": "c0e108217f960c13",
-        "order": 9,
-        "width": 6,
-        "height": 1
-    },
-    {
-        "id": "5a104fd4a8adf935",
-        "type": "ui_spacer",
-        "z": "442dce01f08d13f3",
-        "name": "spacer",
-        "group": "c0e108217f960c13",
-        "order": 10,
-        "width": 6,
-        "height": 1
-    },
-    {
-        "id": "811d9b2a9b90e1db",
-        "type": "ui_spacer",
-        "z": "442dce01f08d13f3",
-        "name": "spacer",
-        "group": "c0e108217f960c13",
-        "order": 11,
-        "width": 6,
-        "height": 1
+        "disp": true,
+        "width": "10",
+        "collapse": true,
+        "className": ""
     },
     {
         "id": "9e58624.7faaba",
         "type": "mqtt out",
         "z": "4eb00aa7fe93676d",
         "name": "Krelais",
-        "topic": "esp32/cool",
+        "topic": "tcs/cool/out",
         "qos": "1",
         "retain": "true",
         "respTopic": "",
@@ -294,8 +340,8 @@
         "userProps": "",
         "correl": "",
         "expiry": "",
-        "broker": "f8369d8a6231b708",
-        "x": 1150,
+        "broker": "5bdf636997f59325",
+        "x": 990,
         "y": 220,
         "wires": []
     },
@@ -315,17 +361,17 @@
         "topic": "",
         "topicType": "str",
         "style": "",
-        "onvalue": "on",
-        "onvalueType": "str",
+        "onvalue": "true",
+        "onvalueType": "bool",
         "onicon": "",
         "oncolor": "",
-        "offvalue": "off",
-        "offvalueType": "str",
+        "offvalue": "false",
+        "offvalueType": "bool",
         "officon": "",
         "offcolor": "",
         "animate": true,
         "className": "",
-        "x": 970,
+        "x": 810,
         "y": 220,
         "wires": [
             [
@@ -342,7 +388,7 @@
         "type": "mqtt out",
         "z": "4eb00aa7fe93676d",
         "name": "Brelais",
-        "topic": "esp32/boil",
+        "topic": "tcs/boil/out",
         "qos": "1",
         "retain": "true",
         "respTopic": "",
@@ -350,8 +396,8 @@
         "userProps": "",
         "correl": "",
         "expiry": "",
-        "broker": "f8369d8a6231b708",
-        "x": 1150,
+        "broker": "5bdf636997f59325",
+        "x": 990,
         "y": 340,
         "wires": []
     },
@@ -363,7 +409,7 @@
         "label": "Boiler",
         "tooltip": "",
         "group": "aefc2b4692e2a1e1",
-        "order": 2,
+        "order": 3,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -371,17 +417,17 @@
         "topic": "",
         "topicType": "str",
         "style": "",
-        "onvalue": "on",
-        "onvalueType": "str",
+        "onvalue": "true",
+        "onvalueType": "bool",
         "onicon": "",
         "oncolor": "",
-        "offvalue": "off",
-        "offvalueType": "str",
+        "offvalue": "false",
+        "offvalueType": "bool",
         "officon": "",
         "offcolor": "",
         "animate": true,
         "className": "",
-        "x": 970,
+        "x": 810,
         "y": 340,
         "wires": [
             [
@@ -403,7 +449,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1160,
+        "x": 1000,
         "y": 400,
         "wires": []
     },
@@ -420,86 +466,9 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1160,
+        "x": 1000,
         "y": 280,
         "wires": []
-    },
-    {
-        "id": "04dd8f1d89d7454a",
-        "type": "ui_time_scheduler",
-        "z": "4eb00aa7fe93676d",
-        "group": "aefc2b4692e2a1e1",
-        "name": "schedule-Kühlung",
-        "startDay": 0,
-        "refresh": 60,
-        "devices": [
-            "Kühlbox",
-            "Boiler"
-        ],
-        "singleOff": true,
-        "onlySendChange": false,
-        "customPayload": false,
-        "eventMode": false,
-        "eventOptions": [],
-        "sendTopic": false,
-        "lat": "",
-        "lon": "",
-        "customContextStore": "",
-        "outputs": 3,
-        "order": 3,
-        "width": "10",
-        "height": "4",
-        "x": 590,
-        "y": 220,
-        "wires": [
-            [
-                "4de8515e61752abd"
-            ],
-            [
-                "74f2311ac610312d"
-            ],
-            [
-                "2a8c728b35fa45b6"
-            ]
-        ]
-    },
-    {
-        "id": "74f2311ac610312d",
-        "type": "change",
-        "z": "4eb00aa7fe93676d",
-        "name": "sched0",
-        "rules": [
-            {
-                "t": "change",
-                "p": "payload",
-                "pt": "msg",
-                "from": "true",
-                "fromt": "bool",
-                "to": "on",
-                "tot": "str"
-            },
-            {
-                "t": "change",
-                "p": "payload",
-                "pt": "msg",
-                "from": "false",
-                "fromt": "bool",
-                "to": "off",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 820,
-        "y": 220,
-        "wires": [
-            [
-                "83cf37cf.c76988"
-            ]
-        ]
     },
     {
         "id": "86b196ba5a66c00f",
@@ -568,714 +537,16 @@
         ]
     },
     {
-        "id": "2a8c728b35fa45b6",
-        "type": "change",
-        "z": "4eb00aa7fe93676d",
-        "name": "sched1",
-        "rules": [
-            {
-                "t": "change",
-                "p": "payload",
-                "pt": "msg",
-                "from": "true",
-                "fromt": "bool",
-                "to": "on",
-                "tot": "str"
-            },
-            {
-                "t": "change",
-                "p": "payload",
-                "pt": "msg",
-                "from": "false",
-                "fromt": "bool",
-                "to": "off",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 820,
-        "y": 340,
-        "wires": [
-            [
-                "2376d0162f13c4b0"
-            ]
-        ]
-    },
-    {
-        "id": "aa70ef695cddc6f0",
-        "type": "ui_button",
-        "z": "42ea56318411e126",
-        "name": "",
-        "group": "61285987.c20328",
-        "order": 1,
-        "width": 0,
-        "height": 0,
-        "passthru": true,
-        "label": "Einzelimpuls",
-        "tooltip": "",
-        "color": "",
-        "bgcolor": "",
-        "className": "",
-        "icon": "",
-        "payload": "stepon",
-        "payloadType": "str",
-        "topic": "",
-        "topicType": "str",
-        "x": 490,
-        "y": 220,
-        "wires": [
-            [
-                "9baabe809124f08a"
-            ]
-        ],
-        "inputLabels": [
-            "1"
-        ]
-    },
-    {
-        "id": "3e0937057dabb28a",
-        "type": "debug",
-        "z": "42ea56318411e126",
-        "name": "debug single",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 970,
-        "y": 140,
-        "wires": []
-    },
-    {
-        "id": "9baabe809124f08a",
-        "type": "trigger",
-        "z": "42ea56318411e126",
-        "name": "",
-        "op1": "singon",
-        "op2": "singoff",
-        "op1type": "str",
-        "op2type": "str",
-        "duration": "250",
-        "extend": false,
-        "overrideDelay": false,
-        "units": "ms",
-        "reset": "",
-        "bytopic": "all",
-        "topic": "topic",
-        "outputs": 1,
-        "x": 680,
-        "y": 220,
-        "wires": [
-            [
-                "1484bc2499203e69",
-                "3e0937057dabb28a"
-            ]
-        ]
-    },
-    {
-        "id": "573cc84a9d4ed79d",
-        "type": "ui_switch",
-        "z": "42ea56318411e126",
-        "name": "Autostep",
-        "label": "automatische Minuten Fortschaltung",
-        "tooltip": "",
-        "group": "61285987.c20328",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "passthru": true,
-        "decouple": "false",
-        "topic": "autoOnOff",
-        "topicType": "str",
-        "style": "",
-        "onvalue": "auton",
-        "onvalueType": "str",
-        "onicon": "",
-        "oncolor": "",
-        "offvalue": "autoff",
-        "offvalueType": "str",
-        "officon": "",
-        "offcolor": "",
-        "animate": false,
-        "className": "",
-        "x": 520,
-        "y": 480,
-        "wires": [
-            [
-                "2796e1c171633b19",
-                "d43eb555bc11f542",
-                "1484bc2499203e69"
-            ]
-        ]
-    },
-    {
-        "id": "1484bc2499203e69",
-        "type": "mqtt out",
-        "z": "42ea56318411e126",
-        "name": "Analoguhr",
-        "topic": "esp32/auhr",
-        "qos": "1",
-        "retain": "true",
-        "respTopic": "",
-        "contentType": "",
-        "userProps": "",
-        "correl": "",
-        "expiry": "",
-        "broker": "f8369d8a6231b708",
-        "x": 990,
-        "y": 220,
-        "wires": []
-    },
-    {
-        "id": "25ec61ac25cfa520",
-        "type": "ui_switch",
-        "z": "42ea56318411e126",
-        "name": "TimeImpStop",
-        "label": "stopen des Zetimpulses",
-        "tooltip": "",
-        "group": "61285987.c20328",
-        "order": 3,
-        "width": 0,
-        "height": 0,
-        "passthru": true,
-        "decouple": "false",
-        "topic": "stopOnOff",
-        "topicType": "str",
-        "style": "",
-        "onvalue": "stopon",
-        "onvalueType": "str",
-        "onicon": "",
-        "oncolor": "",
-        "offvalue": "stopoff",
-        "offvalueType": "str",
-        "officon": "",
-        "offcolor": "",
-        "animate": false,
-        "className": "",
-        "x": 690,
-        "y": 620,
-        "wires": [
-            [
-                "1484bc2499203e69",
-                "c0f34db01fc9f4ea"
-            ]
-        ]
-    },
-    {
-        "id": "2796e1c171633b19",
-        "type": "function",
-        "z": "42ea56318411e126",
-        "name": "function 1",
-        "func": "if(msg.payload===\"auton\"){\n    msg.payload='stopon';\n}\nelse{\n    msg.payload=\"stopoff\";\n}\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 480,
-        "y": 620,
-        "wires": [
-            [
-                "25ec61ac25cfa520"
-            ]
-        ]
-    },
-    {
-        "id": "c0f34db01fc9f4ea",
-        "type": "debug",
-        "z": "42ea56318411e126",
-        "name": "debug stop",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 970,
-        "y": 620,
-        "wires": []
-    },
-    {
-        "id": "d43eb555bc11f542",
-        "type": "debug",
-        "z": "42ea56318411e126",
-        "name": "debug auto",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 970,
-        "y": 480,
-        "wires": []
-    },
-    {
-        "id": "ae49d3ad7882bb64",
-        "type": "ui_form",
-        "z": "42ea56318411e126",
-        "name": "",
-        "label": "Uhrzeit auf Analoguhr",
-        "group": "61285987.c20328",
-        "order": 4,
-        "width": 0,
-        "height": 0,
-        "options": [
-            {
-                "label": "",
-                "value": "Analoguhr",
-                "type": "time",
-                "required": true,
-                "rows": null
-            }
-        ],
-        "formValue": {
-            "Analoguhr": ""
-        },
-        "payload": "",
-        "submit": "OK",
-        "cancel": "Abbr.",
-        "topic": "topic",
-        "topicType": "msg",
-        "splitLayout": true,
-        "className": "",
-        "x": 520,
-        "y": 320,
-        "wires": [
-            [
-                "237ba817e3a87c7b",
-                "a711cc89bcf98c7d",
-                "a1e920f66343eaa3"
-            ]
-        ]
-    },
-    {
-        "id": "3abd7ace15e861c1",
-        "type": "debug",
-        "z": "42ea56318411e126",
-        "name": "debug 3",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 980,
-        "y": 320,
-        "wires": []
-    },
-    {
-        "id": "237ba817e3a87c7b",
-        "type": "change",
-        "z": "42ea56318411e126",
-        "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "auton",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 730,
-        "y": 420,
-        "wires": [
-            [
-                "573cc84a9d4ed79d"
-            ]
-        ]
-    },
-    {
-        "id": "a711cc89bcf98c7d",
-        "type": "debug",
-        "z": "42ea56318411e126",
-        "name": "debug 4",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 980,
-        "y": 400,
-        "wires": []
-    },
-    {
-        "id": "a1e920f66343eaa3",
-        "type": "function",
-        "z": "42ea56318411e126",
-        "name": "function 2",
-        "func": "let us = msg.payload.Analoguhr.indexOf(\"T\");\nlet h = msg.payload.Analoguhr.substring(us+1,us+3);\nlet m = msg.payload.Analoguhr.substring(us + 4, us + 6);\nvar hn = parseInt(h)+1;\nvar mn = parseInt(m);\nvar asum = hn*60 + mn;\nvar datum = new Date();\nvar th = datum.getHours();\nvar tm = datum.getMinutes();\nvar tsum = th*60 + tm;\nif(asum > tsum)\n{\n   var sum = 24*60-asum + tsum;\n}\nelse\n{\n    sum = tsum -asum;\n} \nlet strsum = sum.toString();\nmsg.payload=strsum;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 760,
-        "y": 320,
-        "wires": [
-            [
-                "3abd7ace15e861c1",
-                "1484bc2499203e69"
-            ]
-        ]
-    },
-    {
-        "id": "b56235a21553f059",
-        "type": "mqtt in",
-        "z": "42ea56318411e126",
-        "name": "InAnaloguhr",
-        "topic": "esp32/autostop",
-        "qos": "1",
-        "datatype": "utf8",
-        "broker": "f8369d8a6231b708",
-        "nl": false,
-        "rap": true,
-        "rh": 0,
-        "inputs": 0,
-        "x": 170,
-        "y": 480,
-        "wires": [
-            [
-                "543108e4214e608b",
-                "b326b71d1e580590"
-            ]
-        ]
-    },
-    {
-        "id": "543108e4214e608b",
-        "type": "debug",
-        "z": "42ea56318411e126",
-        "name": "debug 5",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 380,
-        "y": 540,
-        "wires": []
-    },
-    {
-        "id": "b326b71d1e580590",
-        "type": "function",
-        "z": "42ea56318411e126",
-        "name": "function 3",
-        "func": "if (msg.payload === 'autoff') {\n    msg.payload = 'autoff';\n}\nelse {\n    msg.payload = \"\";\n}\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 340,
-        "y": 420,
-        "wires": [
-            [
-                "573cc84a9d4ed79d"
-            ]
-        ]
-    },
-    {
-        "id": "5a45b8da.52b0d8",
-        "type": "mqtt in",
-        "z": "442dce01f08d13f3",
-        "name": "",
-        "topic": "esp32/bme280/temperature",
-        "qos": "1",
-        "datatype": "auto-detect",
-        "broker": "f8369d8a6231b708",
-        "nl": false,
-        "rap": false,
-        "inputs": 0,
-        "x": 840,
-        "y": 120,
-        "wires": [
-            [
-                "3042e15e.80a4ee",
-                "09ba17d54e78f84b"
-            ]
-        ]
-    },
-    {
-        "id": "3042e15e.80a4ee",
-        "type": "ui_gauge",
-        "z": "442dce01f08d13f3",
-        "name": "",
-        "group": "c0e108217f960c13",
-        "order": 1,
-        "width": 12,
-        "height": 7,
-        "gtype": "gage",
-        "title": "<font size = 3>Temperatur",
-        "label": "ºC",
-        "format": "{{value}}",
-        "min": "-20",
-        "max": "45",
-        "colors": [
-            "#006eb3",
-            "#f7df09",
-            "#ca3838"
-        ],
-        "seg1": "10",
-        "seg2": "20",
-        "diff": false,
-        "className": "",
-        "x": 1150,
-        "y": 120,
-        "wires": []
-    },
-    {
-        "id": "8ff168f0.0c74a8",
-        "type": "mqtt in",
-        "z": "442dce01f08d13f3",
-        "name": "",
-        "topic": "esp32/bme280/humidity",
-        "qos": "1",
-        "datatype": "auto-detect",
-        "broker": "f8369d8a6231b708",
-        "nl": false,
-        "rap": false,
-        "inputs": 0,
-        "x": 820,
-        "y": 240,
-        "wires": [
-            [
-                "29251f29.6687c",
-                "4a0a4afa0e3c0580"
-            ]
-        ]
-    },
-    {
-        "id": "29251f29.6687c",
-        "type": "ui_gauge",
-        "z": "442dce01f08d13f3",
-        "name": "",
-        "group": "c0e108217f960c13",
-        "order": 2,
-        "width": 6,
-        "height": 4,
-        "gtype": "gage",
-        "title": "<font size = 3>Luftfeuchtigkeit",
-        "label": "%",
-        "format": "{{value}}",
-        "min": "0",
-        "max": "120",
-        "colors": [
-            "#53a4e6",
-            "#1d78a9",
-            "#4e38c9"
-        ],
-        "seg1": "",
-        "seg2": "",
-        "diff": false,
-        "className": "",
-        "x": 1170,
-        "y": 240,
-        "wires": []
-    },
-    {
-        "id": "681a1588.8506fc",
-        "type": "mqtt in",
-        "z": "442dce01f08d13f3",
-        "name": "",
-        "topic": "esp32/bme280/pressure",
-        "qos": "1",
-        "datatype": "auto-detect",
-        "broker": "f8369d8a6231b708",
-        "nl": false,
-        "rap": false,
-        "inputs": 0,
-        "x": 830,
-        "y": 360,
-        "wires": [
-            [
-                "41164c6.e7b3cb4",
-                "ce445bd646c4e75d"
-            ]
-        ]
-    },
-    {
-        "id": "41164c6.e7b3cb4",
-        "type": "ui_gauge",
-        "z": "442dce01f08d13f3",
-        "name": "",
-        "group": "c0e108217f960c13",
-        "order": 7,
-        "width": 6,
-        "height": 4,
-        "gtype": "gage",
-        "title": "<font size = 3>Luftdruck",
-        "label": "hPa",
-        "format": "{{value}}",
-        "min": "950",
-        "max": "1060",
-        "colors": [
-            "#a346ff",
-            "#bd45cb",
-            "#7d007d"
-        ],
-        "seg1": "",
-        "seg2": "",
-        "diff": false,
-        "className": "",
-        "x": 1150,
-        "y": 360,
-        "wires": []
-    },
-    {
-        "id": "09ba17d54e78f84b",
-        "type": "debug",
-        "z": "442dce01f08d13f3",
-        "name": "debug 7",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1100,
-        "y": 60,
-        "wires": []
-    },
-    {
-        "id": "4a0a4afa0e3c0580",
-        "type": "debug",
-        "z": "442dce01f08d13f3",
-        "name": "debug 8",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1100,
-        "y": 180,
-        "wires": []
-    },
-    {
-        "id": "ce445bd646c4e75d",
-        "type": "debug",
-        "z": "442dce01f08d13f3",
-        "name": "debug 9",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1100,
-        "y": 300,
-        "wires": []
-    },
-    {
-        "id": "5ff9e673b44b352a",
-        "type": "ui_switch",
-        "z": "442dce01f08d13f3",
-        "name": "Tonoff",
-        "label": "Test",
-        "tooltip": "",
-        "group": "c0e108217f960c13",
-        "order": 5,
-        "width": 6,
-        "height": 1,
-        "passthru": true,
-        "decouple": "false",
-        "topic": "",
-        "topicType": "str",
-        "style": "",
-        "onvalue": "on",
-        "onvalueType": "str",
-        "onicon": "",
-        "oncolor": "",
-        "offvalue": "off",
-        "offvalueType": "str",
-        "officon": "",
-        "offcolor": "",
-        "animate": true,
-        "className": "",
-        "x": 910,
-        "y": 480,
-        "wires": [
-            [
-                "0cf9b0925c489abb",
-                "2ec309ce0e417ac9"
-            ]
-        ]
-    },
-    {
-        "id": "0cf9b0925c489abb",
-        "type": "debug",
-        "z": "442dce01f08d13f3",
-        "name": "debug 11",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1100,
-        "y": 520,
-        "wires": []
-    },
-    {
-        "id": "2ec309ce0e417ac9",
-        "type": "mqtt out",
-        "z": "442dce01f08d13f3",
-        "name": "Trelais",
-        "topic": "esp32/temp/test",
-        "qos": "1",
-        "retain": "true",
-        "respTopic": "",
-        "contentType": "",
-        "userProps": "",
-        "correl": "",
-        "expiry": "",
-        "broker": "f8369d8a6231b708",
-        "x": 1090,
-        "y": 460,
-        "wires": []
-    },
-    {
-        "id": "41af657b76d4cb83",
+        "id": "04dd8f1d89d7454a",
         "type": "ui_time_scheduler",
-        "z": "442dce01f08d13f3",
-        "group": "c0e108217f960c13",
-        "name": "scheduleTemp",
+        "z": "4eb00aa7fe93676d",
+        "group": "eee21aa75102caa5",
+        "name": "schedule-Kühlung",
         "startDay": 0,
         "refresh": 60,
         "devices": [
-            "OnOff"
+            "Kühlbox",
+            "Boiler"
         ],
         "singleOff": true,
         "onlySendChange": false,
@@ -1286,43 +557,504 @@
         "lat": "",
         "lon": "",
         "customContextStore": "",
-        "outputs": 2,
-        "order": 8,
-        "width": 6,
-        "height": 1,
-        "x": 540,
-        "y": 480,
+        "outputs": 3,
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "x": 590,
+        "y": 220,
         "wires": [
             [
-                "c908e3d53154cbcc"
+                "4de8515e61752abd"
             ],
             [
-                "a46503b7c0558bb1"
+                "83cf37cf.c76988"
+            ],
+            [
+                "2376d0162f13c4b0"
             ]
         ]
     },
     {
-        "id": "a46503b7c0558bb1",
-        "type": "change",
-        "z": "442dce01f08d13f3",
-        "name": "sched-temp",
-        "rules": [
+        "id": "eb554fbe4a5d9c28",
+        "type": "ui_led",
+        "z": "4eb00aa7fe93676d",
+        "order": 2,
+        "group": "aefc2b4692e2a1e1",
+        "width": 0,
+        "height": 0,
+        "label": "Kühlung Status",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
             {
-                "t": "change",
-                "p": "payload",
-                "pt": "msg",
-                "from": "true",
-                "fromt": "bool",
-                "to": "on",
-                "tot": "str"
+                "color": "#f66151",
+                "value": "false",
+                "valueType": "bool"
             },
             {
-                "t": "change",
+                "color": "#008000",
+                "value": "true",
+                "valueType": "bool"
+            },
+            {
+                "color": "#808080",
+                "value": "unknown",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "StatusCooler",
+        "x": 600,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "19f39a2d8607456e",
+        "type": "mqtt in",
+        "z": "4eb00aa7fe93676d",
+        "name": "MqttStatusCooler",
+        "topic": "tcs/cool/state",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "5bdf636997f59325",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 200,
+        "y": 440,
+        "wires": [
+            [
+                "eb554fbe4a5d9c28",
+                "49016baf0c4f5b1c"
+            ]
+        ]
+    },
+    {
+        "id": "2f4be298c48bd832",
+        "type": "mqtt in",
+        "z": "4eb00aa7fe93676d",
+        "name": "MqttStatusBoiler",
+        "topic": "tcs/boil/state",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "5bdf636997f59325",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 200,
+        "y": 320,
+        "wires": [
+            [
+                "fb0b02b8def21a81",
+                "79d6de95fa464456"
+            ]
+        ]
+    },
+    {
+        "id": "79d6de95fa464456",
+        "type": "ui_led",
+        "z": "4eb00aa7fe93676d",
+        "order": 4,
+        "group": "aefc2b4692e2a1e1",
+        "width": 0,
+        "height": 0,
+        "label": "Boiler Status",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "false",
+                "valueType": "bool"
+            },
+            {
+                "color": "#008000",
+                "value": "true",
+                "valueType": "bool"
+            },
+            {
+                "color": "#808080",
+                "value": "unknown",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "StatusBoiler",
+        "x": 600,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "fb0b02b8def21a81",
+        "type": "trigger",
+        "z": "4eb00aa7fe93676d",
+        "name": "",
+        "op1": "",
+        "op2": "unknown",
+        "op1type": "nul",
+        "op2type": "str",
+        "duration": "2000",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 410,
+        "y": 380,
+        "wires": [
+            [
+                "79d6de95fa464456"
+            ]
+        ]
+    },
+    {
+        "id": "49016baf0c4f5b1c",
+        "type": "trigger",
+        "z": "4eb00aa7fe93676d",
+        "name": "triggerCooler",
+        "op1": "",
+        "op2": "unknown",
+        "op1type": "nul",
+        "op2type": "str",
+        "duration": "2000",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 400,
+        "y": 500,
+        "wires": [
+            [
+                "eb554fbe4a5d9c28"
+            ]
+        ]
+    },
+    {
+        "id": "c898636cb95e2310",
+        "type": "switch",
+        "z": "a9fb92d1b4a932fb",
+        "name": "SprinklerNumber",
+        "property": "number",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "3",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "4",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "5",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "6",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "7",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 7,
+        "x": 450,
+        "y": 620,
+        "wires": [
+            [
+                "045d2f5ebced484b",
+                "4b3a4a32032406b1"
+            ],
+            [
+                "a57b738b50be0375",
+                "aa0e04c1254ce26c"
+            ],
+            [
+                "4f52df246add9608",
+                "7d90fb413534d750"
+            ],
+            [],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "47a55f87deea37fe",
+        "type": "ui_switch",
+        "z": "a9fb92d1b4a932fb",
+        "name": "Sprinker3",
+        "label": "Platz 3",
+        "tooltip": "",
+        "group": "ecfe237452d32ec6",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "tcs/sprink/switch/3",
+        "topicType": "str",
+        "style": "",
+        "onvalue": "START",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "STOP",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 160,
+        "y": 520,
+        "wires": [
+            [
+                "59b3909fb8dd4c29"
+            ]
+        ]
+    },
+    {
+        "id": "4f52df246add9608",
+        "type": "controltimer",
+        "z": "a9fb92d1b4a932fb",
+        "g": "67a97b1e13f032fa",
+        "name": "Timer3",
+        "timerType": "delay",
+        "timerDurationUnit": "second",
+        "timerDurationType": "num",
+        "timerDuration": 5,
+        "timerLoopTimeoutUnit": "second",
+        "timerLoopTimeoutType": "num",
+        "timerLoopTimeout": 1,
+        "loopTimeoutMessageType": "str",
+        "loopTimeoutMessage": "LOOP_TIMEOUT",
+        "timerMaxLoopIterationsType": "num",
+        "timerMaxLoopIterations": 0,
+        "loopMaxIterationsMessageType": "str",
+        "loopMaxIterationsMessage": "MAX_LOOP_ITERATIONS",
+        "isRunningTimerProgressVisible": true,
+        "outputReceivedMessageOnTimerTrigger": true,
+        "outputReceivedMessageOnTimerHalt": false,
+        "startTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfStartAction": true,
+        "continueTimerOnReceivalOfStartAction": false,
+        "isDebugModeEnabled": false,
+        "timerTriggeredMessageType": "str",
+        "timerTriggeredMessage": "TIMER_TRIGGERED",
+        "timerHaltedMessageType": "str",
+        "timerHaltedMessage": "TIMER_HALTED",
+        "isStartActionEnabled": true,
+        "isStopActionEnabled": true,
+        "isResetActionEnabled": true,
+        "isPauseActionEnabled": false,
+        "isContinueActionEnabled": false,
+        "actionPropertyNameType": "str",
+        "actionPropertyName": "payload",
+        "startActionNameType": "str",
+        "startActionName": "START",
+        "stopActionNameType": "str",
+        "stopActionName": "STOP",
+        "resetActionNameType": "str",
+        "resetActionName": "RESET",
+        "pauseActionNameType": "str",
+        "pauseActionName": "PAUSE",
+        "continueActionNameType": "str",
+        "continueActionName": "CONTINUE",
+        "x": 750,
+        "y": 860,
+        "wires": [
+            [
+                "d0a1c65ba00adb9c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "492e26aa3b507aaf",
+        "type": "trigger",
+        "z": "a9fb92d1b4a932fb",
+        "g": "67a97b1e13f032fa",
+        "name": "Retrigger3",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-5",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "STOP",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 950,
+        "y": 940,
+        "wires": [
+            [
+                "cc14cf3ae842109f"
+            ]
+        ]
+    },
+    {
+        "id": "7af6e6e234052106",
+        "type": "debug",
+        "z": "a9fb92d1b4a932fb",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 300,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "aee84e2d7d034340",
+        "type": "delay",
+        "z": "a9fb92d1b4a932fb",
+        "g": "67a97b1e13f032fa",
+        "name": "verz3",
+        "pauseType": "delay",
+        "timeout": "50",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 950,
+        "y": 1000,
+        "wires": [
+            [
+                "cc14cf3ae842109f"
+            ]
+        ]
+    },
+    {
+        "id": "7d90fb413534d750",
+        "type": "switch",
+        "z": "a9fb92d1b4a932fb",
+        "g": "67a97b1e13f032fa",
+        "name": "Split3",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "START",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "STOP",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 920,
+        "wires": [
+            [
+                "492e26aa3b507aaf"
+            ],
+            [
+                "492e26aa3b507aaf",
+                "aee84e2d7d034340"
+            ]
+        ]
+    },
+    {
+        "id": "a048a602a9f9571c",
+        "type": "mqtt in",
+        "z": "a9fb92d1b4a932fb",
+        "name": "SprinklerIn",
+        "topic": "tcs/sprink/in",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "5bdf636997f59325",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 100,
+        "y": 320,
+        "wires": [
+            [
+                "7af6e6e234052106",
+                "59b3909fb8dd4c29"
+            ]
+        ]
+    },
+    {
+        "id": "25381b49d0c92f7e",
+        "type": "debug",
+        "z": "a9fb92d1b4a932fb",
+        "name": "debug 10",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 540,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "d0a1c65ba00adb9c",
+        "type": "change",
+        "z": "a9fb92d1b4a932fb",
+        "g": "67a97b1e13f032fa",
+        "name": "setStop3",
+        "rules": [
+            {
+                "t": "set",
                 "p": "payload",
                 "pt": "msg",
-                "from": "false",
-                "fromt": "bool",
-                "to": "off",
+                "to": "STOP",
                 "tot": "str"
             }
         ],
@@ -1331,77 +1063,752 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 750,
-        "y": 480,
+        "x": 920,
+        "y": 860,
         "wires": [
             [
-                "5ff9e673b44b352a"
+                "5a3b11ea51c06a7b",
+                "492e26aa3b507aaf",
+                "aee84e2d7d034340"
             ]
         ]
     },
     {
-        "id": "c908e3d53154cbcc",
-        "type": "file",
-        "z": "442dce01f08d13f3",
-        "name": "WriteFile",
-        "filename": "/home/pi/Documents/time-schedule1.txt",
-        "filenameType": "str",
-        "appendNewline": true,
-        "createDir": true,
-        "overwriteFile": "true",
-        "encoding": "none",
-        "x": 740,
-        "y": 420,
+        "id": "70a853b4d7a242d7",
+        "type": "link in",
+        "z": "a9fb92d1b4a932fb",
+        "name": "link in switch3",
+        "links": [
+            "5a3b11ea51c06a7b"
+        ],
+        "x": 65,
+        "y": 520,
         "wires": [
+            [
+                "47a55f87deea37fe"
+            ]
+        ]
+    },
+    {
+        "id": "5a3b11ea51c06a7b",
+        "type": "link out",
+        "z": "a9fb92d1b4a932fb",
+        "g": "67a97b1e13f032fa",
+        "name": "link out switch3",
+        "mode": "link",
+        "links": [
+            "70a853b4d7a242d7"
+        ],
+        "x": 1045,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "59b3909fb8dd4c29",
+        "type": "function",
+        "z": "a9fb92d1b4a932fb",
+        "name": "SprinkFunc",
+        "func": "var msgOut = RED.util.cloneMessage(msg);\n\nmsgOut.timerType = 'delay'; // 'delay', 'loop'\nmsgOut.timerDurationUnit = 'second';\nmsgOut.retain = false;\n\nif (msg.topic === \"tcs/sprink/duration\") {\n\n    global.set(\"sprinklerDuration\", msg.payload);\n    return null;\n\n} else if (msg.topic === \"tcs/sprink/in\") {\n\n    msgOut.topic = \"tcs/sprink/out/\" + msg.payload.number;\n    msgOut.number = msg.payload.number;\n    msgOut.payload = msg.payload.action;\n    msgOut.timerDuration = msg.payload.dauer;\n    return msgOut;\n\n} else if (msg.topic === \"tcs/sprink/switch/1\") {\n    msgOut.topic = \"tcs/sprink/out/1\";\n    msgOut.number = 1;\n    msgOut.payload = msg.payload;\n    msgOut.timerDuration = global.get(\"sprinklerDuration\");\n    return msgOut;\n} else if (msg.topic === \"tcs/sprink/switch/2\") {\n    msgOut.topic = \"tcs/sprink/out/2\";\n    msgOut.number = 2;\n    msgOut.payload = msg.payload;\n    msgOut.timerDuration = global.get(\"sprinklerDuration\");;\n    return msgOut;\n} else if (msg.topic === \"tcs/sprink/switch/3\") {\n    msgOut.topic = \"tcs/sprink/out/3\";\n    msgOut.number = 3;\n    msgOut.payload = msg.payload;\n    msgOut.timerDuration = global.get(\"sprinklerDuration\");;\n    return msgOut;\n}\nreturn msgOut;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 320,
+        "wires": [
+            [
+                "25381b49d0c92f7e",
+                "c898636cb95e2310"
+            ]
+        ]
+    },
+    {
+        "id": "045d2f5ebced484b",
+        "type": "controltimer",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9241c20bc42d3e37",
+        "name": "Timer1",
+        "timerType": "delay",
+        "timerDurationUnit": "second",
+        "timerDurationType": "num",
+        "timerDuration": 5,
+        "timerLoopTimeoutUnit": "second",
+        "timerLoopTimeoutType": "num",
+        "timerLoopTimeout": 1,
+        "loopTimeoutMessageType": "str",
+        "loopTimeoutMessage": "LOOP_TIMEOUT",
+        "timerMaxLoopIterationsType": "num",
+        "timerMaxLoopIterations": 0,
+        "loopMaxIterationsMessageType": "str",
+        "loopMaxIterationsMessage": "MAX_LOOP_ITERATIONS",
+        "isRunningTimerProgressVisible": true,
+        "outputReceivedMessageOnTimerTrigger": true,
+        "outputReceivedMessageOnTimerHalt": false,
+        "startTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfStartAction": true,
+        "continueTimerOnReceivalOfStartAction": false,
+        "isDebugModeEnabled": false,
+        "timerTriggeredMessageType": "str",
+        "timerTriggeredMessage": "TIMER_TRIGGERED",
+        "timerHaltedMessageType": "str",
+        "timerHaltedMessage": "TIMER_HALTED",
+        "isStartActionEnabled": true,
+        "isStopActionEnabled": true,
+        "isResetActionEnabled": true,
+        "isPauseActionEnabled": false,
+        "isContinueActionEnabled": false,
+        "actionPropertyNameType": "str",
+        "actionPropertyName": "payload",
+        "startActionNameType": "str",
+        "startActionName": "START",
+        "stopActionNameType": "str",
+        "stopActionName": "STOP",
+        "resetActionNameType": "str",
+        "resetActionName": "RESET",
+        "pauseActionNameType": "str",
+        "pauseActionName": "PAUSE",
+        "continueActionNameType": "str",
+        "continueActionName": "CONTINUE",
+        "x": 750,
+        "y": 340,
+        "wires": [
+            [
+                "73f4cb948724d108"
+            ],
             []
         ]
     },
     {
-        "id": "dd595bc32f861099",
-        "type": "file in",
-        "z": "442dce01f08d13f3",
-        "name": "ReadFile",
-        "filename": "/home/pi/Documents/time-schedule1.txt",
-        "filenameType": "str",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 360,
-        "y": 480,
+        "id": "ea11efe4f9290a1b",
+        "type": "debug",
+        "z": "a9fb92d1b4a932fb",
+        "g": "66c755c689efd3a6",
+        "name": "debug s1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1530,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "4bfad026dfbb5fda",
+        "type": "trigger",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9241c20bc42d3e37",
+        "name": "Retrigger1",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-5",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "STOP",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 970,
+        "y": 420,
         "wires": [
             [
-                "41af657b76d4cb83"
+                "cc14cf3ae842109f"
             ]
         ]
     },
     {
-        "id": "94669d08fff0ecc8",
-        "type": "inject",
-        "z": "442dce01f08d13f3",
-        "name": "FireAfterReboot",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": 0.1,
+        "id": "f95e93ca62cd09bf",
+        "type": "mqtt out",
+        "z": "a9fb92d1b4a932fb",
+        "g": "66c755c689efd3a6",
+        "name": "SprinklerOut",
         "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 180,
+        "qos": "",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "5bdf636997f59325",
+        "x": 1560,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "161491f69bd9f0bc",
+        "type": "delay",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9241c20bc42d3e37",
+        "name": "verz1",
+        "pauseType": "delay",
+        "timeout": "50",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 950,
         "y": 480,
         "wires": [
             [
-                "dd595bc32f861099"
+                "cc14cf3ae842109f"
+            ]
+        ]
+    },
+    {
+        "id": "4b3a4a32032406b1",
+        "type": "switch",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9241c20bc42d3e37",
+        "name": "Split1",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "START",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "STOP",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 400,
+        "wires": [
+            [
+                "4bfad026dfbb5fda"
+            ],
+            [
+                "4bfad026dfbb5fda",
+                "161491f69bd9f0bc"
+            ]
+        ]
+    },
+    {
+        "id": "73f4cb948724d108",
+        "type": "change",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9241c20bc42d3e37",
+        "name": "setStop1",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "STOP",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 340,
+        "wires": [
+            [
+                "9b5c1d4ab75f6d21",
+                "4bfad026dfbb5fda",
+                "161491f69bd9f0bc"
+            ]
+        ]
+    },
+    {
+        "id": "9b5c1d4ab75f6d21",
+        "type": "link out",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9241c20bc42d3e37",
+        "name": "link out switch1",
+        "mode": "link",
+        "links": [
+            "ee22414abe7a6893"
+        ],
+        "x": 1050,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "cc14cf3ae842109f",
+        "type": "change",
+        "z": "a9fb92d1b4a932fb",
+        "g": "66c755c689efd3a6",
+        "name": "Out",
+        "rules": [
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "START",
+                "fromt": "str",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "STOP",
+                "fromt": "str",
+                "to": "false",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1350,
+        "y": 460,
+        "wires": [
+            [
+                "f95e93ca62cd09bf",
+                "ea11efe4f9290a1b"
+            ]
+        ]
+    },
+    {
+        "id": "1ce7c102fdc27036",
+        "type": "ui_switch",
+        "z": "a9fb92d1b4a932fb",
+        "name": "Sprinkler1",
+        "label": "Platz 1",
+        "tooltip": "",
+        "group": "ecfe237452d32ec6",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "tcs/sprink/switch/1",
+        "topicType": "str",
+        "style": "",
+        "onvalue": "START",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "STOP",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 160,
+        "y": 400,
+        "wires": [
+            [
+                "59b3909fb8dd4c29"
+            ]
+        ]
+    },
+    {
+        "id": "ee22414abe7a6893",
+        "type": "link in",
+        "z": "a9fb92d1b4a932fb",
+        "name": "link in switch1",
+        "links": [
+            "9b5c1d4ab75f6d21"
+        ],
+        "x": 65,
+        "y": 400,
+        "wires": [
+            [
+                "1ce7c102fdc27036"
+            ]
+        ]
+    },
+    {
+        "id": "aa0e04c1254ce26c",
+        "type": "controltimer",
+        "z": "a9fb92d1b4a932fb",
+        "g": "b30fdee85ef4213c",
+        "name": "Timer2",
+        "timerType": "delay",
+        "timerDurationUnit": "second",
+        "timerDurationType": "num",
+        "timerDuration": 5,
+        "timerLoopTimeoutUnit": "second",
+        "timerLoopTimeoutType": "num",
+        "timerLoopTimeout": 1,
+        "loopTimeoutMessageType": "str",
+        "loopTimeoutMessage": "LOOP_TIMEOUT",
+        "timerMaxLoopIterationsType": "num",
+        "timerMaxLoopIterations": 0,
+        "loopMaxIterationsMessageType": "str",
+        "loopMaxIterationsMessage": "MAX_LOOP_ITERATIONS",
+        "isRunningTimerProgressVisible": true,
+        "outputReceivedMessageOnTimerTrigger": true,
+        "outputReceivedMessageOnTimerHalt": false,
+        "startTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfStartAction": true,
+        "continueTimerOnReceivalOfStartAction": false,
+        "isDebugModeEnabled": false,
+        "timerTriggeredMessageType": "str",
+        "timerTriggeredMessage": "TIMER_TRIGGERED",
+        "timerHaltedMessageType": "str",
+        "timerHaltedMessage": "TIMER_HALTED",
+        "isStartActionEnabled": true,
+        "isStopActionEnabled": true,
+        "isResetActionEnabled": true,
+        "isPauseActionEnabled": false,
+        "isContinueActionEnabled": false,
+        "actionPropertyNameType": "str",
+        "actionPropertyName": "payload",
+        "startActionNameType": "str",
+        "startActionName": "START",
+        "stopActionNameType": "str",
+        "stopActionName": "STOP",
+        "resetActionNameType": "str",
+        "resetActionName": "RESET",
+        "pauseActionNameType": "str",
+        "pauseActionName": "PAUSE",
+        "continueActionNameType": "str",
+        "continueActionName": "CONTINUE",
+        "x": 750,
+        "y": 600,
+        "wires": [
+            [
+                "ea8e50df20fe2494"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "aaf478ea35832cbc",
+        "type": "trigger",
+        "z": "a9fb92d1b4a932fb",
+        "g": "b30fdee85ef4213c",
+        "name": "Retrigger2",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-5",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "STOP",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 950,
+        "y": 680,
+        "wires": [
+            [
+                "cc14cf3ae842109f"
+            ]
+        ]
+    },
+    {
+        "id": "96f7909ddffacb81",
+        "type": "delay",
+        "z": "a9fb92d1b4a932fb",
+        "g": "b30fdee85ef4213c",
+        "name": "verz2",
+        "pauseType": "delay",
+        "timeout": "50",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 950,
+        "y": 740,
+        "wires": [
+            [
+                "cc14cf3ae842109f"
+            ]
+        ]
+    },
+    {
+        "id": "a57b738b50be0375",
+        "type": "switch",
+        "z": "a9fb92d1b4a932fb",
+        "g": "b30fdee85ef4213c",
+        "name": "Split2",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "START",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "STOP",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 660,
+        "wires": [
+            [
+                "aaf478ea35832cbc"
+            ],
+            [
+                "aaf478ea35832cbc",
+                "96f7909ddffacb81"
+            ]
+        ]
+    },
+    {
+        "id": "ea8e50df20fe2494",
+        "type": "change",
+        "z": "a9fb92d1b4a932fb",
+        "g": "b30fdee85ef4213c",
+        "name": "setStop2",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "STOP",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 600,
+        "wires": [
+            [
+                "67abf137d4ba6898",
+                "aaf478ea35832cbc",
+                "96f7909ddffacb81"
+            ]
+        ]
+    },
+    {
+        "id": "67abf137d4ba6898",
+        "type": "link out",
+        "z": "a9fb92d1b4a932fb",
+        "g": "b30fdee85ef4213c",
+        "name": "link out switch2",
+        "mode": "link",
+        "links": [
+            "4ec98f1f920c0197"
+        ],
+        "x": 1045,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "64165a7d90bc0b1e",
+        "type": "ui_switch",
+        "z": "a9fb92d1b4a932fb",
+        "name": "Sprinker2",
+        "label": "Platz 2",
+        "tooltip": "",
+        "group": "ecfe237452d32ec6",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "tcs/sprink/switch/2",
+        "topicType": "str",
+        "style": "",
+        "onvalue": "START",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "STOP",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 160,
+        "y": 460,
+        "wires": [
+            [
+                "59b3909fb8dd4c29"
+            ]
+        ]
+    },
+    {
+        "id": "4ec98f1f920c0197",
+        "type": "link in",
+        "z": "a9fb92d1b4a932fb",
+        "name": "link in switch2",
+        "links": [
+            "67abf137d4ba6898"
+        ],
+        "x": 65,
+        "y": 460,
+        "wires": [
+            [
+                "64165a7d90bc0b1e"
+            ]
+        ]
+    },
+    {
+        "id": "86e727dc968351ed",
+        "type": "ui_text_input",
+        "z": "a9fb92d1b4a932fb",
+        "name": "SprinklerDuration",
+        "label": "Sprenger Dauer",
+        "tooltip": "",
+        "group": "ecfe237452d32ec6",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "mode": "number",
+        "delay": 300,
+        "topic": "tcs/sprink/duration",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 150,
+        "y": 160,
+        "wires": [
+            [
+                "1fdb6f32bd973d23",
+                "59b3909fb8dd4c29"
+            ]
+        ]
+    },
+    {
+        "id": "1fdb6f32bd973d23",
+        "type": "debug",
+        "z": "a9fb92d1b4a932fb",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "615ac56610cfecc9",
+        "type": "ui_switch",
+        "z": "ba3455c58b89c1a0",
+        "name": "FloodLight",
+        "label": "Platz 3 und 4",
+        "tooltip": "",
+        "group": "582a1b332c7e62f2",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "payload",
+        "topicType": "msg",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 310,
+        "y": 60,
+        "wires": [
+            [
+                "e9ddfb833697770e",
+                "eabd01c99869229a"
+            ]
+        ]
+    },
+    {
+        "id": "e9ddfb833697770e",
+        "type": "mqtt out",
+        "z": "ba3455c58b89c1a0",
+        "name": "LightOut",
+        "topic": "tcs/light/out",
+        "qos": "",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "5bdf636997f59325",
+        "x": 520,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "eabd01c99869229a",
+        "type": "debug",
+        "z": "ba3455c58b89c1a0",
+        "name": "licht",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 530,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "e97eedcc0d5b2d08",
+        "type": "mqtt in",
+        "z": "ba3455c58b89c1a0",
+        "name": "LightIn",
+        "topic": "tcs/light/in",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "5bdf636997f59325",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 60,
+        "wires": [
+            [
+                "615ac56610cfecc9"
             ]
         ]
     }
