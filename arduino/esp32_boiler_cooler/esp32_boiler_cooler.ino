@@ -34,7 +34,7 @@ long lastHeartBeat = 0;
 const int ledPin = 21;
 // default output is relais on.
 const String defaultPinState = "true"; // Turn Relais on
-String currentPinState = "unknown";
+String currentPinState = "false";
 
 // setup WiFi events
 void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
@@ -61,8 +61,7 @@ void setup() {
   DEBUG_INFO("ESP32: MQTT client %s", clientId.c_str());
 
   pinMode(ledPin, OUTPUT);
-  // do not switch before connected
-  //digitalWrite(ledPin, HIGH);
+  digitalWrite(ledPin, HIGH);
 
   delay(10);
   setup_wifi();

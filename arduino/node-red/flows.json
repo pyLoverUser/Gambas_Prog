@@ -24,55 +24,6 @@
         "env": []
     },
     {
-        "id": "9241c20bc42d3e37",
-        "type": "group",
-        "z": "a9fb92d1b4a932fb",
-        "style": {
-            "stroke": "#999999",
-            "stroke-opacity": "1",
-            "fill": "none",
-            "fill-opacity": "1",
-            "label": true,
-            "label-position": "nw",
-            "color": "#a4a4a4"
-        },
-        "nodes": [
-            "045d2f5ebced484b",
-            "4bfad026dfbb5fda",
-            "161491f69bd9f0bc",
-            "4b3a4a32032406b1",
-            "73f4cb948724d108",
-            "9b5c1d4ab75f6d21"
-        ],
-        "x": 674,
-        "y": 299,
-        "w": 417,
-        "h": 222
-    },
-    {
-        "id": "66c755c689efd3a6",
-        "type": "group",
-        "z": "a9fb92d1b4a932fb",
-        "style": {
-            "stroke": "#999999",
-            "stroke-opacity": "1",
-            "fill": "none",
-            "fill-opacity": "1",
-            "label": true,
-            "label-position": "nw",
-            "color": "#a4a4a4"
-        },
-        "nodes": [
-            "ea11efe4f9290a1b",
-            "f95e93ca62cd09bf",
-            "cc14cf3ae842109f"
-        ],
-        "x": 1274,
-        "y": 419,
-        "w": 382,
-        "h": 142
-    },
-    {
         "id": "67a97b1e13f032fa",
         "type": "group",
         "z": "a9fb92d1b4a932fb",
@@ -88,15 +39,14 @@
         "nodes": [
             "4f52df246add9608",
             "492e26aa3b507aaf",
-            "aee84e2d7d034340",
             "7d90fb413534d750",
             "d0a1c65ba00adb9c",
             "5a3b11ea51c06a7b"
         ],
         "x": 674,
-        "y": 819,
+        "y": 699,
         "w": 412,
-        "h": 222
+        "h": 162
     },
     {
         "id": "b30fdee85ef4213c",
@@ -114,15 +64,202 @@
         "nodes": [
             "aa0e04c1254ce26c",
             "aaf478ea35832cbc",
-            "96f7909ddffacb81",
             "a57b738b50be0375",
             "ea8e50df20fe2494",
             "67abf137d4ba6898"
         ],
         "x": 674,
-        "y": 559,
+        "y": 499,
         "w": 412,
-        "h": 222
+        "h": 162
+    },
+    {
+        "id": "cda401a936d08969",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "161491f69bd9f0bc",
+            "ea11efe4f9290a1b",
+            "f95e93ca62cd09bf",
+            "cc14cf3ae842109f"
+        ],
+        "x": 1354,
+        "y": 839,
+        "w": 412,
+        "h": 202
+    },
+    {
+        "id": "e168c75453c01ed1",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "045d2f5ebced484b",
+            "4bfad026dfbb5fda",
+            "4b3a4a32032406b1",
+            "73f4cb948724d108",
+            "9b5c1d4ab75f6d21"
+        ],
+        "x": 674,
+        "y": 299,
+        "w": 417,
+        "h": 162
+    },
+    {
+        "id": "7d3b885ff05c8df7",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "d8ed96829f15c1b3",
+            "b4b20464cd1bf062",
+            "b0448a1364e25513",
+            "b0829a6f5c3a500c",
+            "ce2a58795b3cc806"
+        ],
+        "x": 674,
+        "y": 899,
+        "w": 412,
+        "h": 162
+    },
+    {
+        "id": "daa11a28fbecaa5d",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "e76e4263f342eb3b",
+            "5ecdcb2da42ca9a3",
+            "12fd76253755a413",
+            "aaaf0c16241f1c82",
+            "def6082d5c876282"
+        ],
+        "x": 674,
+        "y": 1099,
+        "w": 412,
+        "h": 162
+    },
+    {
+        "id": "22ccf2d35aff0398",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "e969dafd98dfcc13",
+            "00054e19f9b59956",
+            "19d9c9beadc0162c",
+            "5ee8e05c59ed4d4f",
+            "6a8dde7f59c7eb27"
+        ],
+        "x": 674,
+        "y": 1299,
+        "w": 412,
+        "h": 162
+    },
+    {
+        "id": "9cf7f42a819b4d4b",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "7d4d208f57870471",
+            "bcbe46bf80107b1b",
+            "fc89dcf8e74c2884",
+            "3929b13719681baf",
+            "1b9d9d240acabf3f"
+        ],
+        "x": 674,
+        "y": 1499,
+        "w": 412,
+        "h": 162
+    },
+    {
+        "id": "28d60df670311f10",
+        "type": "group",
+        "z": "ba3455c58b89c1a0",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "a3ce79a844279562",
+            "372f4262201ef4f4",
+            "d8c93e18aceaa916",
+            "c5a14a38ca5df4a0",
+            "69a8b71dafbcf074",
+            "e13c323c31380f2f",
+            "2853345606fb4174",
+            "c286cf4436903687",
+            "7e0f1592c8772514",
+            "f3162516092d217d",
+            "cede7bed9bf1716a",
+            "f42dc8d004bc8c79",
+            "3d4fec6294324c89",
+            "2f094a87f927767a",
+            "7d4213749a771baf",
+            "cdb00818d49e4c8a",
+            "81a98eeb9ca928a1",
+            "0af7f2613f6294d8",
+            "67b8fecb6c6a939a"
+        ],
+        "x": 74,
+        "y": 319,
+        "w": 872,
+        "h": 382
     },
     {
         "id": "081e94a5f61d65d8",
@@ -279,10 +416,10 @@
         "type": "ui_group",
         "name": "Geräte",
         "tab": "2936b813.6cde68",
-        "order": 3,
+        "order": 4,
         "disp": true,
         "width": "4",
-        "collapse": true,
+        "collapse": false,
         "className": ""
     },
     {
@@ -293,7 +430,7 @@
         "order": 1,
         "disp": true,
         "width": "4",
-        "collapse": true,
+        "collapse": false,
         "className": ""
     },
     {
@@ -301,10 +438,10 @@
         "type": "ui_group",
         "name": "Flutlicht",
         "tab": "2936b813.6cde68",
-        "order": 2,
+        "order": 3,
         "disp": true,
         "width": "4",
-        "collapse": true,
+        "collapse": false,
         "className": ""
     },
     {
@@ -325,6 +462,17 @@
         "disp": true,
         "width": "10",
         "collapse": true,
+        "className": ""
+    },
+    {
+        "id": "425a628f40c4287e",
+        "type": "ui_group",
+        "name": "Status",
+        "tab": "2936b813.6cde68",
+        "order": 2,
+        "disp": true,
+        "width": "3",
+        "collapse": false,
         "className": ""
     },
     {
@@ -607,7 +755,7 @@
         "shape": "circle",
         "showGlow": true,
         "name": "StatusCooler",
-        "x": 600,
+        "x": 570,
         "y": 440,
         "wires": []
     },
@@ -628,7 +776,6 @@
         "y": 440,
         "wires": [
             [
-                "eb554fbe4a5d9c28",
                 "49016baf0c4f5b1c"
             ]
         ]
@@ -650,8 +797,7 @@
         "y": 320,
         "wires": [
             [
-                "fb0b02b8def21a81",
-                "79d6de95fa464456"
+                "fb0b02b8def21a81"
             ]
         ]
     },
@@ -687,7 +833,7 @@
         "shape": "circle",
         "showGlow": true,
         "name": "StatusBoiler",
-        "x": 600,
+        "x": 570,
         "y": 320,
         "wires": []
     },
@@ -695,10 +841,10 @@
         "id": "fb0b02b8def21a81",
         "type": "trigger",
         "z": "4eb00aa7fe93676d",
-        "name": "",
+        "name": "triggerBoiler",
         "op1": "",
         "op2": "unknown",
-        "op1type": "nul",
+        "op1type": "pay",
         "op2type": "str",
         "duration": "2000",
         "extend": false,
@@ -708,8 +854,8 @@
         "bytopic": "all",
         "topic": "topic",
         "outputs": 1,
-        "x": 410,
-        "y": 380,
+        "x": 390,
+        "y": 320,
         "wires": [
             [
                 "79d6de95fa464456"
@@ -723,7 +869,7 @@
         "name": "triggerCooler",
         "op1": "",
         "op2": "unknown",
-        "op1type": "nul",
+        "op1type": "pay",
         "op2type": "str",
         "duration": "2000",
         "extend": false,
@@ -733,8 +879,8 @@
         "bytopic": "all",
         "topic": "topic",
         "outputs": 1,
-        "x": 400,
-        "y": 500,
+        "x": 390,
+        "y": 440,
         "wires": [
             [
                 "eb554fbe4a5d9c28"
@@ -789,7 +935,7 @@
         "repair": false,
         "outputs": 7,
         "x": 450,
-        "y": 620,
+        "y": 900,
         "wires": [
             [
                 "045d2f5ebced484b",
@@ -803,10 +949,22 @@
                 "4f52df246add9608",
                 "7d90fb413534d750"
             ],
-            [],
-            [],
-            [],
-            []
+            [
+                "d8ed96829f15c1b3",
+                "b0448a1364e25513"
+            ],
+            [
+                "e76e4263f342eb3b",
+                "12fd76253755a413"
+            ],
+            [
+                "e969dafd98dfcc13",
+                "19d9c9beadc0162c"
+            ],
+            [
+                "7d4d208f57870471",
+                "fc89dcf8e74c2884"
+            ]
         ]
     },
     {
@@ -892,7 +1050,7 @@
         "continueActionNameType": "str",
         "continueActionName": "CONTINUE",
         "x": 750,
-        "y": 860,
+        "y": 740,
         "wires": [
             [
                 "d0a1c65ba00adb9c"
@@ -919,7 +1077,7 @@
         "topic": "topic",
         "outputs": 1,
         "x": 950,
-        "y": 940,
+        "y": 820,
         "wires": [
             [
                 "cc14cf3ae842109f"
@@ -930,7 +1088,7 @@
         "id": "7af6e6e234052106",
         "type": "debug",
         "z": "a9fb92d1b4a932fb",
-        "name": "debug 9",
+        "name": "debugSprinkIn",
         "active": true,
         "tosidebar": true,
         "console": false,
@@ -940,34 +1098,8 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 300,
-        "y": 240,
+        "y": 260,
         "wires": []
-    },
-    {
-        "id": "aee84e2d7d034340",
-        "type": "delay",
-        "z": "a9fb92d1b4a932fb",
-        "g": "67a97b1e13f032fa",
-        "name": "verz3",
-        "pauseType": "delay",
-        "timeout": "50",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 950,
-        "y": 1000,
-        "wires": [
-            [
-                "cc14cf3ae842109f"
-            ]
-        ]
     },
     {
         "id": "7d90fb413534d750",
@@ -993,14 +1125,14 @@
         "repair": false,
         "outputs": 2,
         "x": 750,
-        "y": 920,
+        "y": 800,
         "wires": [
             [
                 "492e26aa3b507aaf"
             ],
             [
                 "492e26aa3b507aaf",
-                "aee84e2d7d034340"
+                "161491f69bd9f0bc"
             ]
         ]
     },
@@ -1030,7 +1162,7 @@
         "id": "25381b49d0c92f7e",
         "type": "debug",
         "z": "a9fb92d1b4a932fb",
-        "name": "debug 10",
+        "name": "debugSprinkFunc",
         "active": true,
         "tosidebar": true,
         "console": false,
@@ -1039,7 +1171,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 540,
+        "x": 570,
         "y": 240,
         "wires": []
     },
@@ -1064,12 +1196,12 @@
         "to": "",
         "reg": false,
         "x": 920,
-        "y": 860,
+        "y": 740,
         "wires": [
             [
                 "5a3b11ea51c06a7b",
                 "492e26aa3b507aaf",
-                "aee84e2d7d034340"
+                "161491f69bd9f0bc"
             ]
         ]
     },
@@ -1100,7 +1232,7 @@
             "70a853b4d7a242d7"
         ],
         "x": 1045,
-        "y": 860,
+        "y": 740,
         "wires": []
     },
     {
@@ -1108,11 +1240,11 @@
         "type": "function",
         "z": "a9fb92d1b4a932fb",
         "name": "SprinkFunc",
-        "func": "var msgOut = RED.util.cloneMessage(msg);\n\nmsgOut.timerType = 'delay'; // 'delay', 'loop'\nmsgOut.timerDurationUnit = 'second';\nmsgOut.retain = false;\n\nif (msg.topic === \"tcs/sprink/duration\") {\n\n    global.set(\"sprinklerDuration\", msg.payload);\n    return null;\n\n} else if (msg.topic === \"tcs/sprink/in\") {\n\n    msgOut.topic = \"tcs/sprink/out/\" + msg.payload.number;\n    msgOut.number = msg.payload.number;\n    msgOut.payload = msg.payload.action;\n    msgOut.timerDuration = msg.payload.dauer;\n    return msgOut;\n\n} else if (msg.topic === \"tcs/sprink/switch/1\") {\n    msgOut.topic = \"tcs/sprink/out/1\";\n    msgOut.number = 1;\n    msgOut.payload = msg.payload;\n    msgOut.timerDuration = global.get(\"sprinklerDuration\");\n    return msgOut;\n} else if (msg.topic === \"tcs/sprink/switch/2\") {\n    msgOut.topic = \"tcs/sprink/out/2\";\n    msgOut.number = 2;\n    msgOut.payload = msg.payload;\n    msgOut.timerDuration = global.get(\"sprinklerDuration\");;\n    return msgOut;\n} else if (msg.topic === \"tcs/sprink/switch/3\") {\n    msgOut.topic = \"tcs/sprink/out/3\";\n    msgOut.number = 3;\n    msgOut.payload = msg.payload;\n    msgOut.timerDuration = global.get(\"sprinklerDuration\");;\n    return msgOut;\n}\nreturn msgOut;",
+        "func": "var msgOut = RED.util.cloneMessage(msg);\n\n// store sprinkler duration from ui\nif (msg.topic === \"tcs/sprink/duration\") {\n    global.set(\"sprinklerDuration\", msg.payload);\n    return null;\n}\n\nmsgOut.timerType = 'delay'; // 'delay', 'loop'\nmsgOut.timerDurationUnit = 'second';\nmsgOut.retain = false;\n\nif (msg.topic === \"tcs/sprink/in\") {\n    // prepare message from mqtt\n    msgOut.topic = \"tcs/sprink/out/\" + msg.payload.number;\n    msgOut.number = msg.payload.number;\n    msgOut.payload = msg.payload.action;\n    msgOut.timerDuration = msg.payload.dauer;\n\n} else if (msg.topic.startsWith(\"tcs/sprink/switch/\")) {\n    // prepare message from ui switches\n    var numberStr = msg.topic.split('/').pop();\n    var number = parseInt(numberStr, 10);\n    msgOut.topic = \"tcs/sprink/out/\" + String(number);\n    msgOut.number = number;\n    msgOut.payload = msg.payload;\n    msgOut.timerDuration = global.get(\"sprinklerDuration\");\n}\nreturn msgOut;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "",
+        "initialize": "// Der Code hier wird ausgeführt,\n// wenn der Node gestartet wird\n// global.set(\"sprinklerDuration\", 180);",
         "finalize": "",
         "libs": [],
         "x": 410,
@@ -1128,7 +1260,7 @@
         "id": "045d2f5ebced484b",
         "type": "controltimer",
         "z": "a9fb92d1b4a932fb",
-        "g": "9241c20bc42d3e37",
+        "g": "e168c75453c01ed1",
         "name": "Timer1",
         "timerType": "delay",
         "timerDurationUnit": "second",
@@ -1185,8 +1317,8 @@
         "id": "ea11efe4f9290a1b",
         "type": "debug",
         "z": "a9fb92d1b4a932fb",
-        "g": "66c755c689efd3a6",
-        "name": "debug s1",
+        "g": "cda401a936d08969",
+        "name": "debugSprinkOut",
         "active": true,
         "tosidebar": true,
         "console": false,
@@ -1195,15 +1327,15 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1530,
-        "y": 460,
+        "x": 1640,
+        "y": 960,
         "wires": []
     },
     {
         "id": "4bfad026dfbb5fda",
         "type": "trigger",
         "z": "a9fb92d1b4a932fb",
-        "g": "9241c20bc42d3e37",
+        "g": "e168c75453c01ed1",
         "name": "Retrigger1",
         "op1": "",
         "op2": "0",
@@ -1229,7 +1361,7 @@
         "id": "f95e93ca62cd09bf",
         "type": "mqtt out",
         "z": "a9fb92d1b4a932fb",
-        "g": "66c755c689efd3a6",
+        "g": "cda401a936d08969",
         "name": "SprinklerOut",
         "topic": "",
         "qos": "",
@@ -1240,16 +1372,16 @@
         "correl": "",
         "expiry": "",
         "broker": "5bdf636997f59325",
-        "x": 1560,
-        "y": 520,
+        "x": 1630,
+        "y": 1000,
         "wires": []
     },
     {
         "id": "161491f69bd9f0bc",
         "type": "delay",
         "z": "a9fb92d1b4a932fb",
-        "g": "9241c20bc42d3e37",
-        "name": "verz1",
+        "g": "cda401a936d08969",
+        "name": "delayFalse",
         "pauseType": "delay",
         "timeout": "50",
         "timeoutUnits": "milliseconds",
@@ -1262,8 +1394,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 950,
-        "y": 480,
+        "x": 1450,
+        "y": 880,
         "wires": [
             [
                 "cc14cf3ae842109f"
@@ -1274,7 +1406,7 @@
         "id": "4b3a4a32032406b1",
         "type": "switch",
         "z": "a9fb92d1b4a932fb",
-        "g": "9241c20bc42d3e37",
+        "g": "e168c75453c01ed1",
         "name": "Split1",
         "property": "payload",
         "propertyType": "msg",
@@ -1309,7 +1441,7 @@
         "id": "73f4cb948724d108",
         "type": "change",
         "z": "a9fb92d1b4a932fb",
-        "g": "9241c20bc42d3e37",
+        "g": "e168c75453c01ed1",
         "name": "setStop1",
         "rules": [
             {
@@ -1339,7 +1471,7 @@
         "id": "9b5c1d4ab75f6d21",
         "type": "link out",
         "z": "a9fb92d1b4a932fb",
-        "g": "9241c20bc42d3e37",
+        "g": "e168c75453c01ed1",
         "name": "link out switch1",
         "mode": "link",
         "links": [
@@ -1353,7 +1485,7 @@
         "id": "cc14cf3ae842109f",
         "type": "change",
         "z": "a9fb92d1b4a932fb",
-        "g": "66c755c689efd3a6",
+        "g": "cda401a936d08969",
         "name": "Out",
         "rules": [
             {
@@ -1380,8 +1512,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1350,
-        "y": 460,
+        "x": 1430,
+        "y": 1000,
         "wires": [
             [
                 "f95e93ca62cd09bf",
@@ -1488,7 +1620,7 @@
         "continueActionNameType": "str",
         "continueActionName": "CONTINUE",
         "x": 750,
-        "y": 600,
+        "y": 540,
         "wires": [
             [
                 "ea8e50df20fe2494"
@@ -1515,33 +1647,7 @@
         "topic": "topic",
         "outputs": 1,
         "x": 950,
-        "y": 680,
-        "wires": [
-            [
-                "cc14cf3ae842109f"
-            ]
-        ]
-    },
-    {
-        "id": "96f7909ddffacb81",
-        "type": "delay",
-        "z": "a9fb92d1b4a932fb",
-        "g": "b30fdee85ef4213c",
-        "name": "verz2",
-        "pauseType": "delay",
-        "timeout": "50",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 950,
-        "y": 740,
+        "y": 620,
         "wires": [
             [
                 "cc14cf3ae842109f"
@@ -1572,14 +1678,14 @@
         "repair": false,
         "outputs": 2,
         "x": 750,
-        "y": 660,
+        "y": 600,
         "wires": [
             [
                 "aaf478ea35832cbc"
             ],
             [
                 "aaf478ea35832cbc",
-                "96f7909ddffacb81"
+                "161491f69bd9f0bc"
             ]
         ]
     },
@@ -1604,12 +1710,12 @@
         "to": "",
         "reg": false,
         "x": 920,
-        "y": 600,
+        "y": 540,
         "wires": [
             [
                 "67abf137d4ba6898",
                 "aaf478ea35832cbc",
-                "96f7909ddffacb81"
+                "161491f69bd9f0bc"
             ]
         ]
     },
@@ -1624,7 +1730,7 @@
             "4ec98f1f920c0197"
         ],
         "x": 1045,
-        "y": 600,
+        "y": 540,
         "wires": []
     },
     {
@@ -1690,7 +1796,7 @@
         "height": 0,
         "passthru": false,
         "mode": "number",
-        "delay": 300,
+        "delay": "0",
         "topic": "tcs/sprink/duration",
         "sendOnBlur": true,
         "className": "",
@@ -1722,6 +1828,854 @@
         "wires": []
     },
     {
+        "id": "d8ed96829f15c1b3",
+        "type": "controltimer",
+        "z": "a9fb92d1b4a932fb",
+        "g": "7d3b885ff05c8df7",
+        "name": "Timer4",
+        "timerType": "delay",
+        "timerDurationUnit": "second",
+        "timerDurationType": "num",
+        "timerDuration": 5,
+        "timerLoopTimeoutUnit": "second",
+        "timerLoopTimeoutType": "num",
+        "timerLoopTimeout": 1,
+        "loopTimeoutMessageType": "str",
+        "loopTimeoutMessage": "LOOP_TIMEOUT",
+        "timerMaxLoopIterationsType": "num",
+        "timerMaxLoopIterations": 0,
+        "loopMaxIterationsMessageType": "str",
+        "loopMaxIterationsMessage": "MAX_LOOP_ITERATIONS",
+        "isRunningTimerProgressVisible": true,
+        "outputReceivedMessageOnTimerTrigger": true,
+        "outputReceivedMessageOnTimerHalt": false,
+        "startTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfStartAction": true,
+        "continueTimerOnReceivalOfStartAction": false,
+        "isDebugModeEnabled": false,
+        "timerTriggeredMessageType": "str",
+        "timerTriggeredMessage": "TIMER_TRIGGERED",
+        "timerHaltedMessageType": "str",
+        "timerHaltedMessage": "TIMER_HALTED",
+        "isStartActionEnabled": true,
+        "isStopActionEnabled": true,
+        "isResetActionEnabled": true,
+        "isPauseActionEnabled": false,
+        "isContinueActionEnabled": false,
+        "actionPropertyNameType": "str",
+        "actionPropertyName": "payload",
+        "startActionNameType": "str",
+        "startActionName": "START",
+        "stopActionNameType": "str",
+        "stopActionName": "STOP",
+        "resetActionNameType": "str",
+        "resetActionName": "RESET",
+        "pauseActionNameType": "str",
+        "pauseActionName": "PAUSE",
+        "continueActionNameType": "str",
+        "continueActionName": "CONTINUE",
+        "x": 750,
+        "y": 940,
+        "wires": [
+            [
+                "b0829a6f5c3a500c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "b4b20464cd1bf062",
+        "type": "trigger",
+        "z": "a9fb92d1b4a932fb",
+        "g": "7d3b885ff05c8df7",
+        "name": "Retrigger4",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-5",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "STOP",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 950,
+        "y": 1020,
+        "wires": [
+            [
+                "cc14cf3ae842109f"
+            ]
+        ]
+    },
+    {
+        "id": "b0448a1364e25513",
+        "type": "switch",
+        "z": "a9fb92d1b4a932fb",
+        "g": "7d3b885ff05c8df7",
+        "name": "Split4",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "START",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "STOP",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 1000,
+        "wires": [
+            [
+                "b4b20464cd1bf062"
+            ],
+            [
+                "b4b20464cd1bf062",
+                "161491f69bd9f0bc"
+            ]
+        ]
+    },
+    {
+        "id": "b0829a6f5c3a500c",
+        "type": "change",
+        "z": "a9fb92d1b4a932fb",
+        "g": "7d3b885ff05c8df7",
+        "name": "setStop4",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "STOP",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 940,
+        "wires": [
+            [
+                "ce2a58795b3cc806",
+                "b4b20464cd1bf062",
+                "161491f69bd9f0bc"
+            ]
+        ]
+    },
+    {
+        "id": "ce2a58795b3cc806",
+        "type": "link out",
+        "z": "a9fb92d1b4a932fb",
+        "g": "7d3b885ff05c8df7",
+        "name": "link out switch4",
+        "mode": "link",
+        "links": [
+            "b88cafb144f16ac2"
+        ],
+        "x": 1045,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "a6446cc82f5dc75e",
+        "type": "ui_switch",
+        "z": "a9fb92d1b4a932fb",
+        "name": "Sprinker6",
+        "label": "Platz 6",
+        "tooltip": "",
+        "group": "ecfe237452d32ec6",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "tcs/sprink/switch/6",
+        "topicType": "str",
+        "style": "",
+        "onvalue": "START",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "STOP",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 160,
+        "y": 700,
+        "wires": [
+            [
+                "59b3909fb8dd4c29"
+            ]
+        ]
+    },
+    {
+        "id": "019a5dc9ab81a2df",
+        "type": "link in",
+        "z": "a9fb92d1b4a932fb",
+        "name": "link in switch6",
+        "links": [
+            "6a8dde7f59c7eb27"
+        ],
+        "x": 65,
+        "y": 700,
+        "wires": [
+            [
+                "a6446cc82f5dc75e"
+            ]
+        ]
+    },
+    {
+        "id": "cbbdae8be0305768",
+        "type": "ui_switch",
+        "z": "a9fb92d1b4a932fb",
+        "name": "Sprinker5",
+        "label": "Platz 5",
+        "tooltip": "",
+        "group": "ecfe237452d32ec6",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "tcs/sprink/switch/5",
+        "topicType": "str",
+        "style": "",
+        "onvalue": "START",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "STOP",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 160,
+        "y": 640,
+        "wires": [
+            [
+                "59b3909fb8dd4c29"
+            ]
+        ]
+    },
+    {
+        "id": "bb8b391164fe2f1f",
+        "type": "link in",
+        "z": "a9fb92d1b4a932fb",
+        "name": "link in switch5",
+        "links": [
+            "def6082d5c876282"
+        ],
+        "x": 65,
+        "y": 640,
+        "wires": [
+            [
+                "cbbdae8be0305768"
+            ]
+        ]
+    },
+    {
+        "id": "7210ad1ca0c77e6d",
+        "type": "ui_switch",
+        "z": "a9fb92d1b4a932fb",
+        "name": "Sprinker4",
+        "label": "Platz 4",
+        "tooltip": "",
+        "group": "ecfe237452d32ec6",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "tcs/sprink/switch/4",
+        "topicType": "str",
+        "style": "",
+        "onvalue": "START",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "STOP",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 160,
+        "y": 580,
+        "wires": [
+            [
+                "59b3909fb8dd4c29"
+            ]
+        ]
+    },
+    {
+        "id": "b88cafb144f16ac2",
+        "type": "link in",
+        "z": "a9fb92d1b4a932fb",
+        "name": "link in switch4",
+        "links": [
+            "ce2a58795b3cc806"
+        ],
+        "x": 65,
+        "y": 580,
+        "wires": [
+            [
+                "7210ad1ca0c77e6d"
+            ]
+        ]
+    },
+    {
+        "id": "495a2680b7702139",
+        "type": "ui_switch",
+        "z": "a9fb92d1b4a932fb",
+        "name": "Sprinker7",
+        "label": "Platz 7",
+        "tooltip": "",
+        "group": "ecfe237452d32ec6",
+        "order": 8,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "tcs/sprink/switch/7",
+        "topicType": "str",
+        "style": "",
+        "onvalue": "START",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "STOP",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 160,
+        "y": 760,
+        "wires": [
+            [
+                "59b3909fb8dd4c29"
+            ]
+        ]
+    },
+    {
+        "id": "c94a773bc7d8cd75",
+        "type": "link in",
+        "z": "a9fb92d1b4a932fb",
+        "name": "link in switch7",
+        "links": [
+            "1b9d9d240acabf3f"
+        ],
+        "x": 65,
+        "y": 760,
+        "wires": [
+            [
+                "495a2680b7702139"
+            ]
+        ]
+    },
+    {
+        "id": "e76e4263f342eb3b",
+        "type": "controltimer",
+        "z": "a9fb92d1b4a932fb",
+        "g": "daa11a28fbecaa5d",
+        "name": "Timer5",
+        "timerType": "delay",
+        "timerDurationUnit": "second",
+        "timerDurationType": "num",
+        "timerDuration": 5,
+        "timerLoopTimeoutUnit": "second",
+        "timerLoopTimeoutType": "num",
+        "timerLoopTimeout": 1,
+        "loopTimeoutMessageType": "str",
+        "loopTimeoutMessage": "LOOP_TIMEOUT",
+        "timerMaxLoopIterationsType": "num",
+        "timerMaxLoopIterations": 0,
+        "loopMaxIterationsMessageType": "str",
+        "loopMaxIterationsMessage": "MAX_LOOP_ITERATIONS",
+        "isRunningTimerProgressVisible": true,
+        "outputReceivedMessageOnTimerTrigger": true,
+        "outputReceivedMessageOnTimerHalt": false,
+        "startTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfStartAction": true,
+        "continueTimerOnReceivalOfStartAction": false,
+        "isDebugModeEnabled": false,
+        "timerTriggeredMessageType": "str",
+        "timerTriggeredMessage": "TIMER_TRIGGERED",
+        "timerHaltedMessageType": "str",
+        "timerHaltedMessage": "TIMER_HALTED",
+        "isStartActionEnabled": true,
+        "isStopActionEnabled": true,
+        "isResetActionEnabled": true,
+        "isPauseActionEnabled": false,
+        "isContinueActionEnabled": false,
+        "actionPropertyNameType": "str",
+        "actionPropertyName": "payload",
+        "startActionNameType": "str",
+        "startActionName": "START",
+        "stopActionNameType": "str",
+        "stopActionName": "STOP",
+        "resetActionNameType": "str",
+        "resetActionName": "RESET",
+        "pauseActionNameType": "str",
+        "pauseActionName": "PAUSE",
+        "continueActionNameType": "str",
+        "continueActionName": "CONTINUE",
+        "x": 750,
+        "y": 1140,
+        "wires": [
+            [
+                "aaaf0c16241f1c82"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "5ecdcb2da42ca9a3",
+        "type": "trigger",
+        "z": "a9fb92d1b4a932fb",
+        "g": "daa11a28fbecaa5d",
+        "name": "Retrigger5",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-5",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "STOP",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 950,
+        "y": 1220,
+        "wires": [
+            [
+                "cc14cf3ae842109f"
+            ]
+        ]
+    },
+    {
+        "id": "12fd76253755a413",
+        "type": "switch",
+        "z": "a9fb92d1b4a932fb",
+        "g": "daa11a28fbecaa5d",
+        "name": "Split5",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "START",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "STOP",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 1200,
+        "wires": [
+            [
+                "5ecdcb2da42ca9a3"
+            ],
+            [
+                "5ecdcb2da42ca9a3",
+                "161491f69bd9f0bc"
+            ]
+        ]
+    },
+    {
+        "id": "aaaf0c16241f1c82",
+        "type": "change",
+        "z": "a9fb92d1b4a932fb",
+        "g": "daa11a28fbecaa5d",
+        "name": "setStop5",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "STOP",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 1140,
+        "wires": [
+            [
+                "def6082d5c876282",
+                "5ecdcb2da42ca9a3",
+                "161491f69bd9f0bc"
+            ]
+        ]
+    },
+    {
+        "id": "def6082d5c876282",
+        "type": "link out",
+        "z": "a9fb92d1b4a932fb",
+        "g": "daa11a28fbecaa5d",
+        "name": "link out switch5",
+        "mode": "link",
+        "links": [
+            "bb8b391164fe2f1f"
+        ],
+        "x": 1045,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "e969dafd98dfcc13",
+        "type": "controltimer",
+        "z": "a9fb92d1b4a932fb",
+        "g": "22ccf2d35aff0398",
+        "name": "Timer6",
+        "timerType": "delay",
+        "timerDurationUnit": "second",
+        "timerDurationType": "num",
+        "timerDuration": 5,
+        "timerLoopTimeoutUnit": "second",
+        "timerLoopTimeoutType": "num",
+        "timerLoopTimeout": 1,
+        "loopTimeoutMessageType": "str",
+        "loopTimeoutMessage": "LOOP_TIMEOUT",
+        "timerMaxLoopIterationsType": "num",
+        "timerMaxLoopIterations": 0,
+        "loopMaxIterationsMessageType": "str",
+        "loopMaxIterationsMessage": "MAX_LOOP_ITERATIONS",
+        "isRunningTimerProgressVisible": true,
+        "outputReceivedMessageOnTimerTrigger": true,
+        "outputReceivedMessageOnTimerHalt": false,
+        "startTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfStartAction": true,
+        "continueTimerOnReceivalOfStartAction": false,
+        "isDebugModeEnabled": false,
+        "timerTriggeredMessageType": "str",
+        "timerTriggeredMessage": "TIMER_TRIGGERED",
+        "timerHaltedMessageType": "str",
+        "timerHaltedMessage": "TIMER_HALTED",
+        "isStartActionEnabled": true,
+        "isStopActionEnabled": true,
+        "isResetActionEnabled": true,
+        "isPauseActionEnabled": false,
+        "isContinueActionEnabled": false,
+        "actionPropertyNameType": "str",
+        "actionPropertyName": "payload",
+        "startActionNameType": "str",
+        "startActionName": "START",
+        "stopActionNameType": "str",
+        "stopActionName": "STOP",
+        "resetActionNameType": "str",
+        "resetActionName": "RESET",
+        "pauseActionNameType": "str",
+        "pauseActionName": "PAUSE",
+        "continueActionNameType": "str",
+        "continueActionName": "CONTINUE",
+        "x": 750,
+        "y": 1340,
+        "wires": [
+            [
+                "5ee8e05c59ed4d4f"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "00054e19f9b59956",
+        "type": "trigger",
+        "z": "a9fb92d1b4a932fb",
+        "g": "22ccf2d35aff0398",
+        "name": "Retrigger6",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-5",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "STOP",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 950,
+        "y": 1420,
+        "wires": [
+            [
+                "cc14cf3ae842109f"
+            ]
+        ]
+    },
+    {
+        "id": "19d9c9beadc0162c",
+        "type": "switch",
+        "z": "a9fb92d1b4a932fb",
+        "g": "22ccf2d35aff0398",
+        "name": "Split6",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "START",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "STOP",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 1400,
+        "wires": [
+            [
+                "00054e19f9b59956"
+            ],
+            [
+                "00054e19f9b59956",
+                "161491f69bd9f0bc"
+            ]
+        ]
+    },
+    {
+        "id": "5ee8e05c59ed4d4f",
+        "type": "change",
+        "z": "a9fb92d1b4a932fb",
+        "g": "22ccf2d35aff0398",
+        "name": "setStop6",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "STOP",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 1340,
+        "wires": [
+            [
+                "6a8dde7f59c7eb27",
+                "00054e19f9b59956",
+                "161491f69bd9f0bc"
+            ]
+        ]
+    },
+    {
+        "id": "6a8dde7f59c7eb27",
+        "type": "link out",
+        "z": "a9fb92d1b4a932fb",
+        "g": "22ccf2d35aff0398",
+        "name": "link out switch6",
+        "mode": "link",
+        "links": [
+            "019a5dc9ab81a2df"
+        ],
+        "x": 1045,
+        "y": 1340,
+        "wires": []
+    },
+    {
+        "id": "7d4d208f57870471",
+        "type": "controltimer",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9cf7f42a819b4d4b",
+        "name": "Timer7",
+        "timerType": "delay",
+        "timerDurationUnit": "second",
+        "timerDurationType": "num",
+        "timerDuration": 5,
+        "timerLoopTimeoutUnit": "second",
+        "timerLoopTimeoutType": "num",
+        "timerLoopTimeout": 1,
+        "loopTimeoutMessageType": "str",
+        "loopTimeoutMessage": "LOOP_TIMEOUT",
+        "timerMaxLoopIterationsType": "num",
+        "timerMaxLoopIterations": 0,
+        "loopMaxIterationsMessageType": "str",
+        "loopMaxIterationsMessage": "MAX_LOOP_ITERATIONS",
+        "isRunningTimerProgressVisible": true,
+        "outputReceivedMessageOnTimerTrigger": true,
+        "outputReceivedMessageOnTimerHalt": false,
+        "startTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfUnknownMessage": false,
+        "resetTimerOnReceivalOfStartAction": true,
+        "continueTimerOnReceivalOfStartAction": false,
+        "isDebugModeEnabled": false,
+        "timerTriggeredMessageType": "str",
+        "timerTriggeredMessage": "TIMER_TRIGGERED",
+        "timerHaltedMessageType": "str",
+        "timerHaltedMessage": "TIMER_HALTED",
+        "isStartActionEnabled": true,
+        "isStopActionEnabled": true,
+        "isResetActionEnabled": true,
+        "isPauseActionEnabled": false,
+        "isContinueActionEnabled": false,
+        "actionPropertyNameType": "str",
+        "actionPropertyName": "payload",
+        "startActionNameType": "str",
+        "startActionName": "START",
+        "stopActionNameType": "str",
+        "stopActionName": "STOP",
+        "resetActionNameType": "str",
+        "resetActionName": "RESET",
+        "pauseActionNameType": "str",
+        "pauseActionName": "PAUSE",
+        "continueActionNameType": "str",
+        "continueActionName": "CONTINUE",
+        "x": 750,
+        "y": 1540,
+        "wires": [
+            [
+                "3929b13719681baf"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "bcbe46bf80107b1b",
+        "type": "trigger",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9cf7f42a819b4d4b",
+        "name": "Retrigger7",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-5",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "STOP",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 950,
+        "y": 1620,
+        "wires": [
+            [
+                "cc14cf3ae842109f"
+            ]
+        ]
+    },
+    {
+        "id": "fc89dcf8e74c2884",
+        "type": "switch",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9cf7f42a819b4d4b",
+        "name": "Split7",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "START",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "STOP",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 1600,
+        "wires": [
+            [
+                "bcbe46bf80107b1b"
+            ],
+            [
+                "bcbe46bf80107b1b",
+                "161491f69bd9f0bc"
+            ]
+        ]
+    },
+    {
+        "id": "3929b13719681baf",
+        "type": "change",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9cf7f42a819b4d4b",
+        "name": "setStop7",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "STOP",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 1540,
+        "wires": [
+            [
+                "1b9d9d240acabf3f",
+                "bcbe46bf80107b1b",
+                "161491f69bd9f0bc"
+            ]
+        ]
+    },
+    {
+        "id": "1b9d9d240acabf3f",
+        "type": "link out",
+        "z": "a9fb92d1b4a932fb",
+        "g": "9cf7f42a819b4d4b",
+        "name": "link out switch7",
+        "mode": "link",
+        "links": [
+            "c94a773bc7d8cd75"
+        ],
+        "x": 1045,
+        "y": 1540,
+        "wires": []
+    },
+    {
         "id": "615ac56610cfecc9",
         "type": "ui_switch",
         "z": "ba3455c58b89c1a0",
@@ -1732,10 +2686,10 @@
         "order": 1,
         "width": 0,
         "height": 0,
-        "passthru": true,
-        "decouple": "false",
-        "topic": "payload",
-        "topicType": "msg",
+        "passthru": false,
+        "decouple": "true",
+        "topic": "",
+        "topicType": "str",
         "style": "",
         "onvalue": "true",
         "onvalueType": "bool",
@@ -1748,11 +2702,10 @@
         "animate": false,
         "className": "",
         "x": 310,
-        "y": 60,
+        "y": 100,
         "wires": [
             [
-                "e9ddfb833697770e",
-                "eabd01c99869229a"
+                "f4f082b119f62c06"
             ]
         ]
     },
@@ -1770,25 +2723,25 @@
         "correl": "",
         "expiry": "",
         "broker": "5bdf636997f59325",
-        "x": 520,
-        "y": 60,
+        "x": 860,
+        "y": 100,
         "wires": []
     },
     {
         "id": "eabd01c99869229a",
         "type": "debug",
         "z": "ba3455c58b89c1a0",
-        "name": "licht",
+        "name": "debugLightOut",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
+        "complete": "true",
+        "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 530,
-        "y": 140,
+        "x": 840,
+        "y": 40,
         "wires": []
     },
     {
@@ -1808,6 +2761,725 @@
         "y": 60,
         "wires": [
             [
+                "fec167d6ec6044cf",
+                "615ac56610cfecc9",
+                "f4f082b119f62c06"
+            ]
+        ]
+    },
+    {
+        "id": "a3ce79a844279562",
+        "type": "mqtt in",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "name": "CourtState",
+        "topic": "tcs/court/state/#",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "5bdf636997f59325",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 460,
+        "wires": [
+            [
+                "372f4262201ef4f4",
+                "d8c93e18aceaa916"
+            ]
+        ]
+    },
+    {
+        "id": "372f4262201ef4f4",
+        "type": "debug",
+        "z": "ba3455c58b89c1a0",
+        "d": true,
+        "g": "28d60df670311f10",
+        "name": "debugCourtState",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 370,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "d8c93e18aceaa916",
+        "type": "function",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "name": "functionCourt",
+        "func": "const messages = new Array(node.outputCount)\n\nif (msg.topic.startsWith(\"tcs/court/state/\")) {\n    // prepare state message from court\n    var numberStr = msg.topic.split('/').pop();\n\n    var sprinklers = msg.payload[\"sprinklers\"];\n    for (let i = 0; i < sprinklers.length; i++) {\n        if (sprinklers[i] < 2) {\n            messages[i] = { payload: Boolean(sprinklers[i]) };\n        }\n    }\n\n    var floodlight = msg.payload[\"floodlight\"];\n    if (floodlight < 2) {\n        // floodlight message at the end\n        messages[7] = { payload: Boolean(floodlight) };\n    }\n}\nreturn messages;\n",
+        "outputs": 8,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 460,
+        "wires": [
+            [
+                "69a8b71dafbcf074"
+            ],
+            [
+                "2f094a87f927767a"
+            ],
+            [
+                "7d4213749a771baf"
+            ],
+            [
+                "cdb00818d49e4c8a"
+            ],
+            [
+                "81a98eeb9ca928a1"
+            ],
+            [
+                "0af7f2613f6294d8"
+            ],
+            [
+                "67b8fecb6c6a939a"
+            ],
+            [
+                "3d4fec6294324c89",
+                "c52b2966f5e14d03"
+            ]
+        ]
+    },
+    {
+        "id": "c5a14a38ca5df4a0",
+        "type": "ui_led",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "order": 2,
+        "group": "425a628f40c4287e",
+        "width": 0,
+        "height": 0,
+        "label": "Platz 1",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "false",
+                "valueType": "bool"
+            },
+            {
+                "color": "#008000",
+                "value": "true",
+                "valueType": "bool"
+            },
+            {
+                "color": "#808080",
+                "value": "unknown",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "StatusSprink1",
+        "x": 820,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "69a8b71dafbcf074",
+        "type": "trigger",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "name": "triggerSprink1",
+        "op1": "",
+        "op2": "unknown",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "3000",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 620,
+        "y": 360,
+        "wires": [
+            [
+                "c5a14a38ca5df4a0"
+            ]
+        ]
+    },
+    {
+        "id": "e13c323c31380f2f",
+        "type": "ui_led",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "order": 8,
+        "group": "425a628f40c4287e",
+        "width": 0,
+        "height": 0,
+        "label": "Platz 7",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "false",
+                "valueType": "bool"
+            },
+            {
+                "color": "#008000",
+                "value": "true",
+                "valueType": "bool"
+            },
+            {
+                "color": "#808080",
+                "value": "unknown",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "StatusSprink7",
+        "x": 820,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "2853345606fb4174",
+        "type": "ui_led",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "order": 7,
+        "group": "425a628f40c4287e",
+        "width": 0,
+        "height": 0,
+        "label": "Platz 6",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "false",
+                "valueType": "bool"
+            },
+            {
+                "color": "#008000",
+                "value": "true",
+                "valueType": "bool"
+            },
+            {
+                "color": "#808080",
+                "value": "unknown",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "StatusSprink6",
+        "x": 820,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "c286cf4436903687",
+        "type": "ui_led",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "order": 6,
+        "group": "425a628f40c4287e",
+        "width": 0,
+        "height": 0,
+        "label": "Platz 5",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "false",
+                "valueType": "bool"
+            },
+            {
+                "color": "#008000",
+                "value": "true",
+                "valueType": "bool"
+            },
+            {
+                "color": "#808080",
+                "value": "unknown",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "StatusSprink5",
+        "x": 820,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "7e0f1592c8772514",
+        "type": "ui_led",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "order": 5,
+        "group": "425a628f40c4287e",
+        "width": 0,
+        "height": 0,
+        "label": "Platz 4",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "false",
+                "valueType": "bool"
+            },
+            {
+                "color": "#008000",
+                "value": "true",
+                "valueType": "bool"
+            },
+            {
+                "color": "#808080",
+                "value": "unknown",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "StatusSprink4",
+        "x": 820,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "f3162516092d217d",
+        "type": "ui_led",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "order": 4,
+        "group": "425a628f40c4287e",
+        "width": 0,
+        "height": 0,
+        "label": "Platz 3",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "false",
+                "valueType": "bool"
+            },
+            {
+                "color": "#008000",
+                "value": "true",
+                "valueType": "bool"
+            },
+            {
+                "color": "#808080",
+                "value": "unknown",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "StatusSprink3",
+        "x": 820,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "cede7bed9bf1716a",
+        "type": "ui_led",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "order": 3,
+        "group": "425a628f40c4287e",
+        "width": 0,
+        "height": 0,
+        "label": "Platz 2",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "false",
+                "valueType": "bool"
+            },
+            {
+                "color": "#008000",
+                "value": "true",
+                "valueType": "bool"
+            },
+            {
+                "color": "#808080",
+                "value": "unknown",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "StatusSprink2",
+        "x": 820,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "f42dc8d004bc8c79",
+        "type": "ui_led",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "order": 1,
+        "group": "425a628f40c4287e",
+        "width": 0,
+        "height": 0,
+        "label": "Flutlicht",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "false",
+                "valueType": "bool"
+            },
+            {
+                "color": "#008000",
+                "value": "true",
+                "valueType": "bool"
+            },
+            {
+                "color": "#808080",
+                "value": "unknown",
+                "valueType": "str"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "StatusFloodLight",
+        "x": 830,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "3d4fec6294324c89",
+        "type": "trigger",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "name": "triggerFloodLight",
+        "op1": "",
+        "op2": "unknown",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "3000",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 630,
+        "y": 660,
+        "wires": [
+            [
+                "f42dc8d004bc8c79"
+            ]
+        ]
+    },
+    {
+        "id": "2f094a87f927767a",
+        "type": "trigger",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "name": "triggerSprink2",
+        "op1": "",
+        "op2": "unknown",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "3000",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 620,
+        "y": 400,
+        "wires": [
+            [
+                "cede7bed9bf1716a"
+            ]
+        ]
+    },
+    {
+        "id": "7d4213749a771baf",
+        "type": "trigger",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "name": "triggerSprink3",
+        "op1": "",
+        "op2": "unknown",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "3000",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 620,
+        "y": 440,
+        "wires": [
+            [
+                "f3162516092d217d"
+            ]
+        ]
+    },
+    {
+        "id": "cdb00818d49e4c8a",
+        "type": "trigger",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "name": "triggerSprink4",
+        "op1": "",
+        "op2": "unknown",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "3000",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 620,
+        "y": 480,
+        "wires": [
+            [
+                "7e0f1592c8772514"
+            ]
+        ]
+    },
+    {
+        "id": "81a98eeb9ca928a1",
+        "type": "trigger",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "name": "triggerSprink5",
+        "op1": "",
+        "op2": "unknown",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "3000",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 620,
+        "y": 520,
+        "wires": [
+            [
+                "c286cf4436903687"
+            ]
+        ]
+    },
+    {
+        "id": "0af7f2613f6294d8",
+        "type": "trigger",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "name": "triggerSprink6",
+        "op1": "",
+        "op2": "unknown",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "3000",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 620,
+        "y": 560,
+        "wires": [
+            [
+                "2853345606fb4174"
+            ]
+        ]
+    },
+    {
+        "id": "67b8fecb6c6a939a",
+        "type": "trigger",
+        "z": "ba3455c58b89c1a0",
+        "g": "28d60df670311f10",
+        "name": "triggerSprink7",
+        "op1": "",
+        "op2": "unknown",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "3000",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 620,
+        "y": 600,
+        "wires": [
+            [
+                "e13c323c31380f2f"
+            ]
+        ]
+    },
+    {
+        "id": "c5bb8e4b30f5c0f2",
+        "type": "trigger",
+        "z": "ba3455c58b89c1a0",
+        "name": "RetriggerF",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-1",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "min",
+        "reset": "false",
+        "bytopic": "topic",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 650,
+        "y": 100,
+        "wires": [
+            [
+                "e9ddfb833697770e",
+                "eabd01c99869229a"
+            ]
+        ]
+    },
+    {
+        "id": "fec167d6ec6044cf",
+        "type": "debug",
+        "z": "ba3455c58b89c1a0",
+        "name": "debugLightIn",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 310,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "f4f082b119f62c06",
+        "type": "switch",
+        "z": "ba3455c58b89c1a0",
+        "name": "SplitF",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 450,
+        "y": 60,
+        "wires": [
+            [
+                "c5bb8e4b30f5c0f2"
+            ],
+            [
+                "c5bb8e4b30f5c0f2",
+                "b7815ee30e57c6fb"
+            ]
+        ]
+    },
+    {
+        "id": "b7815ee30e57c6fb",
+        "type": "delay",
+        "z": "ba3455c58b89c1a0",
+        "name": "delayF",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 630,
+        "y": 180,
+        "wires": [
+            [
+                "e9ddfb833697770e"
+            ]
+        ]
+    },
+    {
+        "id": "c52b2966f5e14d03",
+        "type": "switch",
+        "z": "ba3455c58b89c1a0",
+        "name": "stateFalse",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 130,
+        "y": 180,
+        "wires": [
+            [
+                "615ac56610cfecc9"
+            ],
+            [
+                "c5bb8e4b30f5c0f2",
                 "615ac56610cfecc9"
             ]
         ]

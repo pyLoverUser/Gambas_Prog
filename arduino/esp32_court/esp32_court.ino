@@ -1,4 +1,4 @@
-// ESP32 mqtt client for sprinkler and floodlight
+// ESP32 mqtt client next to court 1 and 6 for sprinkler and floodlight
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <Arduino_DebugUtils.h>
@@ -11,16 +11,15 @@ const char* password = "58714188517339106583";
 
 const char* mqtt_server = "192.168.178.2";
 const int mqtt_port = 1883;
-const String clientId = "court1";
-// const String clientId = "court6";
+const int courtNumber = 1; // court number, used for clientId and topic names
+// const int courtNumber = 6; // court number, used for clientId and topic names
+const String clientId = "court" + String(courtNumber); // clientId for MQTT broker
 
 const String topicSprinkler = "tcs/sprink/out";
 const String topicFloodlight = "tcs/light/out";
 const String topicSWildcard = String(topicSprinkler + "/#");
 const String topicFWildcard = String(topicFloodlight + "/#");
-
-const String topicSprinklerState = "tcs/sprink/state";
-
+const String topicSprinklerState = "tcs/court/state/" + String(courtNumber);
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -29,7 +28,7 @@ boolean wifiConnected = false;
 const long reconnectInterval = 4000; // interval in milliseconds
 long lastReconnectAttempt = 0;
 const int sprinklerTimeout = 15 * 1000; // timeout in milliseconds for sprinkler to turn off automatically
-const int lightTimeout = 60 * 1000; // timeout in milliseconds for floodlight to turn off automatically
+const int lightTimeout = 300 * 1000; // timeout in milliseconds for floodlight to turn off automatically
 
 const long heartBeatInterval = 6000; // interval in milliseconds
 long lastHeartBeat = 0;
@@ -98,6 +97,17 @@ void setup() {
   {
     DEBUG_VERBOSE("Set pin %d to OUTPUT", R[i]);
     pinMode(R[i], OUTPUT);
+    digitalWrite(R[i], LOW); // set all pins to LOW
+  }
+
+  // set default states to false, off after reboot
+  if (maxLigths > 0) {
+    currentLightState = 0;
+  }
+  for (int i = 0; i < maxSprinklers; i++) {
+    if (sprinklerConfig[i] != 0xff) {
+      currentSprinklerState[i] = 0;
+    }
   }
 
   delay(10);

@@ -42,6 +42,22 @@ retain: false
 true
 
 
+# ## Publish Ausgabe
+topic: tcs/light/in
+qos: 1
+retain: false
+
+true
+
+
+# ## Publish Ausgabe
+topic: tcs/light/in
+qos: 1
+retain: false
+
+false
+
+
 # ## Publish debug output -1 none, 0 error, 1 warning, 2 info, 3 debug, 4 verbose
 topic: tcs/sprink/out/debug
 qos: 1
