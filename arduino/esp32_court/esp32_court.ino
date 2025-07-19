@@ -20,7 +20,6 @@ const String topicSWildcard = String(topicSprinkler + "/#");
 const String topicFWildcard = String(topicFloodlight + "/#");
 
 const String topicSprinklerState = "tcs/sprink/state";
-const String topicFloodlightState = "tcs/light/state";
 
 
 WiFiClient espClient;
@@ -55,7 +54,7 @@ const int numPins = sizeof(R) / sizeof(R[0]);
 
 const int maxSprinklers = 7; // maximum number of sprinklers
 // Sprinkler configuration, number is index in array R, 0xff = not used
-const int sprinklerConfig[maxSprinklers] = {0, 1, 2, 3, 0xff, 0xff, 0xff};
+const int sprinklerConfig[maxSprinklers] = {0, 1, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 // store the sprinkler start times into an array
 // index 0 starts with sprinkler 1
@@ -65,7 +64,7 @@ int currentSprinklerState[maxSprinklers] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
 // floodlight config
 const int maxLigths = 2; // maximum number of flood lights
 // floodlight configuration, number is index in array R
-const int lightConfig[maxLigths] = {8, 9};
+const int lightConfig[maxLigths] = {2, 3};
 long lightStart = 0;
 int currentLightState = 0xff; // 0xff = unknown, 0 = off, 1 = on
 
