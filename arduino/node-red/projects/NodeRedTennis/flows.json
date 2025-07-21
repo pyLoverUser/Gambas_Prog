@@ -262,6 +262,30 @@
         "h": 382
     },
     {
+        "id": "dc641b9bdff088da",
+        "type": "group",
+        "z": "a9fb92d1b4a932fb",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "86e727dc968351ed",
+            "f67768c3a2b3e0db",
+            "6193ab53df9a1574",
+            "673da509677e5e69"
+        ],
+        "x": 34,
+        "y": 139,
+        "w": 1072,
+        "h": 82
+    },
+    {
         "id": "081e94a5f61d65d8",
         "type": "ui_base",
         "theme": {
@@ -445,23 +469,14 @@
         "className": ""
     },
     {
-        "id": "7b590fa26824b92e",
-        "type": "ui_tab",
-        "name": "Konfiguration",
-        "icon": "dashboard",
-        "order": 2,
-        "disabled": false,
-        "hidden": false
-    },
-    {
         "id": "eee21aa75102caa5",
         "type": "ui_group",
         "name": "Zeitplan Geräte",
-        "tab": "7b590fa26824b92e",
+        "tab": "2936b813.6cde68",
         "order": 4,
         "disp": true,
         "width": "10",
-        "collapse": true,
+        "collapse": false,
         "className": ""
     },
     {
@@ -498,7 +513,7 @@
         "type": "ui_switch",
         "z": "4eb00aa7fe93676d",
         "name": "Konoff",
-        "label": "Kühlbox",
+        "label": "Kühltheke",
         "tooltip": "",
         "group": "aefc2b4692e2a1e1",
         "order": 1,
@@ -619,78 +634,12 @@
         "wires": []
     },
     {
-        "id": "86b196ba5a66c00f",
-        "type": "file in",
-        "z": "4eb00aa7fe93676d",
-        "name": "ReadFile",
-        "filename": "/home/pi/Documents/time-schedule0.txt",
-        "filenameType": "str",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 400,
-        "y": 220,
-        "wires": [
-            [
-                "04dd8f1d89d7454a"
-            ]
-        ]
-    },
-    {
-        "id": "c87a556f2620a313",
-        "type": "inject",
-        "z": "4eb00aa7fe93676d",
-        "name": "FireAfterReboot",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "5",
-        "crontab": "",
-        "once": true,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 230,
-        "y": 220,
-        "wires": [
-            [
-                "86b196ba5a66c00f"
-            ]
-        ]
-    },
-    {
-        "id": "4de8515e61752abd",
-        "type": "file",
-        "z": "4eb00aa7fe93676d",
-        "name": "WriteFile",
-        "filename": "/home/pi/Documents/time-schedule0.txt",
-        "filenameType": "str",
-        "appendNewline": true,
-        "createDir": true,
-        "overwriteFile": "true",
-        "encoding": "none",
-        "x": 820,
-        "y": 100,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "04dd8f1d89d7454a",
         "type": "ui_time_scheduler",
         "z": "4eb00aa7fe93676d",
         "group": "eee21aa75102caa5",
         "name": "schedule-Kühlung",
-        "startDay": 0,
+        "startDay": "1",
         "refresh": 60,
         "devices": [
             "Kühlbox",
@@ -704,17 +653,15 @@
         "sendTopic": false,
         "lat": "",
         "lon": "",
-        "customContextStore": "",
+        "customContextStore": "file",
         "outputs": 3,
         "order": 1,
-        "width": "0",
-        "height": "0",
+        "width": "10",
+        "height": "8",
         "x": 590,
         "y": 220,
         "wires": [
-            [
-                "4de8515e61752abd"
-            ],
+            [],
             [
                 "83cf37cf.c76988"
             ],
@@ -731,12 +678,12 @@
         "group": "aefc2b4692e2a1e1",
         "width": 0,
         "height": 0,
-        "label": "Kühlung Status",
+        "label": "Kühltheke Status",
         "labelPlacement": "left",
         "labelAlignment": "left",
         "colorForValue": [
             {
-                "color": "#f66151",
+                "color": "#ff0000",
                 "value": "false",
                 "valueType": "bool"
             },
@@ -1171,8 +1118,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 570,
-        "y": 240,
+        "x": 650,
+        "y": 260,
         "wires": []
     },
     {
@@ -1240,7 +1187,7 @@
         "type": "function",
         "z": "a9fb92d1b4a932fb",
         "name": "SprinkFunc",
-        "func": "var msgOut = RED.util.cloneMessage(msg);\n\n// store sprinkler duration from ui\nif (msg.topic === \"tcs/sprink/duration\") {\n    global.set(\"sprinklerDuration\", msg.payload);\n    return null;\n}\n\nmsgOut.timerType = 'delay'; // 'delay', 'loop'\nmsgOut.timerDurationUnit = 'second';\nmsgOut.retain = false;\n\nif (msg.topic === \"tcs/sprink/in\") {\n    // prepare message from mqtt\n    msgOut.topic = \"tcs/sprink/out/\" + msg.payload.number;\n    msgOut.number = msg.payload.number;\n    msgOut.payload = msg.payload.action;\n    msgOut.timerDuration = msg.payload.dauer;\n\n} else if (msg.topic.startsWith(\"tcs/sprink/switch/\")) {\n    // prepare message from ui switches\n    var numberStr = msg.topic.split('/').pop();\n    var number = parseInt(numberStr, 10);\n    msgOut.topic = \"tcs/sprink/out/\" + String(number);\n    msgOut.number = number;\n    msgOut.payload = msg.payload;\n    msgOut.timerDuration = global.get(\"sprinklerDuration\");\n}\nreturn msgOut;",
+        "func": "var msgOut = RED.util.cloneMessage(msg);\nvar defaultDuration = 60;\n\n// store sprinkler duration from ui\nif (msg.topic === \"tcs/sprink/duration\") {\n    if (msg.payload && (msg.payload !== \"\" || msg.payload > 0)) {\n        global.set(\"sprinklerDuration\", msg.payload, \"file\");\n    }\n    return null;\n}\n\nmsgOut.timerType = 'delay'; // 'delay', 'loop'\nmsgOut.timerDurationUnit = 'second';\nmsgOut.retain = false;\n\nif (msg.topic === \"tcs/sprink/in\") {\n    // prepare message from mqtt\n    msgOut.topic = \"tcs/sprink/out/\" + msg.payload.number;\n    msgOut.number = msg.payload.number;\n    msgOut.payload = msg.payload.action;\n    msgOut.timerDuration = msg.payload.dauer;\n\n} else if (msg.topic.startsWith(\"tcs/sprink/switch/\")) {\n    // prepare message from ui switches\n    var numberStr = msg.topic.split('/').pop();\n    var number = parseInt(numberStr, 10);\n    msgOut.topic = \"tcs/sprink/out/\" + String(number);\n    msgOut.number = number;\n    msgOut.payload = msg.payload;\n    var duration = global.get(\"sprinklerDuration\", \"file\");\n    node.log(\"get sprinklerDuration = \" + duration);\n\n    if (!duration || duration === \"\" || duration === 0) {\n        duration = defaultDuration;\n        global.set(\"sprinklerDuration\", duration, \"file\");        \n        node.log(\"set sprinklerDuration = \" + duration);\n    }\n    msgOut.timerDuration = duration;\n}\nreturn msgOut;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1787,6 +1734,7 @@
         "id": "86e727dc968351ed",
         "type": "ui_text_input",
         "z": "a9fb92d1b4a932fb",
+        "g": "dc641b9bdff088da",
         "name": "SprinklerDuration",
         "label": "Sprenger Dauer",
         "tooltip": "",
@@ -1797,35 +1745,17 @@
         "passthru": false,
         "mode": "number",
         "delay": "0",
-        "topic": "tcs/sprink/duration",
+        "topic": "",
         "sendOnBlur": true,
         "className": "",
         "topicType": "str",
-        "x": 150,
-        "y": 160,
+        "x": 690,
+        "y": 180,
         "wires": [
             [
-                "1fdb6f32bd973d23",
-                "59b3909fb8dd4c29"
+                "6193ab53df9a1574"
             ]
         ]
-    },
-    {
-        "id": "1fdb6f32bd973d23",
-        "type": "debug",
-        "z": "a9fb92d1b4a932fb",
-        "name": "debug 3",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 400,
-        "y": 160,
-        "wires": []
     },
     {
         "id": "d8ed96829f15c1b3",
@@ -2674,6 +2604,86 @@
         "x": 1045,
         "y": 1540,
         "wires": []
+    },
+    {
+        "id": "f67768c3a2b3e0db",
+        "type": "change",
+        "z": "a9fb92d1b4a932fb",
+        "g": "dc641b9bdff088da",
+        "name": "ReadGlobalSprinkDuration",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "#:(file)::sprinklerDuration",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 180,
+        "wires": [
+            [
+                "86e727dc968351ed"
+            ]
+        ]
+    },
+    {
+        "id": "6193ab53df9a1574",
+        "type": "change",
+        "z": "a9fb92d1b4a932fb",
+        "g": "dc641b9bdff088da",
+        "name": "WriteGlobalSprinkDuration",
+        "rules": [
+            {
+                "t": "set",
+                "p": "#:(file)::sprinklerDuration",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 960,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "673da509677e5e69",
+        "type": "inject",
+        "z": "a9fb92d1b4a932fb",
+        "g": "dc641b9bdff088da",
+        "name": "triggerAtStart",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "#:(file)::sprinklerDuration",
+        "payloadType": "global",
+        "x": 160,
+        "y": 180,
+        "wires": [
+            [
+                "f67768c3a2b3e0db"
+            ]
+        ]
     },
     {
         "id": "615ac56610cfecc9",

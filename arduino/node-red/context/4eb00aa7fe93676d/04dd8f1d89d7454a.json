@@ -1,0 +1,50 @@
+{
+    "timers": [
+        {
+            "starttime": 1753076880000,
+            "days": [
+                0,
+                1,
+                1,
+                1,
+                1,
+                1,
+                0
+            ],
+            "output": "0",
+            "endtime": 1753113960000
+        },
+        {
+            "starttime": 1753084260000,
+            "days": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "output": "0",
+            "endtime": 1753113360000
+        },
+        {
+            "starttime": 1753112880000,
+            "days": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "output": "1",
+            "endtime": 1753131180000
+        }
+    ],
+    "settings": {
+        "disabledDevices": [],
+        "overviewFilter": "all"
+    }
+}
