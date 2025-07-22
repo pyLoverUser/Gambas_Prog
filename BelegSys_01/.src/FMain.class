@@ -2006,24 +2006,27 @@ End
 '==========================================================================
 Public Sub TimerRegner_Timer()
   
-  Dim i, j, k As Integer
+  Dim i, k As Integer
+  Dim iCacheRegnerNumber As Integer
+  Dim iRegner As Integer
   ' digitalWrite(secure, True)
   For i = 0 To StrucType.RegnerManu.RegnerGlZ - 1
-    j = RegnerCach[i, 0]
-    If RegnerCach[i, 1] > 0 Then
-      If RegnerCach[i, 2] = 0 Then
+    iCacheRegnerNumber = RegnerCach[i, 0]   'x,0=Regner Nr., x,1 Beregnungsdauer, x,2=Einschaltverzögerung
+    If RegnerCach[i, 1] > 0 Then  ' x,1 Beregnungsdauer
+      If RegnerCach[i, 2] = 0 Then  ' x,2=Einschaltverzögerung
         RegnerCach[i, 1] -= 1
-        If hPicRegner[j].Picture = picRegCopy1.Picture Then
-          hPicRegner[j].Picture = picRegCopy2.Picture
+        If hPicRegner[iCacheRegnerNumber].Picture = picRegCopy1.Picture Then
+          hPicRegner[iCacheRegnerNumber].Picture = picRegCopy2.Picture
         Else
-          hPicRegner[j].Picture = picRegCopy1.Picture
+          hPicRegner[iCacheRegnerNumber].Picture = picRegCopy1.Picture
         Endif
         If RegnerCach[i, 1] <= 0 Then
-          hPicRegner[j].Visible = False
-          hLabRegnerNr[j].Visible = False
-          OutByte[j, 0] = 0
+          hPicRegner[iCacheRegnerNumber].Visible = False
+          hLabRegnerNr[iCacheRegnerNumber].Visible = False
+          OutByte[iCacheRegnerNumber, 0] = 0
           RegnerRollo(0, clock0)
           ' regWrite(clock0, gpioD8[j], 0)      'Regner Aus
+          Mqtt.MqttSwitchSprinkler(iCacheRegnerNumber + 1, False, 0)
           
           RegnerCach[i, 1] = 0
           RegnerCach[i, 0] = 0
@@ -2044,12 +2047,13 @@ Public Sub TimerRegner_Timer()
           Endif
         Endif
         
-      Else
+      Else  ' x,2=Einschaltverzögerung aktiv
         RegnerCach[i, 2] -= 1
         If RegnerCach[i, 2] <= 0 Then
           OutByte[RegnerCach[i, 0], 0] = 1
           RegnerRollo(0, clock0)
           ' regWrite(clock0, gpioD8[RegnerCach[i, 0]], 1)       'Regner ein
+          Mqtt.MqttSwitchSprinkler(RegnerCach[i, 0] + 1, True, RegnerCach[i, 1] / 2)
         Endif
       Endif
     Endif

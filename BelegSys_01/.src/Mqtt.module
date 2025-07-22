@@ -1,26 +1,26 @@
 ' Gambas module file
 
 
-Public Function MqttPublish(sTopic As String, sMessage As String) As Result
-Dim rs As Result 
-Dim i As Integer
-Dim sBrokerIp As String = "192.168.1.2"
+Public Function MqttPublish(sTopic As String, sMessage As String) As Boolean
+Dim rs As Boolean = True
+Dim sBrokerIp As String = "192.168.178.2"
+Dim sOutput As String
 
-  Dim pProcess As Process = EXEC ["mosquitto_pub", "-h", sBrokerIp, "-t", sTopic, "-m", sMessage] WAIT
+  Exec ["mosquitto_pub", "-h", sBrokerIp, "-t", sTopic, "-m", sMessage] To sOutput
 
-  If pProcess.Error Then
+  If Error Then
     Message.Error(("Error when running mosquitto_pub"))
+    Return False
   Endif
   Return rs
 
 End
 
 
-Public Function MqttSwitchSprinkler(iNumber As Integer, bOnOff As Boolean, iDuration As Integer) As Result
-Dim rs As Result 
+Public Function MqttSwitchSprinkler(iNumber As Integer, bOnOff As Boolean, iDuration As Integer) As Boolean
+Dim rs As Boolean = True
 ' Example command:
 ' mosquitto_pub -h 192.168.1.2 -t tcs/sprink/in -m "{ \"number\": 1, \"dauer\": 600, \"action\": \"START\" }"
-Dim i As Integer
 
 Dim sTopic As String = "tcs/sprink/in"
 Dim sMessage As String = "{ \"number\": " & iNumber &
@@ -29,11 +29,8 @@ Dim sMessage As String = "{ \"number\": " & iNumber &
                          "\"}"
 
 rs = MqttPublish(sTopic, sMessage)
-If rs.Error Then
-    Message.Error(("Error when running MqttPublish"))
-  Endif
 
-  Return rs
+Return rs
 
 End
 
