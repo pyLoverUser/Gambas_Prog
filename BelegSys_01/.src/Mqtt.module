@@ -1,0 +1,17 @@
+' Gambas module file
+
+
+Public Function MqttPublish(sBrokerIp As String, sTopic As String, sMessage As String) As Result
+Dim rs As Result 
+Dim sCommand As String = "mosquitto_pub -h 192.168.1.1 -p 1885 -t sensors/temperature -m 1266193804 32"
+Dim i As Integer
+
+  Dim pProcess As Process = EXEC ["mosquitto_pub", "-h", sBrokerIp, "-t", sTopic, "-m", sMessage] WAIT
+
+  If pProcess.Error Then
+    Message.Error(("Error when running mosquitto_pub"))
+  Endif
+  Return rs
+
+End
+
