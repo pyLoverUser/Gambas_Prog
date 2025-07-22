@@ -1,9 +1,10 @@
 ' Gambas module file
 
 
-Public Function MqttPublish(sBrokerIp As String, sTopic As String, sMessage As String) As Result
+Public Function MqttPublish(sTopic As String, sMessage As String) As Result
 Dim rs As Result 
 Dim i As Integer
+Dim sBrokerIp As String = "192.168.1.2"
 
   Dim pProcess As Process = EXEC ["mosquitto_pub", "-h", sBrokerIp, "-t", sTopic, "-m", sMessage] WAIT
 
@@ -17,17 +18,17 @@ End
 
 Public Function MqttSwitchSprinkler(iNumber As Integer, bOnOff As Boolean, iDuration As Integer) As Result
 Dim rs As Result 
-Dim sCommand As String = "mosquitto_pub -h 192.168.1.1 -p 1885 -t sensors/temperature -m 1266193804 32"
+' Example command:
+' mosquitto_pub -h 192.168.1.2 -t tcs/sprink/in -m "{ \"number\": 1, \"dauer\": 600, \"action\": \"START\" }"
 Dim i As Integer
 
-Dim sBrokerIp As String = "192.168.1.2"
 Dim sTopic As String = "tcs/sprink/in"
 Dim sMessage As String = "{ \"number\": " & iNumber &
                          ", \"dauer\": " & iDuration & 
                          ", \"action\": \"" & IIf(bOnOff, "START", "STOP") &
                          "\"}"
 
-rs = MqttPublish(sBrokerIp, sTopic, sMessage)
+rs = MqttPublish(sTopic, sMessage)
 If rs.Error Then
     Message.Error(("Error when running MqttPublish"))
   Endif
