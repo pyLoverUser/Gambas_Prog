@@ -132,6 +132,14 @@
       Text = ("Rollo")
       Picture = Picture["icon:/32/lock"]
     }
+    { btnLight Button btnMain
+      Name = "btnLight"
+      MoveScaled(140,6,13.7778,13.7778)
+      Background = Color.Red
+      Tag = "Light"
+      Picture = Picture["Btn_Light.png"]
+      Border = False
+    }
   }
   { !TimerSecure #Timer
     #MoveScaled(5,48)

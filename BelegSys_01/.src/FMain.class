@@ -104,6 +104,7 @@ Public TastSaveFl As Boolean
 Public lbplzSperre[7] As Label
 Public strSperrPlz As String
 Public strMSTBY As String = "300"
+Public bLightState As Boolean = False
 '==========================================================================
 ' Initialisierung:  Form_Open()
 '	
@@ -184,6 +185,7 @@ Public Sub Form_Open()
   
   btnAdmin.Left = 100
   btnSpielBetr.Left = 400
+  btnLight.left = 1920 - 650 - btnLight.Width
   btnGast.left = 1920 - 450 - btnGast.Width
   btnDelete.Left = 1920 - 250 - btnDelete.Width
   btnRollo.X = 1920 - 120
@@ -192,9 +194,11 @@ Public Sub Form_Open()
   btnSpielBetr.y = btnAdmin.y
   btnDelete.y = btnAdmin.y
   btnGast.y = btnAdmin.y
+  btnLight.y = btnAdmin.y
   btnRollo.Visible = False
   btnDelete.Visible = False
   btnGast.Visible = False
+  btnLight.Visible = False
   btnAdmin.Visible = False
   btnSpielBetr.Visible = False
   
@@ -1118,6 +1122,7 @@ Public Sub btnMainInit(SystemRechte As String)
       btnDelete.Visible = True
       If .Belegungs_sts <> 2 And .Belegungs_sts <> 4 Then
         btnGast.Visible = True
+        btnLight.Visible = True
       Endif
     Endif
   End With
@@ -1125,11 +1130,13 @@ Public Sub btnMainInit(SystemRechte As String)
     Case "A"
       btnAdmin.Visible = True
       btnSpielBetr.Visible = True
+      btnLight.Visible = True
     Case "E"
       ' btnDelede.Visible = True
       ' btnGast.Visible = True
       btnAdmin.Visible = True
       btnSpielBetr.Visible = True
+      btnLight.Visible = True
       
     Case "X"
       ' btnDelede.Visible = True
@@ -1329,6 +1336,7 @@ Public Sub delBelegung(plzIdx As Integer, hnr As Integer)
   SqlP = "WHERE Platz_idx = '" & plzIdx & "'"  
   rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
   btnGast.Visible = False
+  btnLight.Visible = False
   btnDelete.Visible = False
 
 End
@@ -1766,6 +1774,7 @@ Public Sub TimerRFID_Timer()
       gridBelegung.Enabled = False
       btnDelete.Visible = False
       btnGast.Visible = False
+      btnLight.Visible = False
       btnRollo.Visible = False
       btnAdmin.Visible = False
       btnSpielBetr.Visible = False
@@ -2208,7 +2217,15 @@ Public Sub btnMain_Click()
       fmSpielbetrieb.ShowModal
     Case "Admin"
       fmAdmin.ShowModal
-      
+
+    Case "Light"
+      If bLightState Then
+        bLightState = False
+      Else
+        bLightState = True
+      Endif
+      Mqtt.MqttSwitchLight(bLightState)
+
     Case "Gast"
       rs = seekMitgl(MitglNr) 
       If rs.count <= 0 Then Return       

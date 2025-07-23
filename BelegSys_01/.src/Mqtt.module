@@ -34,3 +34,17 @@ Return rs
 
 End
 
+Public Function MqttSwitchLight(bOnOff As Boolean) As Boolean
+Dim rs As Boolean = True
+' Example command:
+' mosquitto_pub -h 192.168.1.2 -t tcs/sprink/in -m "{ \"number\": 1, \"dauer\": 600, \"action\": \"START\" }"
+
+Dim sTopic As String = "tcs/light/in"
+Dim sMessage As String = IIf(bOnOff, "true", "false")
+
+rs = MqttPublish(sTopic, sMessage)
+
+Return rs
+
+End
+
