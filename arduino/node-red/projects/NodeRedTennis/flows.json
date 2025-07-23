@@ -3380,7 +3380,7 @@
         "overrideDelay": false,
         "units": "min",
         "reset": "false",
-        "bytopic": "topic",
+        "bytopic": "all",
         "topic": "topic",
         "outputs": 1,
         "x": 650,
@@ -3460,7 +3460,8 @@
         "y": 180,
         "wires": [
             [
-                "e9ddfb833697770e"
+                "e9ddfb833697770e",
+                "c6cf485f9fb4dc09"
             ]
         ]
     },
@@ -3493,5 +3494,22 @@
                 "615ac56610cfecc9"
             ]
         ]
+    },
+    {
+        "id": "c6cf485f9fb4dc09",
+        "type": "debug",
+        "z": "ba3455c58b89c1a0",
+        "name": "debugLighOutFalse",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 830,
+        "y": 180,
+        "wires": []
     }
 ]
