@@ -1,3 +1,8 @@
+Beleg Linux:
+
+sudo apt-get install mosquitto-clients 
+Library "/lib/libwiringPi"
+
 
 
 Regner:
