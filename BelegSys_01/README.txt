@@ -20,3 +20,8 @@ RegnerAus
 
 OutByte[j, 0] = 0
 RegnerRollo(0, clock0)
+
+Row = stunde * 4 + minute / 15
+
+hight_nr = Länge der Buchung in Anzahl 15 min (4 beim 60 min)
+Platz_idx = PlatzNr * 100 + row beim start

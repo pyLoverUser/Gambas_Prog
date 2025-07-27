@@ -2,6 +2,7 @@
 *.gambas
 .lock
 *~
+*.swp
 core
 core.*
 vgcore

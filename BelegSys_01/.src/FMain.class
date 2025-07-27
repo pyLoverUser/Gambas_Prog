@@ -961,9 +961,11 @@ Public Sub comEinbuchung(PlzNr As Integer)
   firstRow = FMain.firstRow
   If rs.Count > 0 Then
     For i = 0 To rs.count - 1
-      PlzFreeIdx = (rs!Platz_idx Mod 100) - firstRow 
-      If PlzFreeIdx > 2 Then
+      PlzFreeIdx = (rs!Platz_idx Mod 100) - firstRow
+      Print "PlzFreeIdx=" & PlzFreeIdx & ", pltzIdx=" & rs!Platz_idx & ", firstRow" & firstRow
+      If PlzFreeIdx > 2 Then  ' still more then 30 minutes until next booked
         tRow = firstRow + 1
+        Fmain.cDBVerbindung.Close()
         Return
       Else
         If strPlz = "" Then
@@ -972,13 +974,13 @@ Public Sub comEinbuchung(PlzNr As Integer)
           tRow = 999
           Message.Info("<font size=4 color=Red><b>Bitte belege einen der freien Plätze! < / b > < / font > < br >" & "<center><font size=5 color=Green>  " & strPlz & "</center><br></font>"
           "<font size=4 color=Black>Eine Buchung nach einer aktiven Belegung ist nur möglich, wenn keine freien Plätze zur Verfügung stehen</b></font>")
-          
+        
           Return
         Endif
       Endif
       rs.MoveNext
     Next
-  Else
+  Else  ' keine Buchung bisher
     PlzFreeIdx = 98 - firstRow
     tRow = firstRow + 1
   Endif
@@ -1115,6 +1117,15 @@ End
 Public Sub btnMainInit(SystemRechte As String)
   
   Dim rs As Result
+  Dim platzNr As Integer
+  Dim lightMin, lightMax As Integer
+  lightMin = 18 * 4      ' 18 Uhr
+  lightMax = 22 * 4 + 2  ' 22:30 Uhr
+  ' Entscheidung wann Flutlicht Button aktiv sein soll
+  ' Admin immer aktiv, normales Mitglied:
+  ' 1. nach 18:00 bis 22:30
+  ' 2. Eingebucht auf Platz 3 oder 4
+  ' 3. Oder Mannschaftstraining oder Reservierung aktiv auf Platz 3 oder 4
 
   rs = seekMitgl(MitglNr)
   With StrucType.Belegung
@@ -1122,9 +1133,28 @@ Public Sub btnMainInit(SystemRechte As String)
       btnDelete.Visible = True
       If .Belegungs_sts <> 2 And .Belegungs_sts <> 4 Then
         btnGast.Visible = True
-        btnLight.Visible = True
+      Else
+        platzNr = .Platz_idx \ 100
+        Print "Platz=" & platzNr & ",Start=" & (.Platz_idx Mod 100) & ",aktuell=" & firstRow & ",min=" & lightMin & ",max=" & lightMax
+        If (lightMin <= firstRow And lightMax >= firstRow) And (platzNr = 3 Or platzNr = 4) Then
+          btnLight.Visible = True
+        Endif
+      Endif
+    Else
+      ' keine Buchung des Users, check ob Event aktiv auf Platz 3 oder 4
+      ' SELECT * FROM `_Buchung_aktiv` WHERE `Event_fl` = 1 AND ((372 BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (472 BETWEEN Platz_idx AND Platz_idx+hight_nr+1))
+      If (lightMin <= firstRow And lightMax > firstRow) Then
+        SqlCom = "SELECT * From "
+        SqlTab = "_Buchung_aktiv "
+        SqlP = "WHERE Event_fl = 1 AND ((" & Str(3 * 100 + firstRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (" & 
+                Str(4 * 100 + firstRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1))" 
+        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+        If rs.count > 0 Then
+          btnLight.Visible = True
+        Endif
       Endif
     Endif
+    
   End With
   Select Case SystemRechte
     Case "A"
@@ -1504,7 +1534,7 @@ Public Sub btnEinzDopp_Click()
         .Einzel_Doppel = 0
         ' .hight_dec_inc = .hight_nr - 1
       Case 1
-        .hight_nr = StrucType.RegelnNormSpz.ZeitDoppel / 15    
+        .hight_nr = StrucType.RegelnNormSpz.ZeitDoppel / 15
         If PlzFreeIdx > .hight_nr Then
           gridBelegung[r, c].RowSpan = .hight_nr
         Else
@@ -1900,6 +1930,7 @@ Public Sub TimerGridZeit_Timer()
   Dim datum As Date
 
   i = topRow()
+  Print "TimerGridZeit: altTime=" & altTime & ", topRow=" & i & ", firstRow=" & firstRow
   If altTime <> i Then
     If i = 96 Then
       i = 0
@@ -2081,6 +2112,7 @@ End
 Public Sub RegnerRollo(i As Integer, clk As Integer)
   
   Dim k As Integer
+  Dim logStr As String = "RegnerRollo :"
 
   ZeitDatum.Stop
   TimerRegner.Stop
@@ -2088,8 +2120,10 @@ Public Sub RegnerRollo(i As Integer, clk As Integer)
   ' TimerGridZeit.Stop
   For k = 0 To 7
     Wait 0.001
+    logStr = logStr & OutByte[k, i] & ","
     digitalWrite(gpioD8[k], OutByte[k, i])
   Next
+  Print logStr
   digitalWrite(clk, 1)
   ' Wait 0.01
   ' digitalWrite(clk, 0)
