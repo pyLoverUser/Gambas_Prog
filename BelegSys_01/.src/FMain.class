@@ -927,16 +927,17 @@ End
 '==========================================================================
 
 Public Sub comEinbuchung(PlzNr As Integer)
-  Dim i As Integer
+  Dim i, j As Integer
   Dim rs As Result
   Dim PlNrRowBeg As Integer
   Dim PlNrRowEnd As Integer
   Dim strPlz As String
   Dim Plz As Integer[] = [0, 0, 0, 0, 0, 0, 0]
+  Dim belegStart, belegEnd, belegFirstEnd As Integer
 
   PlNrRowBeg = PlzNr * 100
   PlNrRowEnd = PlNrRowBeg + 98
-  ' PlatzTimeIdx = PlNrRowBeg + PlzIdx    'plz_sp_idx + SelTimeAbsIdx
+
   SqlCom = "SELECT Platz_idx FROM "
   SqlTab = "_Buchung_aktiv "
   SqlP = "ORDER BY Platz_idx "
@@ -955,24 +956,43 @@ Public Sub comEinbuchung(PlzNr As Integer)
   SqlTab = "_Buchung_aktiv "
   SqlP = "WHERE Platz_idx BETWEEN " & Str(PlNrRowBeg) & " AND " & Str(PlNrRowEnd) & " ORDER BY Platz_idx"
   rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
-  firstRow = FMain.firstRow
+
+  tRow = 999 ' default Wert, keine Buchung möglich
+
+  ' es ist nun möglich sich auf einem belegten Platz eine halbe Stunde im Vorraus sich einzubuchen, obwohl andere Plätze frei sind
+  ' das ist nötig für die Plätze 3 und 4 wegen dem Flutlicht
   If rs.Count > 0 Then
-    For i = 0 To rs.count - 1
-      PlzFreeIdx = (rs!Platz_idx Mod 100) - firstRow
+    j = IIf(rs.Count > 1, 1, 0)  ' nur die ersten 2 buchungen analysieren
+    For i = 0 To j
+      belegStart = rs!Platz_idx Mod 100
+      belegEnd = belegStart + rs!hight_nr
+      
       Print "PlzFreeIdx=" & PlzFreeIdx & ", pltzIdx=" & rs!Platz_idx & ", firstRow" & firstRow
-      If PlzFreeIdx > 2 Then  ' still more then 30 minutes until next booked
-        tRow = firstRow + 1
-        Fmain.cDBVerbindung.Close()
-        Return
-      Else
-        If strPlz = "" Then
-          firstRow = rs!Platz_idx + rs!hight_nr
-        Else
+      
+      ' check ist 1. belegung ist in der Zukunft
+      If i = 0 And belegStart > firstRow Then
+        PlzFreeIdx = belegStart - firstRow
+        tRow = firstRow
+        If PlzFreeIdx = 1 Then  ' Buchung von 15 Minuten nicht sinnvoll
           tRow = 999
-          Message.Info("<font size=4 color=Red><b>Bitte belege einen der freien Plätze! < / b > < / font > < br >" & "<center><font size=5 color=Green>  " & strPlz & "</center><br></font>"
-          "<font size=4 color=Black>Eine Buchung nach einer aktiven Belegung ist nur möglich, wenn keine freien Plätze zur Verfügung stehen</b></font>")
-        
-          Return
+        Else If PlzFreeIdx > 4 Then  ' still more then 60 minutes until next booked
+          tRow = firstRow + 1
+        Endif
+        Break  '  fertig
+      Else  ' Belegung aktiv - schau in die Zukunft ob danach frei
+        If rs.Count = 1 Then ' nur eine Belegung, buche direkt danach
+          tRow = belegEnd
+          PlzFreeIdx = 98 - tRow
+          Break
+        Endif
+        If i = 0 Then
+          belegFirstEnd = belegEnd
+        Else ' 2. Buchung in der Zunkunft
+          If belegStart > belegFirstEnd + 1 Then
+            tRow = belegFirstEnd
+            PlzFreeIdx = belegStart - belegFirstEnd
+            Break
+          Endif
         Endif
       Endif
       rs.MoveNext
@@ -1282,10 +1302,9 @@ Public Sub gridBelegung_MouseDown()
       
       comEinbuchung(tCol)
       If tRow = 999 Then Return
-      ' tRow = tRow Mod 100
       panEinzelDoppel.X = tx 
       panEinzelDoppel.w = gridBelegung.Current.Width
-      panEinzelDoppel.Y = (tRow - firstRow + 1) * 35 + picFmainTop.Height
+      panEinzelDoppel.Y = (tRow - firstRow) * 35 + picFmainTop.Height  ' war firstRow + 1
       panEinzelDoppel.Visible = True
       panEinzelDoppel.Raise
     Else
@@ -1491,7 +1510,7 @@ Public Sub btnEinzDopp_Click()
 
   structBuchLeer()
   r = tRow
-  c = tcol * 2 - 1
+  c = tCol * 2 - 1
   With StrucType.Belegung
     .Platz_idx = tCol * 100 + tRow
     For i = 0 To 9
@@ -1520,8 +1539,7 @@ Public Sub btnEinzDopp_Click()
         If PlzFreeIdx > .hight_nr Then
           gridBelegung[r, c].RowSpan = .hight_nr
         Else
-          r = r - 1
-          .Platz_idx = tCol * 100 + tRow - 1
+          .Platz_idx = tCol * 100 + tRow
           gridBelegung[r, c].RowSpan = PlzFreeIdx
           .hight_nr = PlzFreeIdx
         Endif
@@ -1532,8 +1550,7 @@ Public Sub btnEinzDopp_Click()
         If PlzFreeIdx > .hight_nr Then
           gridBelegung[r, c].RowSpan = .hight_nr
         Else
-          r = r - 1
-          .Platz_idx = tCol * 100 + tRow - 1
+          .Platz_idx = tCol * 100 + tRow
           gridBelegung[r, c].RowSpan = PlzFreeIdx
           .hight_nr = PlzFreeIdx
         Endif
