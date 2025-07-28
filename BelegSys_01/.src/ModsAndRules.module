@@ -11,12 +11,10 @@ Private SqlTab As Variant
 '==========================================================================
 Public Sub GetRules()
 Dim rs As Result
-Dim sSQL_Anweisung As String
-Dim i As Integer
+
     SqlCom = "SELECT * From "
     SqlTab = "r_Global "
     SqlP = "" 
-  ' sSQL_Anweisung = "Select * from r_Global"
     rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
     If rs.Count > 0 Then
     With StrucType.GlobRegeln
@@ -77,7 +75,7 @@ End
 '==========================================================================
 Public Sub RegnerManu()
 Dim rs As Result
-Dim sSQL_Anweisung As String
+
     SqlCom = "SELECT * From "
     SqlTab = "r_RegnerGlob "
     SqlP = "" 
@@ -99,7 +97,6 @@ End
 '==========================================================================
 Public Sub RegnerAuto()
 Dim rs As Result
-Dim sSQL_Anweisung As String
 Dim i As Integer
     SqlCom = "SELECT * From "
     SqlTab = "r_RegnerAuto "

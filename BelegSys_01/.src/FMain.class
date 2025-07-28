@@ -89,16 +89,15 @@ Public Erwachs_FL As Integer
 Public rcMitglNr[4] As Integer
 ' Public buchCtl As Integer
 Public Admin_Fl As Integer          '1=Service; 2=Platzsperre; 3=Spiel löschen
-Public a As String
-Public b As String
-Public s As String
+Public aSound As String
+Public bSound As String
+Public sSound As String
 Private aryMgl[4] As Integer
 Public RegnerCach[20, 3] As Integer     'x,0=Regner Nr., x,1 Beregnungsdauer, x,2=Einschaltverzögerung
 Public zRFID As Integer
 Public altLedUhr_min As String
 Public aryDelZeit[10, 4] As Integer     'Platz_idx, MitglNr, Del_Zeit, Gelb_Sperre
 Private aWeekDay As String[]
-Public Plz[7] As Integer
 Public PlzFreeIdx As Integer
 Public TastSaveFl As Boolean
 Public lbplzSperre[7] As Label
@@ -145,11 +144,11 @@ Public Sub Form_Open()
   RegnerRollo(0, clock0)
   RegnerRollo(1, clock1)
   FMain.Resizable = False
-  a = "/home/pi/Gambas_Prog/WavHilfeSound/Buchung.wav"
-  b = "/home/pi/Gambas_Prog/WavHilfeSound/BtnED.wav" 
+  aSound = "/home/pi/Gambas_Prog/WavHilfeSound/Buchung.wav"
+  bSound = "/home/pi/Gambas_Prog/WavHilfeSound/BtnED.wav" 
   ' s = "/home/wt/Test_db/WavHilfeSound/COMPLETE.wav" 
-  s = "/home/pi/Gambas_Prog/WavHilfeSound/COMPLETE.wav" 
-  Music.Load(s)
+  sSound = "/home/pi/Gambas_Prog/WavHilfeSound/COMPLETE.wav" 
+  Music.Load(sSound)
   Music.Play
   
   hRS232 = New SerialPort As "hRS232"
@@ -318,9 +317,9 @@ End
 '==========================================================================
 Public Sub loadTrVbsEv()
 
-  Dim i, j, b, e, h As Integer
+  Dim i As Integer
   Dim rs As Result
-  Dim tag, Platz, aktPlatz, datum As String
+  Dim tag, datum As String
 
   tag = Trim(aWeekDay[WeekDay(Now)])
   datum = Format(Date, "yyyy-mm-dd")
@@ -347,7 +346,7 @@ Public Sub saveTrVbEv(rs As Result, ed As Integer)
 
   Dim i, j, b, e, h As Integer
   Dim rs1, rs2, rs3 As Result
-  Dim tag, Platz, aktPlatz, datum As String
+  Dim Platz, aktPlatz As String
 
   With StrucType.Belegung
     If rs.Count > 0 Then
@@ -759,7 +758,6 @@ Public Sub MyRegnerDrw_MouseDown()
   Dim hView As DrawingArea = Last
   Dim i, j, Plz, plzCol, plzRow, t As Integer
   Dim rs As Result
-  ' Dim b As String
   
   i = hView.tag
   If MitglNr Then
@@ -929,14 +927,13 @@ End
 '==========================================================================
 
 Public Sub comEinbuchung(PlzNr As Integer)
-
-  Dim i, PlatzTimeIdx As Integer
-  Dim t_Event_FL As Integer
+  Dim i As Integer
   Dim rs As Result
   Dim PlNrRowBeg As Integer
   Dim PlNrRowEnd As Integer
   Dim strPlz As String
-  
+  Dim Plz As Integer[] = [0, 0, 0, 0, 0, 0, 0]
+
   PlNrRowBeg = PlzNr * 100
   PlNrRowEnd = PlNrRowBeg + 98
   ' PlatzTimeIdx = PlNrRowBeg + PlzIdx    'plz_sp_idx + SelTimeAbsIdx
@@ -1192,14 +1189,12 @@ End
 '==========================================================================
 Public Sub gridBelegung_MouseDown()
   
-  Dim tx, ty, i, plzIdx, tempPi, anzsp, belegsts, bRow, bCol, plz, hnr, sp, j, m As Integer
-  Dim MitglNr1, MitglNr2, MitglNr3, MitglNr4, tMitglnr, GmitglNr As Integer
-  Dim Preis As Float
+  Dim tx, ty, i, plzIdx, tempPi, bRow, plz, hnr, j, m As Integer
   Dim rs As Result
   Dim k, strTime As String
   
   If gridBelegung.Column Mod 2 = 1 Then 
-    Music.Load(b)
+    Music.Load(bSound)
     Music.Play
     tRow = gridBelegung.Row
     tCol = gridBelegung.Column \ 2 + 1
@@ -1380,7 +1375,6 @@ End
 Public Function seekMitgl(mgNr As Integer) As Result
   
   Dim rs As Result
-  Dim PlzIdx As Integer
   
   SqlCom = "SELECT * FROM "
   SqlTab = "_Buchung_aktiv "
@@ -1434,7 +1428,7 @@ Public Function seekBuchung(tPi As Integer) As Integer
           gridBelegung[row, col].Font.Bold = False
           gridBelegung[row, col].Font.Size = 12
           gridBelegung[row, col].Font.Italic = False
-          Music.Load(s)
+          Music.Load(sSound)
           Music.Play
         Endif
       Else
@@ -1445,7 +1439,7 @@ Public Function seekBuchung(tPi As Integer) As Integer
           gridBelegung[row, col].Font.Bold = False
           gridBelegung[row, col].Font.Size = 12
           gridBelegung[row, col].Font.Italic = False
-          Music.Load(s)
+          Music.Load(sSound)
           Music.Play
         Endif
       Endif
@@ -1492,7 +1486,7 @@ End
 '==========================================================================
 Public Sub btnEinzDopp_Click()
   
-  Dim i, r, c, std, min, PlzIdx As Integer
+  Dim i, r, c, std, min As Integer
   Dim rs As Result
 
   structBuchLeer()
@@ -1571,7 +1565,7 @@ Public Sub btnEinzDopp_Click()
     btnMainInit(Berecht)
   End With
   'Music.Stop
-  Music.Load(a)
+  Music.Load(aSound)
   Music.Play
   
   panEinzelDoppel.Visible = False  
@@ -1668,7 +1662,7 @@ Public Sub gridUpdate()
   Dim rs As Result
   Dim rs1 As Result
   Dim bCol, bRow, sp, i, j, k, plz, bgC, fgC, stsFl As Integer
-  Dim Titel, Vorname, Name, strTime As String
+  Dim strTime As String
   
   SqlCom = "SELECT * FROM "
   SqlTab = "_Buchung_aktiv "
@@ -1828,7 +1822,7 @@ Public Sub gridRedYel(fRow As Integer, spann As Integer, bgrC As Integer, fgrC A
   
   Dim rs As Result
   Dim plz, j As Integer
-  Dim vorname, Titel, name As String
+  Dim vorname, name As String
   
   gridBelegung[fRow, begCol].RowSpan = spann
   gridBelegung[fRow, begCol].Background = bgrC
@@ -1919,14 +1913,10 @@ End
 Public Sub TimerGridZeit_Timer()
   
   Dim rs As Result
-  Dim rs1 As Result
-  Dim bCol As Integer
-  Dim bRow As Integer
   Dim strTime, plaetze As String
-  Dim sp As Integer
   Dim i, j, k, m As Integer
-  Dim plz, rGlz, rDelay As Integer
-  Dim tag, sDatum As String
+  Dim rGlz, rDelay As Integer
+  Dim tag As String
   Dim datum As Date
 
   i = topRow()
@@ -2046,9 +2036,8 @@ End
 '==========================================================================
 Public Sub TimerRegner_Timer()
   
-  Dim i, k As Integer
+  Dim i As Integer
   Dim iCacheRegnerNumber As Integer
-  Dim iRegner As Integer
   ' digitalWrite(secure, True)
   For i = 0 To StrucType.RegnerManu.RegnerGlZ - 1
     iCacheRegnerNumber = RegnerCach[i, 0]   'x,0=Regner Nr., x,1 Beregnungsdauer, x,2=Einschaltverzögerung
@@ -2142,7 +2131,7 @@ End
 '==========================================================================
 Public Sub ZeitDatum_Timer()
   
-  Dim i, l As Integer
+  Dim l As Integer
   Dim tLedUhr_std, tLedUhr_min, msg_out As String
   ' digitalWrite(secure, 1)
   ' Wait 0.001
@@ -2193,15 +2182,15 @@ End
 
 Public Sub btnMain_Click()
   
-  Dim anzsp, belegsts, bRow, bCol, plz, hnr, sp, j, m As Integer
-  Dim MitglNr1, MitglNr2, MitglNr3, MitglNr4, tMitglnr, GmitglNr As Integer
+  Dim anzsp, belegsts, hnr, j As Integer
+  Dim GmitglNr As Integer
   Dim rs As Result
-  Dim plzIdx, i, Erwachsen, GastNr As Integer
+  Dim plzIdx, i, GastNr As Integer
   Dim Preis As Float
-  Dim n, sPreis As String
+  Dim sPreis As String
   
   mnuBtn = Last.Tag
-  Music.Load(b)
+  Music.Load(bSound)
   Music.Play 
   Select mnuBtn
     Case "Del"

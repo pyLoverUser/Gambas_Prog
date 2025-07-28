@@ -46,7 +46,7 @@ Dim i As Integer
     
 End
 Public Sub btnAdmin_MouseDown()
-Dim i As Integer
+
 Select Case Last.Tag
     Case 0
          fmAdmin.Visible = False
