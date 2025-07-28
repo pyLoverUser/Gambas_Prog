@@ -1,4 +1,17 @@
 
+* node-red
+
+bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered) --node18
+
+sudo apt-get install mosquitto mosquitto-clients
+
+Pakete:
+node-red-dashboard
+ui_led
+node-red-contrib-controltimer
+node-red-contrib-ui-time-scheduler
+node-red-contrib-ui-actions
+
 * mosquitto
 
 remove retained messages, save state

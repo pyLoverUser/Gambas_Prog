@@ -4,10 +4,10 @@
 #include <Arduino_DebugUtils.h>
 
 
-//const char* ssid = "TCSchwieberdingen";
-//const char* password = "TCSchwieberdingen2019";
-const char* ssid = "StrangerThings";
-const char* password = "58714188517339106583";
+const char* ssid = "TCSchwieberdingen";
+const char* password = "TCSchwieberdingen2019";
+//const char* ssid = "StrangerThings";
+//const char* password = "58714188517339106583";
 
 const char* mqtt_server = "192.168.178.2";
 const int mqtt_port = 1883;

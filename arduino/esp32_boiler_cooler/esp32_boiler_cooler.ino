@@ -4,15 +4,15 @@
 #include <Arduino_DebugUtils.h>
 
 
-//const char* ssid = "TCSchwieberdingen";
-//const char* password = "TCSchwieberdingen2019";
-const char* ssid = "StrangerThings";
-const char* password = "58714188517339106583";
+const char* ssid = "TCSchwieberdingen";
+const char* password = "TCSchwieberdingen2019";
+//const char* ssid = "StrangerThings";
+//const char* password = "58714188517339106583";
 
 const char* mqtt_server = "192.168.178.2";
 const int mqtt_port = 1883;
-const String clientId = "boil";
-// const String clientId = "cool";
+// const String clientId = "boil";
+const String clientId = "cool";
 const String topicStr = "tcs/" + clientId + "/out";
 const String topicState = "tcs/" + clientId + "/state";
 
@@ -56,7 +56,8 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
 void setup() {
   Serial.begin(115200);
   delay(250);
-  Debug.setDebugLevel(DBG_VERBOSE);
+//  Debug.setDebugLevel(DBG_VERBOSE);
+  Debug.setDebugLevel(DBG_NONE);
   Debug.timestampOn();
   DEBUG_INFO("ESP32: MQTT client %s", clientId.c_str());
 
