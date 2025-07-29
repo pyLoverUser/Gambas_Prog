@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Public btnService[7] As Button
+Public btnService[8] As Button
 
 Public Sub Form_Open()
     fmService.Visible = True
@@ -16,14 +16,14 @@ Public Sub InitServMenu()
     Dim i As Integer
     Dim k As Integer
 
-    For i = 0 To 6
+    For i = 0 To 7
         btnService[i] = New Button(Me) As "MyService"
         With btnService[i]
             .H = 80
             .W = 200
             .X = 0 + i * 200 
             .Y = 0
-            If i = 6 Then .W = 1920 - .X + 200
+            If i = 7 Then .W = 1920 - .X + 200
             .Tag = i
             .Background = Color.DarkRed
             .Foreground = Color.White
@@ -44,6 +44,9 @@ Public Sub InitServMenu()
                     .Text = "Regner"
                     .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Star2.ico")
                 Case 5
+                    .Text = "Server"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Home.ico")
+                Case 6
                     .Text = "Ende"
                     .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Home.ico")
             End Select
@@ -68,6 +71,8 @@ Public Sub MyService_MouseDown()
         Case 4
             fmRegner.Show
         Case 5
+            fmServer.Show
+        Case 6
             fmService.Close
     End Select
 End

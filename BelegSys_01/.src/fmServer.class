@@ -1,0 +1,74 @@
+' Gambas class file
+
+Private btnMenu[2] As Button
+
+Public Sub Form_Open()
+  fmServer.Visible = True
+  fmServer.W = Screen.W
+  fmServer.H = Screen.H
+  fmServer.Top = 5
+  fmServer.Center
+  fmServer.Resizable = False
+
+  WebViewServer.w = Screen.W
+  WebViewServer.X = 0
+  WebViewServer.H = Screen.H - 80
+  WebViewServer.Y = 80
+  WebViewServer.Visible = True
+  WebViewServer.Url = "http://192.168.178.2:1880/ui"
+  WebViewServer.Reload()
+  WebViewServer.Show()
+  InitMenu()
+End
+
+
+Public Sub InitMenu()
+    
+    Dim i As Integer
+    Dim k As Integer
+
+    For i = 0 To 1
+        btnMenu[i] = New Button(Me) As "MyMenu"
+        With btnMenu[i]
+            .H = 80
+            .W = 200
+            .X = 0 + i * 200 
+            .Y = 0
+            If i = 1 Then .W = 1920 - .X + 200
+            .Tag = i
+            .Background = Color.DarkRed
+            .Foreground = Color.White
+            Select Case i
+                Case 0
+                    .Text = "Mannschaften"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Users.ico")
+                Case 1
+                    .Text = "Ende"
+                    .Picture = Picture.Load("/home/pi/Gambas_Prog/Icons1/Home.ico")
+            End Select
+        End With
+    Next
+    
+End
+
+Public Sub MyMenu_MouseDown()
+    Dim i As Integer
+    For i = 0 To 1
+        btnMenu[i].Background = Color.DarkRed
+        btnMenu[i].Foreground = Color.White
+    Next
+    Select Case Last.tag
+        ' Case 0                          'Mannschaften
+        '     plCom = 0
+        '     Panel1.Visible = False
+        '     Panel3.Visible = True
+        '     btnMenu[0].Background = Color.Cyan
+        '     btnMenu[0].Foreground = Color.Black           
+        '     btnMenu[3].Enabled = True
+        '     btnMenu[2].Enabled = False
+        '     btnMenu[4].Enabled = True
+        '     gridMannschInit()
+        Case 1                           'Ende
+            fmServer.close    
+    End Select    
+End

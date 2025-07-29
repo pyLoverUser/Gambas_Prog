@@ -18,6 +18,7 @@ Component=gb.net
 Component=gb.media
 Component=gb.media.form
 Component=gb.qt5.ext
+Component=gb.qt5.webkit
 Component=gb.sdl2.audio
 Authors="Wilfried Trinks"
 TabSize=2

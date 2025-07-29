@@ -1,0 +1,21 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,153,91)
+  #Translate = False
+  Font = Font["Sans Serif,Bold,12"]
+  Background = Color.LightGray
+  Expand = True
+  Text = "Server"
+  Resizable = False
+  Border = False
+  Stacking = Window.Below
+  Maximized = True
+  FullScreen = True
+  SkipTaskbar = True
+  { WebViewServer WebView
+    MoveScaled(0,0,153,88.8889)
+    #Translate = False
+    Url = "http://192.168.178.2:1880/ui"
+  }
+}
