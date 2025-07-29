@@ -103,13 +103,12 @@ Public TastSaveFl As Boolean
 Public lbplzSperre[7] As Label
 Public strSperrPlz As String
 Public strMSTBY As String = "300"
-Public bLightState As Boolean = False
+
 '==========================================================================
 ' Initialisierung:  Form_Open()
 '	
 '
 '==========================================================================
-
 Public Sub Form_Open()
   
   Dim i As Integer
@@ -931,27 +930,11 @@ Public Sub comEinbuchung(PlzNr As Integer)
   Dim rs As Result
   Dim PlNrRowBeg As Integer
   Dim PlNrRowEnd As Integer
-  Dim strPlz As String
-  Dim Plz As Integer[] = [0, 0, 0, 0, 0, 0, 0]
   Dim belegStart, belegEnd, belegFirstEnd As Integer
 
   PlNrRowBeg = PlzNr * 100
   PlNrRowEnd = PlNrRowBeg + 98
 
-  SqlCom = "SELECT Platz_idx FROM "
-  SqlTab = "_Buchung_aktiv "
-  SqlP = "ORDER BY Platz_idx "
-  rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP)
-  For i = 0 To rs.count - 1
-    Plz[rs!Platz_idx \ 100 - 1] = 1
-    rs.MoveNext
-  Next
-  strPlz = ""
-  For i = 0 To 6
-    If Plz[i] = 0 Then strPlz &= Str(i + 1) & "-"
-  Next
-  i = Len(strPlz) - 1
-  strPlz = Left(strPlz, i)
   SqlCom = "SELECT * FROM "
   SqlTab = "_Buchung_aktiv "
   SqlP = "WHERE Platz_idx BETWEEN " & Str(PlNrRowBeg) & " AND " & Str(PlNrRowEnd) & " ORDER BY Platz_idx"
@@ -966,8 +949,6 @@ Public Sub comEinbuchung(PlzNr As Integer)
     For i = 0 To j
       belegStart = rs!Platz_idx Mod 100
       belegEnd = belegStart + rs!hight_nr
-      
-      Print "PlzFreeIdx=" & PlzFreeIdx & ", pltzIdx=" & rs!Platz_idx & ", firstRow" & firstRow
       
       ' check ist 1. belegung ist in der Zukunft
       If i = 0 And belegStart > firstRow Then
@@ -1075,13 +1056,11 @@ Public Sub datenMitglLesen(dRFID As String)
       Vname.Raise
       Vname.Visible = True
     Endif
-    cDBVerbindung.Close()
   Else
     gridBelegung.Enabled = False
-    
-    cDBVerbindung.Close()
   Endif
-  
+
+  cDBVerbindung.Close()
 End 
 '==========================================================================
 ' RolloClosedTime()
@@ -1135,9 +1114,8 @@ Public Sub btnMainInit(SystemRechte As String)
   
   Dim rs As Result
   Dim platzNr As Integer
-  Dim lightMin, lightMax As Integer
-  lightMin = 18 * 4      ' 18 Uhr
-  lightMax = 22 * 4 + 2  ' 22:30 Uhr
+  Dim eventActive As Boolean
+
   ' Entscheidung wann Flutlicht Button aktiv sein soll
   ' Admin immer aktiv, normales Mitglied:
   ' 1. nach 18:00 bis 22:30
@@ -1152,23 +1130,15 @@ Public Sub btnMainInit(SystemRechte As String)
         btnGast.Visible = True
       Else
         platzNr = .Platz_idx \ 100
-        Print "Platz=" & platzNr & ",Start=" & (.Platz_idx Mod 100) & ",aktuell=" & firstRow & ",min=" & lightMin & ",max=" & lightMax
-        If (lightMin <= firstRow And lightMax >= firstRow) And (platzNr = 3 Or platzNr = 4) Then
+        If (Flutlicht.lightMinRow <= firstRow And Flutlicht.lightMaxRow >= firstRow) And (platzNr = 3 Or platzNr = 4) Then
           btnLight.Visible = True
         Endif
       Endif
     Else
       ' keine Buchung des Users, check ob Event aktiv auf Platz 3 oder 4
-      ' SELECT * FROM `_Buchung_aktiv` WHERE `Event_fl` = 1 AND ((372 BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (472 BETWEEN Platz_idx AND Platz_idx+hight_nr+1))
-      If (lightMin <= firstRow And lightMax > firstRow) Then
-        SqlCom = "SELECT * From "
-        SqlTab = "_Buchung_aktiv "
-        SqlP = "WHERE Event_fl = 1 AND ((" & Str(3 * 100 + firstRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (" & 
-                Str(4 * 100 + firstRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1))" 
-        rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
-        If rs.count > 0 Then
-          btnLight.Visible = True
-        Endif
+      eventActive = Flutlicht.checkEventBuchungActive(firstRow)
+      If eventActive Then
+        btnLight.Visible = True
       Endif
     Endif
     
@@ -1184,7 +1154,6 @@ Public Sub btnMainInit(SystemRechte As String)
       btnAdmin.Visible = True
       btnSpielBetr.Visible = True
       btnLight.Visible = True
-      
     Case "X"
       ' btnDelede.Visible = True
       ' btnGast.Visible = True
@@ -1588,6 +1557,7 @@ Public Sub btnEinzDopp_Click()
   panEinzelDoppel.Visible = False  
   mnuBtn = ""
   
+  cDBVerbindung.Close()  
 End
 '==========================================================================
 ' delLoadAktBel():
@@ -1937,7 +1907,6 @@ Public Sub TimerGridZeit_Timer()
   Dim datum As Date
 
   i = topRow()
-  Print "TimerGridZeit: altTime=" & altTime & ", topRow=" & i & ", firstRow=" & firstRow
   If altTime <> i Then
     If i = 96 Then
       i = 0
@@ -2021,7 +1990,7 @@ Public Sub TimerGridZeit_Timer()
       End With
     Next
   Endif
-  
+
   For i = 0 To 9
     If aryDelZeit[i, 0] > 0 Then
       If aryDelZeit[i, 2] > 0 Then
@@ -2043,7 +2012,9 @@ Public Sub TimerGridZeit_Timer()
       Endif
     Endif
   Next
-  
+
+  ' TODO: activate wenn fertig
+  ' Flutlicht.checkAutomaticLightOff()
 End
 
 '==========================================================================
@@ -2129,7 +2100,7 @@ Public Sub RegnerRollo(i As Integer, clk As Integer)
     logStr = logStr & OutByte[k, i] & ","
     digitalWrite(gpioD8[k], OutByte[k, i])
   Next
-  Print logStr
+  Debug logStr
   digitalWrite(clk, 1)
   ' Wait 0.01
   ' digitalWrite(clk, 0)
@@ -2259,12 +2230,7 @@ Public Sub btnMain_Click()
       fmAdmin.ShowModal
 
     Case "Light"
-      If bLightState Then
-        bLightState = False
-      Else
-        bLightState = True
-      Endif
-      Mqtt.MqttSwitchLight(bLightState)
+      Flutlicht.toggleLight()
 
     Case "Gast"
       rs = seekMitgl(MitglNr) 

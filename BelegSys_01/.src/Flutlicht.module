@@ -1,0 +1,77 @@
+' Gambas module file
+
+Public bLightState As Boolean = False
+Public lightMinRow As Integer = 11 * 4      ' 18 Uhr
+Public lightMaxRow As Integer = 22 * 4 + 2  ' 22:30 Uhr
+
+Private SqlP As Variant
+Private SqlCom As Variant
+Private SqlTab As Variant
+Private lastCheck As Date = Now()
+Private nextCheck As Date
+Private checkIntervalMin As Integer = 5
+
+' Entscheidung wann Flutlicht Button aktiv sein soll
+' Admin immer aktiv, normales Mitglied:
+' 1. nach 18:00 bis 22:30
+' 2. Eingebucht auf Platz 3 oder 4
+' 3. Oder Mannschaftstraining oder Reservierung aktiv auf Platz 3 oder 4
+
+Public Function checkEventBuchungActive(currentRow As Integer) As Boolean
+  Dim rs As Result
+  ' nur checken wenn innerhalb der erlaubten Flutlichtzeit
+  ' check ob Event aktiv auf Platz 3 oder 4
+  ' SELECT * FROM `_Buchung_aktiv` WHERE `Event_fl` = 1 AND ((372 BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (472 BETWEEN Platz_idx AND Platz_idx+hight_nr+1))
+  If (lightMinRow <= currentRow And lightMaxRow > currentRow) Then
+    SqlCom = "SELECT * From "
+    SqlTab = "_Buchung_aktiv "
+    SqlP = "WHERE Event_fl = 1 AND ((" & Str(3 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (" & 
+            Str(4 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1))" 
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+    If rs.count > 0 Then
+      Return True
+    Endif
+  Endif
+
+  Return False
+End
+
+Public Sub checkAutomaticLightOff()
+  
+  ' prüfe alle 5 Minuten ob eine Buchung vorhanden, wenn nein schedule ausschalten nach 5 Minuten
+  ' Nach 22:30 ausschalten
+  Dim currentTime As Date = Now()
+  Dim timeDiff As Integer
+  
+  timeDiff = DateDiff(lastCheck, currentTime, gb.Minute)
+  Debug currentTime & ", Minute=" & Minute(currentTime) & ", diff " & timeDiff
+
+  If timeDiff >= checkIntervalMin Then
+    lastCheck = currentTime
+    Debug lastCheck & ", diff " & timeDiff
+  Endif
+  DateAdd(lastCheck, gb.Minute, 5)
+    
+
+  
+  
+End
+
+
+
+
+Public Sub toggleLight()
+  If bLightState Then
+    bLightState = False
+  Else
+    bLightState = True
+  Endif
+  switchLight(bLightState)
+End
+
+
+Public Sub switchLight(bOnOff As Boolean)
+  
+  bLightState = bOnOff
+  Mqtt.MqttSwitchLight(bLightState)
+End

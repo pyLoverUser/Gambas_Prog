@@ -42,6 +42,8 @@ Dim rs As Boolean = True
 Dim sTopic As String = "tcs/light/in"
 Dim sMessage As String = IIf(bOnOff, "true", "false")
 
+Debug "Mqtt: " & sTopic & ", " & sMessage
+
 rs = MqttPublish(sTopic, sMessage)
 
 Return rs

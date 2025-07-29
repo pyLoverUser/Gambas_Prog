@@ -115,12 +115,11 @@ Dim rs As Result
 Dim sSQL_Anweisung, dberror As String
 Dim i As Integer
   For i = 1 To 10
-  If FMain.cDBVerbindung.Opened Then Break
+    If FMain.cDBVerbindung.Opened Then Break
     FMain.cDBVerbindung.Open()
   Next
   sSQL_Anweisung = SqlCom & SqlTab & SqlP
   Debug sSQL_Anweisung
-  ' rs = Fmain.cDBVerbindung.Exec(sSQL_Anweisung)
   Try rs = Fmain.cDBVerbindung.Exec(sSQL_Anweisung)
   If Error Then
     dberror = sSQL_Anweisung
