@@ -1,0 +1,43 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  Dim i As Integer
+  If Flutlicht.bOnButtonEnabled Then
+    btnLightOn.Visible = True
+  Else
+    btnLightOn.Visible = False
+  Endif
+  btnLightOff.Visible = True
+  swManual.Value = Flutlicht.bAutomaticLightOff
+  If Flutlicht.bManuellButtonEnabled Then
+    swManual.Visible = True
+  Else
+    swManual.Visible = False
+  Endif
+  lbManual.Visible = swManual.Visible
+  fmFlutlicht.Center
+  
+End
+
+Public Sub btnLightOn_Click()
+  Flutlicht.switchLight(True)
+  fmFlutlicht.Close
+End
+
+Public Sub btnLightOff_Click()
+  Flutlicht.switchLight(False)
+  fmFlutlicht.Close
+End
+
+Public Sub swManual_Click()
+  Flutlicht.bAutomaticLightOff = swManual.Value
+End
+
+Public Sub fmFlutlicht_LostFocus()
+  fmFlutlicht.Close
+End
+
+Public Sub Form_MouseDown()
+  fmFlutlicht.Close
+End

@@ -76,15 +76,6 @@ Dim SqlTab As String
         FMain.Vname.Raise
         FMain.RolloOpenTime = Time
         Fmain.Rollo_Closed = 0
-        
-        If .Berecht <> "X" Then
-            ' Fmain.MainBtn(0).Visible = True
-'              Master.btnRollo.Visible = True
-        Else
-            ' Fmain.MainBtn(0).Visible = False
-'              Master.btnRollo.Visible = False
-        End If
-'
        End With
 
     Else

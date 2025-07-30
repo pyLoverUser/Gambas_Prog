@@ -1,0 +1,34 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  Move(0,0,380,150)
+  #Scaled = False
+  #Translate = False
+  Background = Color.DarkBlue
+  Text = "Flutlicht"
+  Resizable = False
+  { swManual SwitchButton
+    Move(260,70,100,50)
+    Tag = "Manual"
+  }
+  { btnLightOn Button
+    Move(20,25,100,100)
+    #Translate = False
+    Font = Font["Sans Serif,Bold,12"]
+    Tag = "On"
+    Text = "Ein"
+  }
+  { btnLightOff Button
+    Move(140,25,100,100)
+    #Translate = False
+    Font = Font["Sans Serif,Bold,12"]
+    Tag = "Off"
+    Text = "Aus"
+  }
+  { lbManual Label
+    Move(260,25,216,40)
+    Font = Font["Sans Serif,Bold,12"]
+    Foreground = Color.White
+    Text = ("Abschalt-\nAutomatik")
+  }
+}

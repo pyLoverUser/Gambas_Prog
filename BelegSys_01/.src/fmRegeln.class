@@ -172,7 +172,6 @@ Case 3
     spFl = 0
     comSpFl = False
 Case 4
-    ' fmAdmin.Show
     fmRegeln.Close  
 End Select  
 End

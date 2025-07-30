@@ -1,8 +1,12 @@
 ' Gambas module file
 
-Public bLightState As Boolean = False
-Public lightMinRow As Integer = 11 * 4      ' 18 Uhr
-Public lightMaxRow As Integer = 22 * 4 + 2  ' 22:30 Uhr
+Public bOnButtonEnabled As Boolean = False
+Public bManuellButtonEnabled As Boolean = False
+Public bAutomaticLightOff As Boolean = True
+
+Private bLightState As Boolean = False
+Private lightMinRow As Integer = 11 * 4      ' 18 Uhr
+Private lightMaxRow As Integer = 22 * 4 + 2  ' 22:30 Uhr
 
 Private SqlP As Variant
 Private SqlCom As Variant
@@ -18,6 +22,7 @@ Private checkIntervalMin As Integer = 5
 ' 3. Oder Mannschaftstraining oder Reservierung aktiv auf Platz 3 oder 4
 
 Public Function checkEventBuchungActive(currentRow As Integer) As Boolean
+  
   Dim rs As Result
   ' nur checken wenn innerhalb der erlaubten Flutlichtzeit
   ' check ob Event aktiv auf Platz 3 oder 4
@@ -26,18 +31,22 @@ Public Function checkEventBuchungActive(currentRow As Integer) As Boolean
     SqlCom = "SELECT * From "
     SqlTab = "_Buchung_aktiv "
     SqlP = "WHERE Event_fl = 1 AND ((" & Str(3 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (" & 
-            Str(4 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1))" 
+      Str(4 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1))" 
     rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
     If rs.count > 0 Then
       Return True
     Endif
   Endif
-
+  
   Return False
+  
 End
 
 Public Sub checkAutomaticLightOff()
   
+  If Not bAutomaticLightOff Then
+    Return  ' checking is deaktiviert
+  Endif
   ' prüfe alle 5 Minuten ob eine Buchung vorhanden, wenn nein schedule ausschalten nach 5 Minuten
   ' Nach 22:30 ausschalten
   Dim currentTime As Date = Now()
@@ -45,33 +54,68 @@ Public Sub checkAutomaticLightOff()
   
   timeDiff = DateDiff(lastCheck, currentTime, gb.Minute)
   Debug currentTime & ", Minute=" & Minute(currentTime) & ", diff " & timeDiff
-
+  
   If timeDiff >= checkIntervalMin Then
     lastCheck = currentTime
     Debug lastCheck & ", diff " & timeDiff
   Endif
   DateAdd(lastCheck, gb.Minute, 5)
-    
-
-  
   
 End
 
+Public Sub setSwitchOnActive(currentRow As Integer, platzNr As Integer, userBooked As Boolean, SystemRechte As String)
+  
+  Dim eventActive As Boolean = False
+  Dim isAdmin As Boolean = False
 
-
-
-Public Sub toggleLight()
-  If bLightState Then
-    bLightState = False
-  Else
-    bLightState = True
+  bOnButtonEnabled = False
+  bManuellButtonEnabled = False
+  
+  ' Entscheidung wann Flutlicht Ein Button aktiv sein soll
+  ' Admin immer aktiv, normales Mitglied:
+  ' 1. nach 18:00 bis 22:30
+  ' 2. Eingebucht auf Platz 3 oder 4
+  ' 3. Oder Mannschaftstraining oder Reservierung aktiv auf Platz 3 oder 4
+  
+  Select Case SystemRechte
+    Case "A"
+      isAdmin = True
+    Case "E"
+      isAdmin = True
+    Case "X"
+      isAdmin = False
+    Case ""
+      Return  ' ignore call whithout rights
+  End Select  
+  
+  If isAdmin Then
+    bManuellButtonEnabled = True
+    bOnButtonEnabled = True
+    Return
   Endif
-  switchLight(bLightState)
-End
+  
+  If currentRow < lightMinRow Or currentRow > lightMaxRow Then
+    ' ausserhalb der erlaubten Zeit
+    Return
+  Endif
+  
+  If userBooked Then
+    If platzNr = 3 Or platzNr = 4 Then
+      bOnButtonEnabled = True
+    Endif      
+  Else
+    ' keine Buchung des Users, check ob Event aktiv auf Platz 3 oder 4
+    eventActive = Flutlicht.checkEventBuchungActive(currentRow)
+    If eventActive Then
+      bOnButtonEnabled = True
+    Endif
+  Endif
 
+End
 
 Public Sub switchLight(bOnOff As Boolean)
   
   bLightState = bOnOff
   Mqtt.MqttSwitchLight(bLightState)
+  
 End

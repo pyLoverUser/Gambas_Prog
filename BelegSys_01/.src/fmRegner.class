@@ -546,7 +546,6 @@ Case 5      'Löschen
         btnAdmin[3].Enabled = True
     End If
 Case 6
-  ' fmAdmin.show
   fmRegner.Close  
 End Select  
 End

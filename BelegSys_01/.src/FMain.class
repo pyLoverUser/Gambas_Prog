@@ -1113,14 +1113,8 @@ End
 Public Sub btnMainInit(SystemRechte As String)
   
   Dim rs As Result
-  Dim platzNr As Integer
-  Dim eventActive As Boolean
-
-  ' Entscheidung wann Flutlicht Button aktiv sein soll
-  ' Admin immer aktiv, normales Mitglied:
-  ' 1. nach 18:00 bis 22:30
-  ' 2. Eingebucht auf Platz 3 oder 4
-  ' 3. Oder Mannschaftstraining oder Reservierung aktiv auf Platz 3 oder 4
+  Dim platzNr As Integer = 0
+  Dim userBooked As Boolean = False
 
   rs = seekMitgl(MitglNr)
   With StrucType.Belegung
@@ -1130,19 +1124,15 @@ Public Sub btnMainInit(SystemRechte As String)
         btnGast.Visible = True
       Else
         platzNr = .Platz_idx \ 100
-        If (Flutlicht.lightMinRow <= firstRow And Flutlicht.lightMaxRow >= firstRow) And (platzNr = 3 Or platzNr = 4) Then
-          btnLight.Visible = True
-        Endif
+        userBooked = True
       Endif
     Else
-      ' keine Buchung des Users, check ob Event aktiv auf Platz 3 oder 4
-      eventActive = Flutlicht.checkEventBuchungActive(firstRow)
-      If eventActive Then
-        btnLight.Visible = True
-      Endif
     Endif
-    
   End With
+  
+  ' Flutlicht Menü ist immer aktiv, aber der Einschalt-button nur nach Regeln
+  Flutlicht.setSwitchOnActive(firstRow, platzNr, userBooked, SystemRechte)
+  
   Select Case SystemRechte
     Case "A"
       btnAdmin.Visible = True
@@ -1158,6 +1148,7 @@ Public Sub btnMainInit(SystemRechte As String)
       ' btnDelede.Visible = True
       ' btnGast.Visible = True
       btnSpielBetr.Visible = True
+      btnLight.Visible = True
   End Select  
   
 End
@@ -1779,6 +1770,7 @@ Public Sub TimerRFID_Timer()
       MitglNr = 0
       Vname.Caption = ""
       fmAdmin.Close
+      fmFlutlicht.Close
       Admin_Fl = 0
       Vname.Visible = False
       panEinzelDoppel.Visible = False
@@ -2228,10 +2220,8 @@ Public Sub btnMain_Click()
       fmSpielbetrieb.ShowModal
     Case "Admin"
       fmAdmin.ShowModal
-
     Case "Light"
-      Flutlicht.toggleLight()
-
+      fmFlutlicht.Show
     Case "Gast"
       rs = seekMitgl(MitglNr) 
       If rs.count <= 0 Then Return       
