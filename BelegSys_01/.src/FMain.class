@@ -2005,8 +2005,7 @@ Public Sub TimerGridZeit_Timer()
     Endif
   Next
 
-  ' TODO: activate wenn fertig
-  ' Flutlicht.checkAutomaticLightOff()
+  Flutlicht.checkAutomaticLightOff(firstRow)
 End
 
 '==========================================================================

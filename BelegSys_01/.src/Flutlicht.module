@@ -4,65 +4,23 @@ Public bOnButtonEnabled As Boolean = False
 Public bManuellButtonEnabled As Boolean = False
 Public bAutomaticLightOff As Boolean = True
 
-Private bLightState As Boolean = False
-Private lightMinRow As Integer = 11 * 4      ' 18 Uhr
-Private lightMaxRow As Integer = 22 * 4 + 2  ' 22:30 Uhr
-
 Private SqlP As Variant
 Private SqlCom As Variant
 Private SqlTab As Variant
-Private lastCheck As Date = Now()
-Private nextCheck As Date
+
+Private bLightState As Boolean = False
+Private lightMinRow As Integer = 18 * 4      ' 18 Uhr
+Private lightMaxRow As Integer = 22 * 4 + 2  ' 22:30 Uhr
+
 Private checkIntervalMin As Integer = 5
+Private lastCheck As Date = Time(Hour(Now), Minute(Now) - (Minute(Now) Mod checkIntervalMin), 0)  ' runde auf Vielfaches von 5 Minuten
+Private lastCheckOn As Date = lastCheck
 
 ' Entscheidung wann Flutlicht Button aktiv sein soll
 ' Admin immer aktiv, normales Mitglied:
 ' 1. nach 18:00 bis 22:30
 ' 2. Eingebucht auf Platz 3 oder 4
 ' 3. Oder Mannschaftstraining oder Reservierung aktiv auf Platz 3 oder 4
-
-Public Function checkEventBuchungActive(currentRow As Integer) As Boolean
-  
-  Dim rs As Result
-  ' nur checken wenn innerhalb der erlaubten Flutlichtzeit
-  ' check ob Event aktiv auf Platz 3 oder 4
-  ' SELECT * FROM `_Buchung_aktiv` WHERE `Event_fl` = 1 AND ((372 BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (472 BETWEEN Platz_idx AND Platz_idx+hight_nr+1))
-  If (lightMinRow <= currentRow And lightMaxRow > currentRow) Then
-    SqlCom = "SELECT * From "
-    SqlTab = "_Buchung_aktiv "
-    SqlP = "WHERE Event_fl = 1 AND ((" & Str(3 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (" & 
-      Str(4 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1))" 
-    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
-    If rs.count > 0 Then
-      Return True
-    Endif
-  Endif
-  
-  Return False
-  
-End
-
-Public Sub checkAutomaticLightOff()
-  
-  If Not bAutomaticLightOff Then
-    Return  ' checking is deaktiviert
-  Endif
-  ' prüfe alle 5 Minuten ob eine Buchung vorhanden, wenn nein schedule ausschalten nach 5 Minuten
-  ' Nach 22:30 ausschalten
-  Dim currentTime As Date = Now()
-  Dim timeDiff As Integer
-  
-  timeDiff = DateDiff(lastCheck, currentTime, gb.Minute)
-  Debug currentTime & ", Minute=" & Minute(currentTime) & ", diff " & timeDiff
-  
-  If timeDiff >= checkIntervalMin Then
-    lastCheck = currentTime
-    Debug lastCheck & ", diff " & timeDiff
-  Endif
-  DateAdd(lastCheck, gb.Minute, 5)
-  
-End
-
 Public Sub setSwitchOnActive(currentRow As Integer, platzNr As Integer, userBooked As Boolean, SystemRechte As String)
   
   Dim eventActive As Boolean = False
@@ -70,13 +28,7 @@ Public Sub setSwitchOnActive(currentRow As Integer, platzNr As Integer, userBook
 
   bOnButtonEnabled = False
   bManuellButtonEnabled = False
-  
-  ' Entscheidung wann Flutlicht Ein Button aktiv sein soll
-  ' Admin immer aktiv, normales Mitglied:
-  ' 1. nach 18:00 bis 22:30
-  ' 2. Eingebucht auf Platz 3 oder 4
-  ' 3. Oder Mannschaftstraining oder Reservierung aktiv auf Platz 3 oder 4
-  
+
   Select Case SystemRechte
     Case "A"
       isAdmin = True
@@ -112,6 +64,101 @@ Public Sub setSwitchOnActive(currentRow As Integer, platzNr As Integer, userBook
   Endif
 
 End
+
+
+
+Public Function checkEventBuchungActive(currentRow As Integer) As Boolean
+  
+  Dim rs As Result
+  ' nur checken wenn innerhalb der erlaubten Flutlichtzeit
+  ' check ob Event aktiv auf Platz 3 oder 4
+  ' SELECT * FROM `_Buchung_aktiv` WHERE `Event_fl` = 1 AND ((372 BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (472 BETWEEN Platz_idx AND Platz_idx+hight_nr+1))
+  If (lightMinRow <= currentRow And lightMaxRow > currentRow) Then
+    SqlCom = "SELECT * From "
+    SqlTab = "_Buchung_aktiv "
+    SqlP = "WHERE Event_fl = 1 AND ((" & Str(3 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (" & 
+      Str(4 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1))" 
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+    If rs.count > 0 Then
+      Return True
+    Endif
+  Endif
+  
+  Return False
+  
+End
+
+Public Function checkBuchungActive(currentRow As Integer) As Boolean
+  
+  Dim rs As Result
+  ' check ob Buchung auf Platz 3 oder 4 aktiv
+  ' SELECT * FROM `_Buchung_aktiv` WHERE (372 BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (472 BETWEEN Platz_idx AND Platz_idx+hight_nr+1)
+  If (lightMinRow <= currentRow And lightMaxRow > currentRow) Then
+    SqlCom = "SELECT * From "
+    SqlTab = "_Buchung_aktiv "
+    SqlP = "WHERE (" & Str(3 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1) OR (" & 
+      Str(4 * 100 + currentRow + 1) & " BETWEEN Platz_idx AND Platz_idx+hight_nr+1)" 
+    rs = DatabaseService.ExecuteSql(SqlCom, SqlTab, SqlP) 
+    If rs.count > 0 Then
+      Return True
+    Endif
+  Endif
+  
+  Return False
+  
+End
+
+Public Sub checkAutomaticLightOff(currentRow As Integer)
+  
+  ' checking is deaktiviert
+  If Not bAutomaticLightOff Then
+    resetCheckTime()
+    Return
+  Endif
+  
+  ' vor 18:30 nicht checken
+  If (lightMinRow > currentRow) Then
+    resetCheckTime()
+    Return
+  Endif
+  
+  Dim currentTime As Date = Time(Hour(Now), Minute(Now), 0)
+  Dim timeDiffMin As Integer = DateDiff(lastCheck, currentTime, gb.Minute)
+
+  If timeDiffMin >= checkIntervalMin Then
+    ' 5 minuten vergangen check
+    Debug "currentMin=" & currentTime & ", lastCheck=" & lastCheck & ", diff=" & timeDiffMin & ", currentRow=" & currentRow
+
+    ' Nach 22:30 ausschalten
+    If (lightMaxRow <= currentRow) Then
+      switchLight(False)
+      lastCheckOn = currentTime  ' reset check time
+      lastCheck = currentTime
+      Return
+    Endif
+
+    ' prüfe ob eine Buchung vorhanden, wenn nein schedule ausschalten nach 5 Minuten
+    Dim isBooked As Boolean = checkBuchungActive(currentRow)
+    
+    If isBooked Then
+      lastCheckOn = currentTime
+    Else
+      If lastCheckOn <> lastCheck Then
+        ' schon vor 5 Minuten war keine Buchung - schalte aus
+        switchLight(False)
+        lastCheckOn = currentTime  ' reset check time
+      Endif
+    Endif
+    lastCheck = currentTime
+  Endif
+  
+End
+
+Private Sub resetCheckTime()
+    lastCheck = Time(Hour(Now), Minute(Now) - (Minute(Now) Mod checkIntervalMin), 0)  ' runde auf Vielfaches von 5 Minuten
+    lastCheckOn = lastCheck
+End
+
 
 Public Sub switchLight(bOnOff As Boolean)
   
